@@ -23,6 +23,10 @@ export const SELECTION_STYLE = `
 .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, #fff); color: var(--tp-accent, #4f6bf6); }
 .tp-sel button.tp-ai { color: #fff; background: var(--tp-accent, #4f6bf6); margin-left: 2px; }
 .tp-sel button.tp-ai:hover { filter: brightness(1.1); }
+:host([data-tp-theme='dark']) .tp-sel { background: #1e2126; border-color: #333941; box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4); }
+:host([data-tp-theme='dark']) .tp-sel button { color: #e6e8eb; }
+:host([data-tp-theme='dark']) .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 24%, #1e2126); }
+:host([data-tp-theme='dark']) .tp-sel button.tp-ai { color: #fff; }
 `;
 
 const SHORT_LABELS: Record<string, string> = {
@@ -70,10 +74,37 @@ export function createSelectionSystem(
       const btn = document.createElement('button');
       btn.className = 'tp-ai';
       btn.textContent = `✨ ${deps.i18n.t('selection.ai')}`;
-      btn.title = deps.i18n.t('selection.ai');
+      btn.title = ai.url.includes('%s')
+        ? `${deps.i18n.t('selection.ai')} · ${ai.label}`
+        : `${deps.i18n.t('selection.ai')} · ${ai.label} ${deps.i18n.t('selection.aiCopyHint')}`;
       btn.addEventListener('click', () => open(ai.url));
       bar.appendChild(btn);
     }
+  }
+
+  /** Copy via the async API when available, else the legacy execCommand path
+   *  (navigator.clipboard is undefined outside secure contexts, e.g. http pages). */
+  function copyText(text: string) {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+      return;
+    }
+    legacyCopy(text);
+  }
+
+  function legacyCopy(text: string) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.cssText = 'position:fixed;top:-1000px;left:-1000px;opacity:0';
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand('copy');
+    } catch {
+      /* clipboard unavailable; the tab still opens */
+    }
+    area.remove();
   }
 
   function open(template: string) {
@@ -82,7 +113,11 @@ export function createSelectionSystem(
     hide();
     if (!text) return;
     sel?.removeAllRanges();
-    const url = template.replace('%s', encodeURIComponent(text));
+    // No `%s` means the site can't take the prompt in the URL, so hand the text
+    // over through the clipboard and just start a fresh conversation.
+    const takestext = template.includes('%s');
+    if (!takestext) copyText(text);
+    const url = takestext ? template.replace('%s', encodeURIComponent(text)) : template;
     void browser.runtime.sendMessage({
       type: 'tabpeek:openTab',
       url,

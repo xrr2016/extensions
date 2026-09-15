@@ -4,23 +4,23 @@
 
 **多浏览器插件 monorepo**（pnpm workspace，根包名 `extensions`）。`apps/` 下按"每个产品两个目录"扁平排列：插件本体 + 落地页。当前产品：
 
-- **TabPeek** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置页、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在 popup 与 landing 放了爱发电 + Patreon 赞助入口。
+- **TabPeek** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置面板（侧边栏）、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在侧边栏设置面板与 landing 放了爱发电 + Patreon 赞助入口。
 - **tabpeek-landing** — 纯静态产品官网（零构建，直接部署）。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份），下载按钮仍是 `href="#"` 占位。
 
 ## 常用命令
 
 在**仓库根目录**执行（脚本经 `pnpm -F` 转发到子包）：
 
-| 命令 | 作用 |
-| --- | --- |
-| `pnpm install` | 安装并链接 workspace（首次克隆/目录改名后必跑，见下） |
-| `pnpm dev:tabpeek` / `pnpm dev:tabpeek:firefox` | 开发模式，产物在 `apps/tabpeek/.output/chrome-mv3-dev/`（firefox 为 `firefox-mv2-dev/`） |
-| `pnpm dev:tabpeek:doubao` | 开发模式，改用本机豆包浏览器（Chromium 147），产物在 `.output/doubao-mv3-dev/` |
-| `pnpm build:tabpeek` / `pnpm build:tabpeek:firefox` | 生产构建，产物在 `apps/tabpeek/.output/chrome-mv3/`（firefox 为 `firefox-mv2/`） |
-| `pnpm zip:tabpeek` / `pnpm zip:tabpeek:firefox` | 打包上架 zip |
-| `pnpm compile:tabpeek` | 单产品类型检查（`vue-tsc --noEmit`） |
-| `pnpm compile` / `pnpm build` | 聚合：对全部子包 `--if-present` 执行 |
-| `pnpm landing:tabpeek` | 官网本地预览（http://127.0.0.1:4173 ，**根目录是 `apps/tabpeek-landing`**） |
+| 命令                                                | 作用                                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `pnpm install`                                      | 安装并链接 workspace（首次克隆/目录改名后必跑，见下）                                    |
+| `pnpm dev:tabpeek` / `pnpm dev:tabpeek:firefox`     | 开发模式，产物在 `apps/tabpeek/.output/chrome-mv3-dev/`（firefox 为 `firefox-mv2-dev/`） |
+| `pnpm dev:tabpeek:doubao`                           | 开发模式，改用本机豆包浏览器（Chromium 147），产物在 `.output/doubao-mv3-dev/`           |
+| `pnpm build:tabpeek` / `pnpm build:tabpeek:firefox` | 生产构建，产物在 `apps/tabpeek/.output/chrome-mv3/`（firefox 为 `firefox-mv2/`）         |
+| `pnpm zip:tabpeek` / `pnpm zip:tabpeek:firefox`     | 打包上架 zip                                                                             |
+| `pnpm compile:tabpeek`                              | 单产品类型检查（`vue-tsc --noEmit`）                                                     |
+| `pnpm compile` / `pnpm build`                       | 聚合：对全部子包 `--if-present` 执行                                                     |
+| `pnpm landing:tabpeek`                              | 官网本地预览（http://127.0.0.1:4173 ，**根目录是 `apps/tabpeek-landing`**）              |
 
 包管理器固定 **pnpm**（workspace 根有 `pnpm-lock.yaml`）。workspace 子包自身的 `postinstall`（`wxt prepare`）会正常执行，并生成 `apps/<name>/.wxt/tsconfig.json`——`tsconfig.json` 正是 `extends` 它，所以**没跑过 install 就编译会失败**。
 
@@ -34,12 +34,12 @@
 pnpm-workspace.yaml          # packages: ['apps/*']
 apps/
   <name>/                    # 插件本体，包名 @extensions/<name>；工程根 = 此目录，@/ 别名指到这里
-    wxt.config.ts            # manifest（权限/名称/描述）唯一定义处
+    wxt.config.ts            # manifest（权限/名称/描述/action）唯一定义处
     tsconfig.json            # extends ./.wxt/tsconfig.json（生成物）
     entrypoints/
       background.ts          # SW：fetch 预检、开标签页（消息中枢）
       content.ts             # 悬停/点击/长按判定 + Shadow UI 装配
-      popup/                 # App.vue（全部设置项）+ index.html + main.ts + style.css
+      sidepanel/             # 设置面板（点工具栏图标打开）：App.vue（7 个 tab 的全部设置项）+ index.html + main.ts + style.css
     utils/
       storage.ts             # 设置类型/默认值/夹取 + settingsItem + 引擎表
       preview.ts             # 预览窗系统（DOM 手动构建 + STYLE 字符串 + 固定/倒计时条）
@@ -62,10 +62,11 @@ apps/
 
 content script 拿不到部分能力（见"陷阱"），所有跨上下文调用都走 `browser.runtime.sendMessage`，**消息名统一 `tabpeek:` 前缀**，处理函数集中在 `entrypoints/background.ts`：
 
-| 消息 | 方向 | 载荷 / 回复 |
-| --- | --- | --- |
-| `tabpeek:fetch` | content → background | `{ url }` → `{ ok, canEmbed, finalUrl?, title?, description?, favicon?, html?, error? }` |
-| `tabpeek:openTab` | content/preview → background | `{ url, background? }` → `{ ok: boolean }`（`background:true` 时非激活打开） |
+| 消息              | 方向                         | 载荷 / 回复                                                                                                                                                                                  |
+| ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tabpeek:fetch`   | content → background         | `{ url }` → `{ ok, canEmbed, finalUrl?, title?, description?, favicon?, html?, error? }`                                                                                                     |
+| `tabpeek:openTab` | content/preview → background | `{ url, background? }` → `{ ok: boolean }`（`background:true` 时非激活打开）                                                                                                                 |
+| `tabpeek:preview` | **background → content**     | `{ url, sidebar }` → 无回复。右键菜单点「在预览窗/侧边栏打开」时由 background 发给该标签页，content 自己按 url 找 `<a>` 的 rect（找不到就用视口中心），再 `preview.open({ …info, sidebar })` |
 
 `tabpeek:fetch` 的 `hostOrigin` 由 background 从 `sender.tab.url` 推导，用于 XFO / CSP `frame-ancestors` 判定；未知消息一律返回 `undefined`（表示不接管）。
 
@@ -80,36 +81,141 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 鼠标离开时 `releaseExcept()` 不是立即关窗，而是给 **400ms 宽限**再关，避免指针穿过缝隙时窗口闪没。
 
+### Alt + 单击（altClick 模式）
+
+`click` 与 `altClick` 共用同一个 capture 阶段的 click 监听，靠修饰键区分：`click` 要求不带修饰键，`altClick` 要求**只**带 Alt（Ctrl / Meta / Shift 一律让给浏览器，Ctrl+单击仍是"新标签页打开"）。要留意 **Chrome 里 Alt+单击链接的默认行为是"下载目标"**，`preventDefault()` 顺手把它接管过来——这正是这个模式能用的前提，别为了"保留下载"去掉它。
+
+和 `click` 模式的区别是刻意设计的：`click` 模式下普通单击就被预览接管、不会跳转；`altClick` 模式下普通单击照旧导航（实测过），只有按住 Alt 才走预览。另外注意 `altHover` 模式下按住 Alt 移动鼠标本身就会触发预览，所以用键盘模拟"Alt+单击"时容易看到两个窗口——那是 altHover 正常工作，不是 altClick 串味。
+
+### 拖动触发（drag 模式）
+
+`triggerMode: 'drag'` 时，**按住链接拖动超过 `DRAG_INTENT_PX`（12px）就打开预览**——"打开"发生在拖动过程中而不是松手时，和 longPress 的"按住期间就打开"保持一致；松手后那次 click 由既有的 `suppressClickUrl` 吃掉，所以不会跳转（实测过：拖完再点链接，页面不导航）。几个关键点：
+
+- `DRAG_INTENT_PX` 同时被两处复用：drag 模式用它判定"开始拖"，longPress 模式用它判定"这不是长按，取消"——同一个位移，两种模式下的相反含义都是刻意的，改的时候别只顾一边。
+- 必须拦掉浏览器原生的链接拖动：`dragstart` 里对 `a[href]` 调 `preventDefault()`（**只在 drag 模式**），否则原生拖拽会话会接管手势、pointermove/pointerup 不再派发，整套判定就废了。不拦的话也没法用原生 `dragend` 代替——原生拖放松手可能直接导航。
+- 一次手势只开一个预览（触发后立刻 `dragCandidate = null`）；`cancelPress()` 里也清它，所以 pointerup/pointercancel/下一次 pointerdown 都会重置。
+- 没拖够距离就松手 = 普通点击，什么都不会发生；从非链接处开始拖也不触发。
+
+### 预览窗淡入淡出
+
+- `.tp-win` 基础态是 `opacity: 0` + `transition: opacity .18s`；创建后等**两帧 rAF** 再加 `.tp-in` 淡入（和倒计时条同一套理由：先让透明态落地，否则过渡不触发）。关闭时加 `.tp-out`（自带 `pointer-events: none`），`setTimeout(…, FADE_MS + 40)` 之后才真正 `remove()`。`FADE_MS` 必须和 CSS 里的 .18s 对齐。
+- `closeWindow(win, animate = true)`：`win.closed` 立即置位、同时从 `windows` 数组里摘掉，所以淡出中的窗口**不再计数、不参与 `place()` 重排、也点不动**，只是元素多留约 220ms（iframe 也是等淡完才置 `about:blank`，否则会在淡出过程里闪一下空白）。`destroy()` 走 `animate = false`，扩展失效/页面卸载时立刻摘除不做动画。驱逐（超上限）走的也是这条路径，所以新旧窗口是交叉淡入淡出，不会堆积幽灵节点。
+- 模糊遮罩 `.tp-overlay` 由 `display` 切换改为 `.tp-on` 透明度过渡，统一由 `syncOverlay()` 决定（`blurPx > 0 && 还有未关闭的窗口`）。这里顺手**修掉一个旧 bug**：过去 `open()` 会点亮遮罩而 `closeWindow()` 从不熄灭，开了背景模糊的用户把预览窗全关掉后，整页会一直灰着直到改设置。
+
+### 预览窗尺寸与背景效果
+
+- 右下角 `.tp-resize` 手柄拖拽改大小：尺寸存进 `win.manualSize`（像素），`sizeFor(win)` 在布局数学里优先用它、否则回落到宽高百分比；`place()` 不再写内联尺寸，所以手动尺寸不会被设置变更或视口 resize 冲掉，但**切到侧边栏时会主动清掉**（见上）。手柄在侧边栏模式下 `display: none`。最小 240×160，最大视口减 16。
+- 背景效果从固定 px 的 `blurPx` 改成百分比 `blurStrength`（0–100）：`--tp-blur = 强度/100 × 14px`、`--tp-dim = 强度/100 × 0.5`，两个都由 `applyVisualVars()` 写。**遮罩只在鼠标指针位于某个预览窗内时才显示**（`win.hovered`，由窗口 root 的 mouseover/mouseout 维护，`syncOverlay()` 据此开关），所以页面在你不看它的时候立刻恢复清晰。注意 `mouseout` 同时会 `releaseExcept()` 启动 400ms 自动关闭——这是既有行为，不要为了"移开指针只关模糊"去动它。
+- 老配置里的 `blurPx` 会被折算一次（×5）。坑在于调用方都先 `{ ...DEFAULT_SETTINGS, ...stored }` 合并，默认值会把 `blurStrength` 填成 0，所以判断不能写成 `s.blurStrength ?? 老值`（永远走不到老值）——要判"新值 > 0"。`clampSettings` 同时把 `blurPx` 从返回对象里剔除，否则它会一直被存回去、每次读都把用户后来设的 0 复活成老值。
+
+### URL 跟踪保护（`utils/tracking.ts`）
+
+`stripTracking(url)` 先**还原中转壳再剥参数**（壳里套壳的情况走两遍，深度上限 3 防环），`stripTracking` 只处理 http(s)，解析失败一律原样返回。
+
+- **全局参数表只收"自解释"的名字**（`utm_*` / `pk_` / `mtm_` / `hsa_` / `oly_` 前缀 + `gclid` / `fbclid` / `msclkid` / `mc_eid` / `mkt_tok` / `_hsenc` / `_gl` 之类）。`ref`、`source`、`si`、`s`、`t`、`spm`、`scm` 这类短名字**故意不收**——它们在很多站点是功能性参数，剥错就是打不开页面。想覆盖它们需要按域名的规则表，这是明确的下一步而不是疏漏。
+- **中转壳表的 `path` 是必须的**：`google.com/url?q=` 要还原，`google.com/search?q=` 绝不能碰（把搜索词当成目标地址解出来就出大事了）。测试里专门留了这条用例。
+- 应用点只有三处，都是"TabPeek 自己要发起访问"的地方：content 的 `anchorHref()`（**在这里洗一次，keep/find/open/fetch 后面比较的都是同一个值**，否则窗口会因为 URL 不一致而找不到）、右键菜单的 `anchorInfoFor()`、以及 background 的 `tabpeek:openTab`（兜底，按 `stripTracking` 设置决定，预览抓取因此也不会带上追踪参数）。开关关闭时三处都放行原地址。
+
+### 链接风险提示（`utils/safety.ts`）
+
+`assessLink(href, anchorText)` 纯本地判定，返回一个 `RiskReason` 或 `null`：`userinfo`（`apple.com@evil.tld`）、`punycode`（`xn--` 或非 ASCII 域名）、`brandMismatch`（域名里出现品牌词但不属于该品牌，或"诱导词 + 链接文字带品牌"）、`textMismatch`（显示的文字写着另一个域名）、`ipHost`、`shortener`。只读：**不拦截、不弹窗**，只在预览窗标题栏加一个 `⚠` 徽章（`.tp-risk`，文字随语言走 `syncHeaderButtons`）。
+
+判定要克制，宁可漏也不要误报——这是"提示"不是"判罪"：合法品牌官网（`www.paypal.com`）、只有诱导词没有品牌的普通域名（`secure.example.com`）都**不**提示，`lure` 检查必须与链接文字里的品牌同时命中才成立。文案也照着这个定位写：说的是"域名疑似仿冒""文字与目标不符"，**不说"这是恶意网站"**——没有威胁情报源就抓不到"已知恶意"，能抓的只是伪装手法，这一点在改动文案时别丢。
+
+### 关闭触发器
+
+三个独立开关（`closeOnOutsideClick` / `closeOnMouseLeave` / `closeOnScroll`，默认全开）决定预览窗什么时候自动关掉。实现分散在两处，且语义都是"**只关未固定的窗口**"：
+
+- `closeOnMouseLeave` 直接**关掉整条自动关闭路径**：`releaseExcept()` 开头就 `if (!settings().closeOnMouseLeave) return;`。这一条同时管住"指针移开链接"和"指针移出窗口"两种 mouse-leave 场景，因为两者都走 `releaseExcept`。关掉后窗口会一直留着，直到别的触发器或用户手动关闭。
+- `closeOnOutsideClick` 在 `content.ts` 用 capture 阶段的 `pointerdown` 实现：`composedPath()` 里出现 `TABPEEK-UI` 就当作点在自家 UI 上（包括预览窗内的 iframe），否则 `preview.dismissUnpinned()`。用 pointerdown 而不是 click，是为了按下即响应。
+- `closeOnScroll` 挂在 `preview.ts` 已有的 scroll 监听里（那个监听同时负责让悬停高亮跟着链接走）。**注意无头 + `--virtual-time-budget` 下浏览器不派发 scroll 事件**，验证滚动相关行为必须用实时模式（CDP 不加虚拟时间），否则会误判成"滚动不关闭"。
+
+`dismissUnpinned()` 与 `releaseExcept()` 都会跳过 `pinned` 窗口——固定就是"别自动关"的意思，加新关闭路径时也要照此跳过。另外固定住所有窗口会顶到 `maxWindows` 上限，此时新预览不打开并弹 `preview.pinLimit` 提示，三件套是连在一起的。
+
+### 弹窗主题（预览窗配色预设）
+
+`windowTheme` 选定一套预览窗配色，取值见 `WINDOW_THEMES`（gray / midnight / silver / blue / green / purple / pink / custom），`themeColor` 仍是全局强调色。两个关键约定：
+
+- **令牌驱动**：预览窗的表面色/文字色不再写死，而是 `:host` 上的 `--tp-base / --tp-ink / --tp-surface / --tp-line / --tp-soft`（`--tp-line`、`--tp-soft` 由 `--tp-ink` 与 `--tp-surface` 用 `color-mix` 推导）。深色主题只改 `--tp-base`、`--tp-ink` 两个默认值，窗口规则全读令牌。`applyWindowTheme(root, preset)` 把预设写进**每个窗口 root 的内联变量**（内联优先，所以能压过主题默认值）：`kind: 'tint'` 的预设写 `--tp-surface: color-mix(in srgb, var(--tp-accent) 7%, var(--tp-base))`——**混到底色而不是写死白色**，这样深色主题下选浅色预设会得到"深底 + 淡淡的主色"，而不是一块刺眼的白色；`kind: 'dark'` 的预设直接给 `surface` / `ink`，无视应用主题（"深色"那张卡就是这个）。
+- **预设拥有强调色**：`clampSettings` 里非 `custom` 的预设会强制把 `themeColor` 改写成该预设的 `accent`（`custom` 才以 `themeColor` 为准）。否则一旦存储里 `windowTheme` 与 `themeColor` 不同步（手改、旧数据），窗口会按一个颜色调色、其余 UI 用另一个颜色。新增预设或新增读 `themeColor` 的地方时别绕过这条。
+
+设置面板「预览窗」tab 里的卡片是 4 列网格的窗口缩略图（`.win-themes` + `.mini*`），每张卡用自己的 `--card-accent` 上色，`custom` 那张是铅笔图标 + 内嵌 `<input type="color">`；选中项用 `color-mix(accent 30%, transparent)` 做外圈高亮。工具提示的名字来自 `windowTheme.<id>` 词条，新增预设要同步补两处 locale。
+
+### 外观主题（深/浅/跟随系统）
+
+`theme` = system / light / dark，默认 **system**（跟随系统）。解析逻辑集中在 `utils/theme.ts`：`resolveTheme(mode)` + `watchTheme(getMode, onChange)`（回调先立刻跑一次，之后仅在 `getMode()` 仍返回 `system` 时响应 `prefers-color-scheme` 变化，返回 disposer）。两处落地方式不同：
+
+- **设置面板**（侧边栏，独立文档）：解析结果写到 `document.documentElement.dataset.theme`，深色样式是 **`style.css` 末尾的 `html[data-theme='dark'] …` 覆盖块**（含 `html[data-theme='dark'] body` 的底色）。面板只渲染一个组件，所以它的样式**全部写在 `style.css` 里、不用 `<style scoped>`**（`App.vue` 没有样式块）——scoped 会往每个选择器塞一遍 `[data-v-…]`，白白撑大产物，而且够不到 `body`，反而要额外写 `:global()`。切换设置时要 `themeDispose?.()` 再重新 `watchTheme`，`onUnmounted` 也要释放。
+- **页面内 shadow UI**（预览窗、阅读模式、划词条、提示）：`content.ts` 在 `onMount` 里拿到 `shadow.host`，把解析结果写成 **host 上的 `data-tp-theme`**（两份 UI 共用一个 shadow root，所以一个属性就够）。**预览窗内部不再用 `data-tp-theme` 直接写规则，而是走上面那组令牌**（`:host` 定义 `--tp-base/--tp-ink` 默认值，深色主题只改这两个默认值）；只有划词条、提示条这类窗口之外的 UI 还用 `:host([data-tp-theme='dark'])` 覆盖。设置变更时同样要重订阅，`ctx.onInvalidated` 里释放。
+
+**改深色样式时的坑**：为了压过浅色规则，覆盖选择器要带 `html[data-theme='dark']` / `:host([data-tp-theme='dark'])`，于是特异性变成 (0,1,1) 这一档，会和 `.seg-btns label.on` / `.theme-cards label.on` 这类 (0,2,1) 的选中态**打平**——平手时靠源码顺序，深色块在后面，深色下选中项就会丢掉主题色填充。所以必须同时为 `.on` 写一条更高特异性的深色规则（现有代码里那三组就是这么来的），新增可选中控件时别忘了照做。
+
+### 节电模式与减少动画
+
+扩展改不了浏览器自己的节电/动画开关，这两项是**约束 TabPeek 自身开销**的档位，解析集中在 `utils/power.ts`：`resolvePowerState(mode, onBattery, reduceMotion)` + `watchPower(getSettings, onChange)`（照 `watchTheme` 的模样写，回调先立刻跑一次，返回 disposer）。降级后的 `PowerState { level, reduceMotion }` 只有三档 `off / on / max`，**它只会拿走功能，绝不会打开设置里关着的东西**。
+
+- `powerSaver` = off / on / max / auto（`POWER_MODES`，设置面板下拉顺序即 `auto` 在前）。`auto` 只影响 `level` 的计算：`navigator.getBattery()` 报到 `charging === false` 时当作 `on`，其余（API 缺失、promise reject、市电）一律当作不降级——**报错猜成"在省电"会把功能悄悄关掉，猜成"市电"只是少省一点**。
+- 三档剥夺的东西：`on` = 关链接预热（`warmupSettings()` 直接返回 `speculationMode: "off"` 的副本，`speculation.ts` 因此完全不用改）+ 关背景模糊（`blurStrength()` 返回 0，设置值不动）；`max` = 在 `on` 基础上再关链接高亮（`highlightWanted()`）、跳过 `tabpeek:fetch` 预检直接 `renderIframe()`（没有标题/图标/阅读模式兜底，禁嵌站点只能失败），并且**隐含 `reduceMotion`**（见下）。
+- `reduceMotion` 是三条来源的合流：`settings.reduceMotion`、系统 `prefers-reduced-motion: reduce`、以及 `level === "max"`（在 `resolvePowerState` 里合，调用方只读这个布尔值，不关心是谁要求的）。落地方式是 `content.ts` 把它写进 **host 的 `data-tp-motion`**（与 `data-tp-theme` 同一套机制），`preview.ts` 的 CSS 里 `:host([data-tp-motion])` 一刀切断 `.tp-overlay` / `.tp-win` / `.tp-hl` / `.tp-pin svg` / `.tp-resize` 的过渡与骨架屏动画；**JS 内联写的过渡 CSS 管不到**，所以倒计时进度条要在 `startProgress()` 里自己提前返回。窗口淡出的 `fadeMs()` 也随之归零（`FADE_SLACK_MS` 保留那一帧余量），`place()` 之类的布局数学不受影响。
+- 电池/系统偏好变化时只走 `preview.applyPower()`（重算模糊与高亮），**不重新 `place()` 窗口**——插拔电源不该把用户拖过位置的窗口挪走。同理设置变更时 `content.ts` 要 `powerDispose?.()` 后重新 `watchPower`（和 `themeDispose` 并列），`ctx.onInvalidated` 里释放。
+
+### 悬停高亮链接
+
+`highlightLinks` 开启时，指针下的链接会被 shadow root 里的一层 `.tp-hl` 框住（`open()` 之外唯一会跟着指针动的元素，和倒计时条同一类）。要点：
+
+- 页面上**不改任何 DOM**，高亮是覆盖层：`position: fixed` + 2px 主题色描边 + 12% 透明底色，尺寸取 `锚点 rect` 四边各外扩 2px（全局 `box-sizing: border-box`，描边画在框内，所以是 ±2 而不是 ±0）。`--tp-accent` 得显式设在元素上——shadow root 自身没有这个变量，不定就永远落到默认蓝。
+- `z-index: 2147483640`，append 在遮罩之后、窗口之前：所以它盖在模糊遮罩之上、但永远在预览窗之下；`pointer-events: none` 是必须的，它就压在链接上，能命中就会把悬停本身掐掉。
+- 判定沿用 `anchorHref()`，因此禁用站点、非 http 链接、扩展关闭时都不会高亮；`applySettings` 里关掉开关会立即隐藏。
+- `scroll`（capture + passive）只重算高亮位置，**不重新 `place()` 窗口**——窗口是 fixed 的，跟着页面滚走会打断正在阅读的预览；`resize` 才同时重排两者。链接若已从 DOM 移除，`placeHighlight()` 会自行收起并清引用。
+- 注意无头 + `--virtual-time-budget` 下浏览器不派发 scroll 事件（也不推进 CSS 过渡），验证要跑实时模式，否则会误判成"滚动不跟随"。
+
 ### 预览窗固定
 
-窗口头部三个按钮：`pin` / `open`（新标签页打开）/ `close`，靠 `data-act` 分派（`preview.ts` 的 `head` click 监听）。点 pin 把 `win.pinned` 置位，效果有两条：`releaseExcept()` 直接跳过（指针移开不再进 400ms 宽限），`open()` 的驱逐循环也只挑`!pinned`的窗口关闭。**所有存活窗口都固定住时，新预览直接不打开**（`if (!victim) return;`）——宁可这次不弹，也不悄悄删掉用户明确要留的窗口，这一点在改动驱逐逻辑时要保持。
+窗口头部四个按钮：`pin` / `reload`（重新 fetch + 重渲染，iframe 会换成一个新元素，阅读模式会重新提取）/ `open`（新标签页打开）/ `close`，靠 `data-act` 分派（`preview.ts` 的 `head` click 监听）。点 pin 把 `win.pinned` 置位，效果有两条：`releaseExcept()` 直接跳过（指针移开不再进 400ms 宽限），`open()` 的驱逐循环也只挑`!pinned`的窗口关闭。**所有存活窗口都固定住时，新预览不打开，而是在光标处弹一条提示**（`showNotice('preview.pinLimit', …)`）：文案走 i18n（zh 带 `{max}` 占位、en 不带数字，避免 `max=1` 时出现 \"All 1 slots\"），2.6s 自动消失，重复触发会重置计时并跟随新的光标位置。提示和倒计时条一样是 `pointer-events: none`——否则它会挡住 hover、把触发自己取消掉（见下面陷阱）。宁可这次不弹，也不悄悄删掉用户明确要留的窗口，这一点在改动驱逐逻辑时要保持。
+
+`autoPin` 打开时，**新建**的窗口直接以 `pinned` 出生（`preview.ts` 的 open 里 `pinned: settings().autoPin`），`syncHeaderButtons()` 随后把图钉按钮的 `.on`/`aria-pressed`/tooltip 一起同步，所以界面不会与状态脱节。刻意**不**在设置变更时给已打开的窗口补固定：那样容易瞬间顶到窗口上限，之后新预览全被拦住。
+
+和窗口上限的联动要注意：固定窗口不参与驱逐，所以 autoPin + 达到 `maxWindows` 之后新预览不会再打开，此时会弹 `preview.pinLimit` 提示告诉用户去取消固定或关窗——这正是那条提示存在的意义，别把这条路径改成静默返回。
 
 固定状态只存在于 DOM 生命周期内（页面跳转/刷新即消失），不落存储。按钮外观由 `.tp-pin` / `.tp-on` 控制：固定时图标转正并染成主题色，未固定时旋转 45°，所以两个状态除了颜色还有形状差异。`syncHeaderButtons()` 统一维护三个按钮的 `title` 与 `aria-pressed`，`refreshTitlesAndBadges()` 就是遍历它，因此换语言时 tooltip 会跟着更新（词条 `preview.pin` / `preview.unpin`）。
+
+### 设置面板（侧边栏）
+
+设置界面是**侧边栏**（`entrypoints/sidepanel/`），没有 popup 入口了。WXT 按目标浏览器把它写成两套 manifest：Chrome MV3 → `side_panel.default_path` 并**自动追加 `sidePanel` 权限**，Firefox → `sidebar_action.default_panel`。两个刻意的后果：
+
+- **`manifest.action` 必须手写**（`wxt.config.ts` 里的 `action: {}`）：工具栏 `action` 只由 popup 入口生成，删掉 popup 后不写这一句，扩展在工具栏上就没有图标可点。MV2 目标由 WXT 的 `convertActionToMv2()` 转成 `browser_action`。
+- **图标点击由 `background.ts` 的 `bindIconToPanel()` 接**：Chrome/Edge 走 `sidePanel.setPanelBehavior({ openPanelOnActionClick: true })`——这是"声明式"的，一旦设置，`action.onClicked` 就再也不会触发，所以别指望用它做别的事；Firefox 完全没有 `sidePanel` API，只能在自己的点击监听里调 `sidebarAction.open()`，而且 MV2 的事件挂在 `browserAction` 而不是 `action` 上。`sidebarAction` 不在共享类型里，所以整段是"拓宽类型 + 运行时探测"，新浏览器接入时保持这个写法，别假设某个命名空间一定存在。
+
+`App.vue` 把设置分成 7 个 tab（`TABS` = trigger / preview / search / appearance / performance / protect / about），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：触发方式与关闭触发器在「触发」，位置/尺寸/模糊/弹窗主题/多窗口在「预览窗」，应用主题与语言在「外观」，预热与节电在「性能」，链接保护与禁用站点在「保护」，赞助与"恢复默认设置"在「关于」。新增设置项时放进语义最接近的那个 tab。
+
+样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。两处为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖），sticky 从 `.hd` 挪到包住头部与 tab 条的 `.topbar`（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致）。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
 ### 设置与存储
 
 - `settingsItem` = `local:tabpeek_settings`，定义在 `utils/storage.ts`。
-- 新增设置项要同时改三处：`TabPeekSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 popup `App.vue` 加控件、两个 locale 补词条。
-- `clampSettings` 的边界：`hoverDelayMs` 100–2000（默认 500）、`longPressMs` 200–2000（600）、`width` 320–1200（560）、`height` 240–900（480）、`blurPx` 0–20、`minSelectionChars` 1–20、`maxWindows` 1–6（默认 3）。**所有读取设置的地方都要过 `clampSettings`**，content 与 popup 都这么做。
-- 枚举取值：`triggerMode` = hover / altHover / click / longPress；`position` = link / mouse / bottom-right / bottom-left / top-right / center / sidebar；`sidebarSide` = left / right；`speculationMode` = off / prefetch / prerender；`language` = zh-CN / en。
-- 搜索引擎表 `SEARCH_ENGINES`（google/bing/baidu/duckduckgo）与 `AI_ENGINES`（copilot/gemini/doubao/kimi）也在这里，URL 模板用 `%s` 占位。
+- 新增设置项要同时改三处：`TabPeekSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 sidepanel `App.vue` 的对应 tab 里加控件、两个 locale 补词条。
+- `clampSettings` 的边界：`hoverDelayMs` 100–2000（默认 500）、`longPressMs` 200–2000（600）、`width` / `height` 20–100（视口百分比，默认 40 / 55）、`blurStrength` 0–100（百分比，默认 0 关闭）、`minSelectionChars` 1–20、`maxWindows` 1–6（默认 3）。**所有读取设置的地方都要过 `clampSettings`**，content 与 sidepanel 都这么做。
+- **单位约定**：延迟类设置**存储永远是毫秒**（`hoverDelayMs` / `longPressMs`，定时器直接用），只有设置面板的滑块与读数换成秒（`App.vue` 里两个 writable computed 做 `×1000 / ÷1000` 换算，`toFixed(2)` 去浮点噪声），这样不需要迁移老数据。宽高反过来，**存储就是视口百分比**，`clampSettings` 里 `clampWindowPercent()` 会把历史遗留的像素值（>100 只可能是 px）按固定参考视口 1440×900 折算一次——不能用 `innerWidth` 折算，因为设置面板的视口不是被浏览的页面，同一份数据在两处会算出不同百分比。
+- 宽高百分比最终由 `--tp-w` / `--tp-h` 两个 CSS 变量生效（`place()` 不再写内联 px 尺寸），而 `place()` 里的定位数学需要像素，所以走 `windowSize()` 按当前视口把百分比换算成 px；`preview.ts` 注册了 `resize` 监听重新 `place()` 所有非手动拖拽过的窗口，否则视口一变、窗口长大了却还停在旧坐标上可能出屏。
+- 枚举取值：`triggerMode` = hover / altHover / click / altClick / longPress / drag；`position` = link / mouse / bottom-right / bottom-left / top-right / center / sidebar；`sidebarSide` = left / right；`speculationMode` = off / prefetch / prerender；`powerSaver` = auto / on / max / off；`language` = zh-CN / en。`powerSaver` 的夹取不能照抄"坏值回落到最省事的那档"：它每个取值都要拿去比较，回落到 `off` 会让省电功能静默失效，所以坏值一律回落到 `DEFAULT_SETTINGS.powerSaver`。
+- 搜索引擎表 `SEARCH_ENGINES`（google/bing/baidu/duckduckgo）与 `AI_ENGINES`（deepseek/doubao/kimi/perplexity）也在这里。URL 模板用 `%s` 占位；**DeepSeek 那条故意不带 `%s`**——它的前端不读任何问题类 query 参数（只读 `model`/`redirect`/`tts_cold` 之类），所以划词工具条改为「先把选中文字写进剪贴板，再打开 `https://chat.deepseek.com/`」，用户在新对话里 Ctrl+V。判断逻辑就在 `selection.ts` 的 `open()`：模板含 `%s` 就替换，否则走 `copyText()`（`navigator.clipboard` 在 http 页缺失时退回 `execCommand('copy')`）。换引擎时别把 `%s` 补上，补了就等于把文字丢了。
 
 ### 多窗口
 
-`s.maxWindows` 是普通设置项，上界 `MAX_WINDOWS_LIMIT = 6`，由 `clampSettings` 夹取（content 与 popup 都过一遍）。曾经有 Pro 分级（非 Pro 强制 1 窗），随 Pro 一起移除：现在没有授权校验，`maxWindows()` 直接返回设置值。
+`s.maxWindows` 是普通设置项，上界 `MAX_WINDOWS_LIMIT = 6`，由 `clampSettings` 夹取（content 与 sidepanel 都过一遍）。曾经有 Pro 分级（非 Pro 强制 1 窗），随 Pro 一起移除：现在没有授权校验，`maxWindows()` 直接返回设置值。
 
 ## 关键约定与陷阱
 
-- **storage / browser 导入**：两者都是 WXT 自动导入的全局，直接裸用（`storage.defineItem`、`browser.runtime`）。`wxt/storage` 子路径不存在；确需显式导入时用 `wxt/utils/storage`。**manifest 必须有 `storage` 权限**，否则 `getValue/setValue` 静默 reject，表现为"设置永远不保存"（popup 的 `load()` catch 里专门打了这条日志）。
-- **popup 里 watch(ref(对象)) 默认不深度监听**：v-model 改嵌套属性不会触发保存，必须 `{ deep: true }`，并在 `visibilitychange→hidden` 时强制 flush（防抖未到期就关窗会丢最后一次变更）。
-- **Shadow UI**：`createShadowRootUi(ctx, { name:'tabpeek-ui', position:'inline', append:'last', css })`；窗口/工具条全在单个 shadow root 内定位（position:fixed），CSS 变量 `--tp-accent/--tp-w/--tp-h/--tp-blur` 驱动外观。content 里按标签名 `tabpeek-ui` 判断"指针是否悬停在我们自己的 UI 上"。z-index 从 2147483640 起分层（overlay < 窗口 < 划词条 < 触发倒计时条）；倒计时条是 `pointer-events:none`，否则悬停倒计时期间它会吃掉 pointerover 把悬停自己的定时器取消掉。
+- **storage / browser 导入**：两者都是 WXT 自动导入的全局，直接裸用（`storage.defineItem`、`browser.runtime`）。`wxt/storage` 子路径不存在；确需显式导入时用 `wxt/utils/storage`。**manifest 必须有 `storage` 权限**，否则 `getValue/setValue` 静默 reject，表现为"设置永远不保存"（sidepanel 的 `load()` catch 里专门打了这条日志）。
+- **设置面板里 watch(ref(对象)) 默认不深度监听**：v-model 改嵌套属性不会触发保存，必须 `{ deep: true }`，并在 `visibilitychange→hidden` 时强制 flush（防抖未到期就被收起会丢最后一次变更）。
+- **Shadow UI**：`createShadowRootUi(ctx, { name:'tabpeek-ui', position:'inline', append:'last', css })`；窗口/工具条全在单个 shadow root 内定位（position:fixed），CSS 变量 `--tp-accent/--tp-w/--tp-h/--tp-blur` 驱动外观。content 里按标签名 `tabpeek-ui` 判断"指针是否悬停在我们自己的 UI 上"。z-index 从 2147483640 起分层（overlay < 窗口 < 划词条 < 触发倒计时条/上限提示）；倒计时条是 `pointer-events:none`，否则悬停倒计时期间它会吃掉 pointerover 把悬停自己的定时器取消掉。
 - **链接预热只用 `document.speculationRules.addRules()`**，不要改成注入 `<script type="speculationrules">`——内联标签会受页面 CSP 限制；能力缺失（Firefox）时整条路径必须保持 no-op。规则分两层：一次性的 `source:'heuristics'` 规则（prerender 用 `conservative`，prefetch 用 `moderate`）+ 每个 URL 一条 `eagerness:'immediate'`（靠 `intentDone` 去重，避免重复注入）。
 - **iframe 能否内嵌必须由 background 预检响应头**（跨域 iframe 对 Chrome 错误页同样触发 load，无法事后检测）；`X-Frame-Options: SAMEORIGIN` 的重定向前后 origin 用 `res.url` 判断。加载超时（8s）才走阅读模式兜底。
 - **阅读模式的内容是 `innerHTML` 直接注入 shadow DOM 的**，所以 `extract.ts` 的 `sanitize()` 是安全边界而非美化步骤：只保留 `a[href]` / `img[src,alt]` 白名单属性，剥掉 `javascript:` 链接，并把相对 URL 用 `finalUrl` 补全。改提取逻辑时不要削弱这一步。
 - **长按模式有一次性的点击抑制**：`suppressClickUrl` 让"长按开预览"后紧跟着的那次 click 被 `preventDefault + stopPropagation` 吃掉，只在释放后首次点击生效。拖动超过 12px 视为滚动意图，会取消长按。
-- **popup 的 radio 组必须带 `name`**（triggerMode / position / sidebarSide / speculationMode / language）：`name` 才让浏览器把它们当原生单选组，方向键切换、读屏播报"N 选 1"都靠它。缺 `name` 时 Vue 仍会在 re-render 时回写 `checked`，鼠标点击看不出问题，但原生分组语义没了。触发方式那一组是 `.seg-btns` 分段按钮（`input` 视觉隐藏 + `label` 上色，选中态用 `settings.x === 值` 绑 `.on`），其余仍是原生圆点。
-- **新增界面文案**：`utils/i18n.ts` 是扁平 key（`t('preview.close')`），zh-CN 与 en 必须同时补齐；popup 模板里的动态 key 是 `trigger.${mode}` / `position.${p}` / `sidebarSide.${side}` / `speculation.${m}` 模式，另有 `t(`sponsor.${s.id}`)` 这种模板拼 key 的写法。
-- **content script 匹配** `<all_urls>` 且仅 main frame（WXT 默认不写 `all_frames`）；`entrypoints/content.ts` 中 `runAt`（camelCase），WXT 0.21 不认 `run_at`。**改 manifest 权限后必须重载扩展并刷新目标网页**，旧页面里的 content script 已失效。
+- **设置面板的 radio 组必须带 `name`**（triggerMode / position / sidebarSide / speculationMode / language）：`name` 才让浏览器把它们当原生单选组，方向键切换、读屏播报"N 选 1"都靠它。缺 `name` 时 Vue 仍会在 re-render 时回写 `checked`，鼠标点击看不出问题，但原生分组语义没了。触发方式那一组是 `.seg-btns` 分段按钮（`input` 视觉隐藏 + `label` 上色，选中态用 `settings.x === 值` 绑 `.on`；**六个选项，用的是 3 列网格、2 行**），其余仍是原生圆点。
+- **新增界面文案**：`utils/i18n.ts` 是扁平 key（`t('preview.close')`），zh-CN 与 en 必须同时补齐；sidepanel `App.vue` 模板里的动态 key 是 `panel.tab.${tab}` / `trigger.${mode}` / `position.${p}` / `sidebarSide.${side}` / `speculation.${m}` 模式，另有 `t(`sponsor.${s.id}`)` 这种模板拼 key 的写法。
+- **content script 匹配** `<all_urls>` 且仅 main frame（WXT 默认不写 `all_frames`）；`entrypoints/content.ts` 中 `runAt`（camelCase），WXT 0.21 不认 `run_at`。 manifest 权限是 `tabs` / `storage` / `contextMenus`（右键菜单），**加权限后必须重载扩展**。**改 manifest 权限后必须重载扩展并刷新目标网页**，旧页面里的 content script 已失效。
 - Manifest 改动（权限/名称）只改各 app 的 `wxt.config.ts`；`.output/`、`.wxt/` 是生成物，不要编辑。
 - `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），仅 `assets/` 图标是从 `public/icon/` 拷贝的副本——`assets/icon-128.png` ← `icon/128.png`、`assets/favicon-32.png` ← `icon/32.png`，改图标记得两边同步。
 
@@ -128,12 +234,20 @@ node -e "const a=Object.keys(require('./apps/tabpeek/assets/locales/zh-CN.json')
 
 ## 附加模块（analytics / auto-icons）
 
-- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。`public/icon/` 里那套是历史遗留的第二份拷贝，popup 头部 `<img src="/icon/32.png">` 还指着它。
+- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。`public/icon/` 里那套是历史遗留的第二份拷贝，设置面板头部 `<img src="/icon/32.png">` 还指着它。
 - `app.config.ts` 是运行时应用配置（`defineAppConfig` 由 WXT 自动导入，不用手写 import）。**文件存在就必须有 default export**，空文件会让构建直接失败：`[MISSING_EXPORT] "default" is not exported by "app.config.ts"`。
-- `@wxt-dev/analytics` 会把客户端代码注入各入口（含 content script 与 popup），在**模块求值阶段**就调用 `runtime.connect` 连后台。也就是说这个调用一旦抛错，整个入口在挂任何监听之前就挂掉——排查“什么都不响应”时先看这里。GA4 需要 `WXT_GA_API_SECRET` 与真实 `measurementId`。
+- `@wxt-dev/analytics` 会把客户端代码注入各入口（content script、sidepanel **和 background SW** 都验证过），在**模块求值阶段**就调用 `runtime.connect`。也就是说这个调用一旦抛错，整个入口在挂任何监听之前就挂掉——排查“什么都不响应”时先看这里。GA4 需要 `WXT_GA_API_SECRET` 与真实 `measurementId`。
+
+## 右键菜单
+
+`background.ts` 里建三层菜单：`tabpeek-root`（`contexts: ['link']`，标题 `menu.root`）下挂 `tabpeek-open-popup` 与 `tabpeek-open-sidebar`。Chrome 不会本地化菜单标题，所以标题由 `settingsItem` 里存的 `language` 经 `translate()` 生成，并在 `onInstalled` 与语言变化时重建（`removeAll()` 后再 `create()`，避免 id 重复报错）。
+
+点击后 background 只发 `tabpeek:preview` 给该 tab，预览窗本体仍由 content 脚本创建（UI 在 shadow root 里，background 碰不到）。两个刻意的决定：**菜单命令无视 `enabled` 与禁用站点**——用户是从浏览器 UI 明确点的，静默不做事比不尊重设置更糟；**「在预览窗打开」是强制浮动窗**，即使用户的 `position` 设成了侧边栏（`AnchorInfo.sidebar` 因此是**三态**：`true` 强制侧边栏、`false` 强制浮动且当配置位置就是 sidebar 时退回 `center`、`undefined` 跟随设置）。对同一个 url 再下一次命令会改掉已开窗口的停靠方式（`existing.sidebar = info.sidebar` 后 `place()`），所以「先浮动打开、再改成侧边栏」是生效的。
+
+注意侧边栏的 `height` 只能由 `.tp-sidebar` 类提供，**不要在 `place()` 里写内联 `height: 100vh`**：浮动与侧边栏互相切换时内联样式不会自己消失，窗口会一直保持满高。同理，切到侧边栏时 `place()` 会清掉 `manualSize` 与内联 width/height，否则拖拽改过尺寸的窗口会带着浮动尺寸被停靠。多窗堆叠偏移是 `order * 窗口宽`，窗口很宽时靠后的那几个会排到视口外（历史行为，非 bug 但值得知道）。
 
 ## 收费现状
 
-没有付费版本：Pro / 授权码 / Ed25519 验签体系已整体移除（`utils/license.ts`、`scripts/gen-license.mjs`、`tabpeek:pro` 消息、popup 授权区、发码脚本都删了），多窗口预览对所有人开放。收入来源只有赞助，入口有两处：popup 的「赞助支持」段（用 `browser.tabs.create` 打开——popup 里 `target="_blank"` 不可靠）与 landing 的 `#sponsor` 段 + 页脚，链接固定为爱发电 `https://ifdian.net/a/coldstoneboy`、Patreon `https://patreon.com/coldstoneboy`。landing 的下载按钮仍是 `href="#"` 占位。
+没有付费版本：Pro / 授权码 / Ed25519 验签体系已整体移除（`utils/license.ts`、`scripts/gen-license.mjs`、`tabpeek:pro` 消息、popup 授权区、发码脚本都删了），多窗口预览对所有人开放。收入来源只有赞助，入口有两处：设置面板「关于」tab 的「赞助支持」段（用 `browser.tabs.create` 打开——面板里 `target="_blank"` 不可靠）与 landing 的 `#sponsor` 段 + 页脚，链接固定为爱发电 `https://ifdian.net/a/coldstoneboy`、Patreon `https://patreon.com/coldstoneboy`。landing 的下载按钮仍是 `href="#"` 占位。
 
 `apps/tabpeek/scripts/private-key.json`（已 gitignore）是旧体系的残留，已无任何代码引用，可自行删除。

@@ -1,0 +1,508 @@
+/* The settings panel renders a single component, so every rule lives here as
+   plain global CSS rather than in App.vue's scoped block: there is no second
+   component for them to leak into. */
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 13px;
+  color: #1f2328;
+  background: #f6f8fa;
+}
+
+#app {
+  padding: 0 0 20px;
+}
+
+/* Header + tab strip stay put while the panel scrolls: the strip is the only
+   way to reach the other sections, so it must always be on screen. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
+  border-bottom: 1px solid #e8ebef;
+}
+.hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px 8px;
+}
+.hd img {
+  width: 22px;
+  height: 22px;
+}
+.hd h1 {
+  font-size: 16px;
+}
+.spacer {
+  flex: 1;
+}
+
+/* The panel can be dragged narrow, so the tabs scroll sideways instead of
+   wrapping into a second row. */
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tabs .chip {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: inherit;
+  padding: 4px 12px;
+}
+
+main {
+  padding: 0 12px;
+}
+section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  border: 1px solid #eceff2;
+}
+h2 {
+  font-size: 12.5px;
+  color: var(--tp-accent);
+  margin-bottom: 8px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 7px 0;
+}
+.row span {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.row b {
+  color: #57606a;
+  font-weight: 500;
+  font-size: 12px;
+}
+.row input[type='range'] {
+  width: 55%;
+  accent-color: var(--tp-accent);
+}
+.row input[type='color'] {
+  width: 36px;
+  height: 26px;
+  border: 0;
+  background: none;
+}
+.row select {
+  max-width: 55%;
+  padding: 4px 6px;
+  border-radius: 7px;
+  border: 1px solid #d8dee4;
+}
+.switch-row {
+  cursor: pointer;
+}
+.switch-row input {
+  accent-color: var(--tp-accent);
+  width: 16px;
+  height: 16px;
+}
+
+/* Single-choice control: a real radio group (name + hidden input) styled as a
+   row of buttons, so keyboard arrows and screen readers still work. */
+.seg-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 6px 0;
+}
+.seg-btns label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid #d8dee4;
+  background: #fff;
+  color: #57606a;
+  font-size: 11px;
+  line-height: 1.25;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+.seg-btns label:hover {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+.seg-btns label.on {
+  background: var(--tp-accent);
+  border-color: var(--tp-accent);
+  color: #fff;
+}
+/* Invisible radio stretched over the whole button: the input itself receives the
+   click, so selection never depends on label->control click forwarding. */
+.seg-btns input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.seg-btns label:has(input:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--tp-accent) 45%, #fff);
+  outline-offset: 1px;
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 6px 0;
+}
+.seg label,
+.grid3 label {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.seg input,
+.grid3 input {
+  accent-color: var(--tp-accent);
+}
+.sub {
+  padding-left: 4px;
+  border-left: 2px solid var(--tp-accent);
+  margin-left: 4px;
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 10px;
+  margin: 6px 0;
+}
+
+/* Window theme cards: a miniature window per preset. */
+.win-themes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 8px 0 2px;
+}
+.win-themes label {
+  position: relative;
+  display: block;
+  padding: 7px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #d8dee4;
+  background: #fff;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.win-themes label:hover {
+  border-color: var(--card-accent);
+}
+.win-themes label.on {
+  border-color: var(--card-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-accent) 30%, transparent);
+}
+.win-themes input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.mini {
+  display: block;
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 3px;
+  background: color-mix(in srgb, var(--card-accent) 7%, #fff);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 18%, transparent);
+}
+.win-themes label.dark .mini {
+  background: #1e2432;
+  border-color: color-mix(in srgb, var(--card-accent) 45%, transparent);
+}
+.mini i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--card-accent);
+}
+.mini-head {
+  margin-bottom: 3px;
+}
+.mini-head {
+  opacity: 1;
+}
+.mini-line {
+  opacity: 0.55;
+}
+.mini-line.short {
+  width: 62%;
+  margin-top: 3px;
+}
+.mini-pen {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  width: 14px;
+  height: 14px;
+  color: color-mix(in srgb, var(--tp-accent) 70%, #fff);
+}
+
+.row-label {
+  margin: 8px 0 4px;
+  color: #57606a;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  border: 1px solid #d8dee4;
+  background: #fff;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #57606a;
+}
+.chip.on {
+  background: var(--tp-accent);
+  border-color: var(--tp-accent);
+  color: #fff;
+}
+
+.hint {
+  font-size: 12px;
+  color: #57606a;
+  margin: 4px 0;
+}
+.hint.muted {
+  color: #8c959f;
+}
+
+.sponsor-section {
+  border-color: color-mix(in srgb, var(--tp-accent) 35%, #fff);
+}
+.sponsor {
+  display: flex;
+  gap: 8px;
+  margin-top: 9px;
+}
+.sponsor button {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--tp-accent) 45%, #fff);
+  background: color-mix(in srgb, var(--tp-accent) 8%, #fff);
+  color: var(--tp-accent);
+}
+.sponsor button:hover {
+  background: color-mix(in srgb, var(--tp-accent) 16%, #fff);
+}
+
+.sites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.site {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eef1f5;
+  border-radius: 999px;
+  padding: 2px 4px 2px 10px;
+  font-size: 12px;
+}
+.site button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: #8c959f;
+}
+.row-inline {
+  display: flex;
+  gap: 6px;
+}
+.row-inline input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 9px;
+  border-radius: 8px;
+  border: 1px solid #d8dee4;
+}
+.row-inline button {
+  border: 1px solid #d8dee4;
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px 9px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Appearance picker: big cards, the selected one filled with the accent. */
+.theme-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 8px 0 2px;
+}
+.theme-cards label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #d8dee4;
+  background: #fff;
+  color: #57606a;
+  font-size: 12px;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+.theme-cards label:hover {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+.theme-cards label.on {
+  background: var(--tp-accent);
+  border-color: var(--tp-accent);
+  color: #fff;
+}
+.theme-cards svg {
+  width: 20px;
+  height: 20px;
+}
+.theme-cards input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.link {
+  border: 0;
+  background: none;
+  color: var(--tp-accent);
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.link.danger {
+  color: #cf222e;
+}
+footer {
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* ---------- dark appearance ---------- */
+/* The theme is resolved onto <html data-theme>. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+html[data-theme='dark'],
+html[data-theme='dark'] body {
+  background: #15171a;
+  color: #e6e8eb;
+}
+html[data-theme='dark'] .topbar {
+  background: #1b1e22;
+  border-bottom-color: #2a2f36;
+}
+html[data-theme='dark'] section {
+  background: #1b1e22;
+  border-color: #2a2f36;
+}
+html[data-theme='dark'] .theme-cards label,
+html[data-theme='dark'] .seg-btns label,
+html[data-theme='dark'] .chip,
+html[data-theme='dark'] .row-inline button,
+html[data-theme='dark'] .sponsor button {
+  background: #22262b;
+  border-color: #333941;
+  color: #c8cdd4;
+}
+html[data-theme='dark'] .seg-btns label:hover {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+html[data-theme='dark'] .picker {
+  color-scheme: dark;
+}
+/* Must out-specify the dark card/button rules above, or the selected option
+   loses its accent fill in dark mode. */
+html[data-theme='dark'] .theme-cards label.on,
+html[data-theme='dark'] .seg-btns label.on,
+html[data-theme='dark'] .chip.on {
+  background: var(--tp-accent);
+  border-color: var(--tp-accent);
+  color: #fff;
+}
+html[data-theme='dark'] .row input[type='range'] {
+  accent-color: var(--tp-accent);
+}
+html[data-theme='dark'] .row select,
+html[data-theme='dark'] .row-inline input,
+html[data-theme='dark'] .redeem input {
+  background: #22262b;
+  border-color: #333941;
+  color: #e6e8eb;
+}
+html[data-theme='dark'] .site {
+  background: #22262b;
+  color: #c8cdd4;
+}
+html[data-theme='dark'] .hint.muted,
+html[data-theme='dark'] .row b,
+html[data-theme='dark'] .hint,
+html[data-theme='dark'] .row-label {
+  color: #9aa3ad;
+}
+html[data-theme='dark'] .swatch.active {
+  border-color: #e6e8eb;
+}
