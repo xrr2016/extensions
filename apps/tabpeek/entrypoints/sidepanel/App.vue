@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import SponsorSection from "@/components/SponsorSection.vue";
 import { translate } from "@/utils/i18n";
 import {
   AI_ENGINES,
@@ -16,23 +17,10 @@ import {
 import { watchTheme } from "@/utils/theme";
 import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
 
-const SPONSORS = [
-  { id: "afdian", url: "https://ifdian.net/a/coldstoneboy" },
-  { id: "patreon", url: "https://patreon.com/coldstoneboy" },
-] as const;
-
 // Sections live in tabs so the panel never turns into one endless scroll.
-const TABS = [
-  "trigger",
-  "preview",
-  "search",
-  "appearance",
-  "performance",
-  "protect",
-  "about",
-] as const;
+const TABS = ["preview", "search", "appearance", "performance", "protect"] as const;
 type TabId = (typeof TABS)[number];
-const activeTab = ref<TabId>("trigger");
+const activeTab = ref<TabId>("preview");
 
 const loaded = ref(false);
 const settings = ref<TabPeekSettings>({ ...DEFAULT_SETTINGS });
@@ -147,12 +135,6 @@ function toggleEngine(id: string) {
   settings.value.searchEngines = [...list];
 }
 
-// The panel cannot host target="_blank" reliably, so sponsor links go through
-// the tabs API.
-function openSponsor(url: string) {
-  void browser.tabs.create({ url });
-}
-
 async function disableCurrentSite() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.url) return;
@@ -212,13 +194,18 @@ function resetAll() {
         :aria-controls="`panel-${tab}`"
         @click="activeTab = tab"
       >
-        {{ t(`tab.${tab}`) }}
+        {{ t(`panel.tab.${tab}`) }}
       </button>
     </div>
   </header>
 
   <main :style="accentStyle">
-    <div v-if="activeTab === 'trigger'" id="panel-trigger" role="tabpanel" aria-labelledby="tab-trigger">
+    <div
+      v-if="activeTab === 'preview'"
+      id="panel-preview"
+      role="tabpanel"
+      aria-labelledby="tab-preview"
+    >
       <section>
         <label class="row switch-row">
           <span>{{ t("panel.enabled") }}</span>
@@ -279,14 +266,7 @@ function resetAll() {
         </label>
         <p class="hint muted">{{ t("close.hint") }}</p>
       </section>
-    </div>
 
-    <div
-      v-else-if="activeTab === 'preview'"
-      id="panel-preview"
-      role="tabpanel"
-      aria-labelledby="tab-preview"
-    >
       <section>
         <h2>{{ t("panel.section.position") }}</h2>
         <div class="grid3">
@@ -423,7 +403,12 @@ function resetAll() {
       </section>
     </div>
 
-    <div v-else-if="activeTab === 'search'" id="panel-search" role="tabpanel" aria-labelledby="tab-search">
+    <div
+      v-else-if="activeTab === 'search'"
+      id="panel-search"
+      role="tabpanel"
+      aria-labelledby="tab-search"
+    >
       <section>
         <h2>{{ t("panel.section.selection") }}</h2>
         <label class="row switch-row">
@@ -456,7 +441,13 @@ function resetAll() {
           <span
             >{{ t("selection.minLength") }}<b>{{ settings.minSelectionChars }}</b></span
           >
-          <input v-model.number="settings.minSelectionChars" type="range" min="1" max="20" step="1" />
+          <input
+            v-model.number="settings.minSelectionChars"
+            type="range"
+            min="1"
+            max="20"
+            step="1"
+          />
         </label>
       </section>
     </div>
@@ -597,20 +588,12 @@ function resetAll() {
       </section>
     </div>
 
-    <div v-else id="panel-about" role="tabpanel" aria-labelledby="tab-about">
-      <section class="sponsor-section">
-        <h2>{{ t("panel.section.sponsor") }}</h2>
-        <p class="hint">{{ t("sponsor.hint") }}</p>
-        <div class="sponsor">
-          <button v-for="s in SPONSORS" :key="s.id" type="button" @click="openSponsor(s.url)">
-            {{ t(`sponsor.${s.id}`) }}
-          </button>
-        </div>
-      </section>
+    <!-- Sits under whichever tab is open: one instance rather than a copy per
+         panel, since the panels are exclusive and only one is ever in the DOM. -->
+    <SponsorSection :lang="settings.language" />
 
-      <footer>
-        <button class="link" @click="resetAll">{{ t("panel.reset") }}</button>
-      </footer>
-    </div>
+    <footer>
+      <button class="link" @click="resetAll">{{ t("panel.reset") }}</button>
+    </footer>
   </main>
 </template>

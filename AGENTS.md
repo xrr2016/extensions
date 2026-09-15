@@ -39,7 +39,8 @@ apps/
     entrypoints/
       background.ts          # SW：fetch 预检、开标签页（消息中枢）
       content.ts             # 悬停/点击/长按判定 + Shadow UI 装配
-      sidepanel/             # 设置面板（点工具栏图标打开）：App.vue（7 个 tab 的全部设置项）+ index.html + main.ts + style.css
+      sidepanel/             # 设置面板（点工具栏图标打开）：App.vue（5 个 tab 的全部设置项 + 共用底部赞助块）+ index.html + main.ts + style.css
+    components/              # 跨入口复用的 Vue 组件（当前只有 SponsorSection.vue，sidepanel 用）
     utils/
       storage.ts             # 设置类型/默认值/夹取 + settingsItem + 引擎表
       preview.ts             # 预览窗系统（DOM 手动构建 + STYLE 字符串 + 固定/倒计时条）
@@ -186,7 +187,9 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 - **`manifest.action` 必须手写**（`wxt.config.ts` 里的 `action: {}`）：工具栏 `action` 只由 popup 入口生成，删掉 popup 后不写这一句，扩展在工具栏上就没有图标可点。MV2 目标由 WXT 的 `convertActionToMv2()` 转成 `browser_action`。
 - **图标点击由 `background.ts` 的 `bindIconToPanel()` 接**：Chrome/Edge 走 `sidePanel.setPanelBehavior({ openPanelOnActionClick: true })`——这是"声明式"的，一旦设置，`action.onClicked` 就再也不会触发，所以别指望用它做别的事；Firefox 完全没有 `sidePanel` API，只能在自己的点击监听里调 `sidebarAction.open()`，而且 MV2 的事件挂在 `browserAction` 而不是 `action` 上。`sidebarAction` 不在共享类型里，所以整段是"拓宽类型 + 运行时探测"，新浏览器接入时保持这个写法，别假设某个命名空间一定存在。
 
-`App.vue` 把设置分成 7 个 tab（`TABS` = trigger / preview / search / appearance / performance / protect / about），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：触发方式与关闭触发器在「触发」，位置/尺寸/模糊/弹窗主题/多窗口在「预览窗」，应用主题与语言在「外观」，预热与节电在「性能」，链接保护与禁用站点在「保护」，赞助与"恢复默认设置"在「关于」。新增设置项时放进语义最接近的那个 tab。
+`App.vue` 把设置分成 5 个 tab（`TABS` = preview / search / appearance / performance / protect），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：「预览窗」（id 是 `preview`）装总开关、触发方式、关闭触发器、位置/尺寸/模糊/弹窗主题/多窗口——触发方式和窗口外观都是"预览窗怎么出现、长什么样"，拆成两个 tab 只会让人来回点；划词搜索单独一站；应用主题与语言在「外观」；预热与节电在「性能」；链接保护与禁用站点在「保护」。新增设置项时放进语义最接近的那个 tab。
+
+赞助卡片与「恢复默认设置」是**每个 tab 共用的底部块**：赞助那块抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它俩存在的，已删除。组件本身**没有样式块**，`.sponsor-section` / `.sponsor` 仍写在 `entrypoints/sidepanel/style.css` 里（面板是独立文档，那份全局 CSS 对它生效）；组件被别处复用时得自己带上样式。
 
 样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。两处为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖），sticky 从 `.hd` 挪到包住头部与 tab 条的 `.topbar`（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致）。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
