@@ -13,18 +13,34 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
   font-size: 13px;
   color: #1f2328;
   background: #f6f8fa;
 }
 
+/* A column as tall as the panel, so `main` can absorb the leftover height and
+   let the sponsor block sink to the bottom edge instead of leaving a gap in the
+   middle of a short tab. `border-box` keeps the bottom padding inside 100vh. */
 #app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   padding: 0 0 20px;
 }
 
-/* Header + tab strip stay put while the panel scrolls: the strip is the only
-   way to reach the other sections, so it must always be on screen. */
+.flex-1 {
+  flex: 1;
+}
+
+/* The tab strip stays put while the panel scrolls: it is the only way to reach
+   the other sections, so it must always be on screen. */
 .topbar {
   position: sticky;
   top: 0;
@@ -32,29 +48,13 @@ body {
   background: #fff;
   border-bottom: 1px solid #e8ebef;
 }
-.hd {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px 8px;
-}
-.hd img {
-  width: 22px;
-  height: 22px;
-}
-.hd h1 {
-  font-size: 16px;
-}
-.spacer {
-  flex: 1;
-}
 
 /* The panel can be dragged narrow, so the tabs scroll sideways instead of
    wrapping into a second row. */
 .tabs {
   display: flex;
   gap: 6px;
-  padding: 0 12px 10px;
+  padding: 10px 12px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -69,6 +69,9 @@ body {
 }
 
 main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: 0 12px;
 }
 section {
@@ -100,11 +103,11 @@ h2 {
   font-weight: 500;
   font-size: 12px;
 }
-.row input[type='range'] {
+.row input[type="range"] {
   width: 55%;
   accent-color: var(--tp-accent);
 }
-.row input[type='color'] {
+.row input[type="color"] {
   width: 36px;
   height: 26px;
   border: 0;
@@ -315,6 +318,7 @@ h2 {
 }
 
 .sponsor-section {
+  margin-top: auto;
   border-color: color-mix(in srgb, var(--tp-accent) 35%, #fff);
 }
 .sponsor {
@@ -425,84 +429,98 @@ h2 {
   cursor: pointer;
 }
 
-.link {
-  border: 0;
-  background: none;
-  color: var(--tp-accent);
-  cursor: pointer;
+/* Reset button, at the end of the settings tab. Boxed, unlike the tab strip's
+   chips: alone under the language picker a bare text button reads as a heading,
+   and a destructive action deserves a target to aim at. */
+.btn-reset {
+  font: inherit;
   font-size: 12.5px;
-}
-.link.danger {
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
   color: #cf222e;
+  border: 1px solid #f0c2c6;
+  background: #fdf2f3;
 }
-footer {
-  text-align: center;
-  margin-top: 12px;
+.btn-reset:hover {
+  background: #fbe4e6;
+  border-color: #e79aa1;
 }
 
 /* ---------- dark appearance ---------- */
 /* The theme is resolved onto <html data-theme>. */
-html[data-theme='dark'] {
+html[data-theme="dark"] {
   color-scheme: dark;
 }
-html[data-theme='dark'],
-html[data-theme='dark'] body {
+html[data-theme="dark"],
+html[data-theme="dark"] body {
   background: #15171a;
   color: #e6e8eb;
 }
-html[data-theme='dark'] .topbar {
+html[data-theme="dark"] .topbar {
   background: #1b1e22;
   border-bottom-color: #2a2f36;
 }
-html[data-theme='dark'] section {
+html[data-theme="dark"] section {
   background: #1b1e22;
   border-color: #2a2f36;
 }
-html[data-theme='dark'] .theme-cards label,
-html[data-theme='dark'] .seg-btns label,
-html[data-theme='dark'] .chip,
-html[data-theme='dark'] .row-inline button,
-html[data-theme='dark'] .sponsor button {
+html[data-theme="dark"] .theme-cards label,
+html[data-theme="dark"] .seg-btns label,
+html[data-theme="dark"] .chip,
+html[data-theme="dark"] .row-inline button,
+html[data-theme="dark"] .sponsor button {
   background: #22262b;
   border-color: #333941;
   color: #c8cdd4;
 }
-html[data-theme='dark'] .seg-btns label:hover {
+html[data-theme="dark"] .seg-btns label:hover {
   border-color: var(--tp-accent);
   color: var(--tp-accent);
 }
-html[data-theme='dark'] .picker {
+html[data-theme="dark"] .picker {
   color-scheme: dark;
 }
 /* Must out-specify the dark card/button rules above, or the selected option
    loses its accent fill in dark mode. */
-html[data-theme='dark'] .theme-cards label.on,
-html[data-theme='dark'] .seg-btns label.on,
-html[data-theme='dark'] .chip.on {
+html[data-theme="dark"] .theme-cards label.on,
+html[data-theme="dark"] .seg-btns label.on,
+html[data-theme="dark"] .chip.on {
   background: var(--tp-accent);
   border-color: var(--tp-accent);
   color: #fff;
 }
-html[data-theme='dark'] .row input[type='range'] {
+html[data-theme="dark"] .row input[type="range"] {
   accent-color: var(--tp-accent);
 }
-html[data-theme='dark'] .row select,
-html[data-theme='dark'] .row-inline input,
-html[data-theme='dark'] .redeem input {
+html[data-theme="dark"] .row select,
+html[data-theme="dark"] .row-inline input,
+html[data-theme="dark"] .redeem input {
   background: #22262b;
   border-color: #333941;
   color: #e6e8eb;
 }
-html[data-theme='dark'] .site {
+html[data-theme="dark"] .site {
   background: #22262b;
   color: #c8cdd4;
 }
-html[data-theme='dark'] .hint.muted,
-html[data-theme='dark'] .row b,
-html[data-theme='dark'] .hint,
-html[data-theme='dark'] .row-label {
+html[data-theme="dark"] .hint.muted,
+html[data-theme="dark"] .row b,
+html[data-theme="dark"] .hint,
+html[data-theme="dark"] .row-label {
   color: #9aa3ad;
 }
-html[data-theme='dark'] .swatch.active {
+html[data-theme="dark"] .swatch.active {
   border-color: #e6e8eb;
+}
+/* Out-specifies the plain `.btn-reset:hover` above (which the dark block's own
+   `html[data-theme="dark"] .btn-reset` would otherwise win against). */
+html[data-theme="dark"] .btn-reset {
+  color: #ff8078;
+  border-color: #5a3233;
+  background: #2a2124;
+}
+html[data-theme="dark"] .btn-reset:hover {
+  background: #372628;
+  border-color: #7a4243;
 }

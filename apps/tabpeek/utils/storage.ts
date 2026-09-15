@@ -107,7 +107,11 @@ export interface TabPeekSettings {
   /** Preview window size as a percentage of the viewport */
   width: number;
   height: number;
+  /** Accent of TabPeek's own UI: the settings panel, the link frame, the hover
+   *  countdown and the selection toolbar. Never touched by the window theme. */
   themeColor: string;
+  /** Accent the preview window uses while `windowTheme` is "custom" */
+  windowColor: string;
   position: PreviewPosition;
   sidebarSide: SidebarSide;
   /** Backdrop blur strength, 0-100 (shown on the preview window's hover) */
@@ -124,7 +128,7 @@ export interface TabPeekSettings {
   autoPin: boolean;
   /** Extension appearance: the settings panel and every in-page shadow UI */
   theme: ThemeMode;
-  /** Preview window look: a preset tint, or `custom` driven by `themeColor` */
+  /** Preview window look: a preset tint, or "custom" driven by `windowColor` */
   windowTheme: WindowTheme;
   /** Strip marketing/analytics parameters from links TabPeek opens */
   stripTracking: boolean;
@@ -153,6 +157,7 @@ export const DEFAULT_SETTINGS: TabPeekSettings = {
   width: 40,
   height: 55,
   themeColor: "#4f6bf6",
+  windowColor: "#4f6bf6",
   position: "link",
   sidebarSide: "right",
   blurStrength: 0,
@@ -213,10 +218,6 @@ export function isSiteDisabled(disabledSites: string[], hostname: string): boole
   });
 }
 
-function presetAccent(id: WindowTheme): string {
-  return (WINDOW_THEMES.find((w) => w.id === id) ?? WINDOW_THEMES[0]!).accent;
-}
-
 export function clampSettings(s: TabPeekSettings): TabPeekSettings {
   const { blurPx: legacyBlurPx, ...rest } = s as TabPeekSettings & { blurPx?: number };
   const windowTheme: WindowTheme = WINDOW_THEMES.some((w) => w.id === s.windowTheme)
@@ -240,11 +241,12 @@ export function clampSettings(s: TabPeekSettings): TabPeekSettings {
     // every comparison against it would silently drop features.
     powerSaver: POWER_MODES.includes(s.powerSaver) ? s.powerSaver : DEFAULT_SETTINGS.powerSaver,
     windowTheme,
-    // A preset owns its accent: keeping them in step here means a stale
-    // `themeColor` (or a hand-edited store) can never tint the window with one
-    // colour while the rest of the UI uses another. `custom` is the exception —
-    // that is exactly the case where themeColor is the source of truth.
-    themeColor: windowTheme === "custom" ? s.themeColor : presetAccent(windowTheme),
+    // Two independent colours: the window theme only ever colours preview
+    // windows (a preset's own accent, or `windowColor` for "custom"), while
+    // `themeColor` belongs to TabPeek's own UI and is edited in the panel's
+    // appearance tab. Nothing writes one from the other.
+    themeColor: s.themeColor || DEFAULT_SETTINGS.themeColor,
+    windowColor: s.windowColor || DEFAULT_SETTINGS.windowColor,
     maxWindows: Math.min(MAX_WINDOWS_LIMIT, Math.max(1, s.maxWindows)),
   };
 }

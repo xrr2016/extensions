@@ -39,7 +39,7 @@ apps/
     entrypoints/
       background.ts          # SW：fetch 预检、开标签页（消息中枢）
       content.ts             # 悬停/点击/长按判定 + Shadow UI 装配
-      sidepanel/             # 设置面板（点工具栏图标打开）：App.vue（5 个 tab 的全部设置项 + 共用底部赞助块）+ index.html + main.ts + style.css
+      sidepanel/             # 设置面板（点工具栏图标打开）：App.vue（4 个 tab 的全部设置项 + 共用底部赞助块）+ index.html + main.ts + style.css
     components/              # 跨入口复用的 Vue 组件（当前只有 SponsorSection.vue，sidepanel 用）
     utils/
       storage.ts             # 设置类型/默认值/夹取 + settingsItem + 引擎表
@@ -81,6 +81,15 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 6. 抓取本身失败（网络错误）时 `canEmbed` 未知，按"宁可一试"仍渲染 iframe。
 
 鼠标离开时 `releaseExcept()` 不是立即关窗，而是给 **400ms 宽限**再关，避免指针穿过缝隙时窗口闪没。
+
+### Alt + 悬停（altHover 模式）
+
+判定是"指针在链接上 **且** Alt 按住"，**不关心先后**：`pointerover` 时带 Alt 就走主路径，指针已经停在链接上、之后才按 Alt 则由 `keydown` 起同一套倒计时——否则"先悬停后按 Alt"永远不会触发，因为指针不动时浏览器不会再派发 `pointerover`。两条路径都调 `beginHover()`，指针位置取自 `pointerover` 时记下的 `hoverTarget`（`toAnchorInfo` 的 rect 是调用那一刻现取的，所以中间滚动过也用的是新鲜坐标；`hoverTarget` 在指针移到非链接、移出文档时置空）。
+
+两个配套细节：
+
+- **松开 Alt 会取消还没到期的倒计时**（`keyup` → `clearHoverTimer()`），这样"按住 Alt"在整个延迟期间都是必要条件。代价是改了旧行为：过去 Alt+悬停起表后、延迟内松开 Alt，预览照样会开，现在不会（已开出的窗口不受影响——和指针路径一致，只有移开指针/点外部才关，所以不会有"松手瞬间窗口闪没"）。
+- `keydown` 必须判 `event.repeat`：Alt 按住时会一直自动重复，而倒计时一到期 `hoveringUrl` 就被清空，这时候再来一次重复事件就会重新起表、把已经开好的窗口又 `open()` 一遍（`open()` 对已存在的 URL 只是重排位置、不重抓，但仍会把用户拖过的窗口拽回锚点）。
 
 ### Alt + 单击（altClick 模式）
 
@@ -135,12 +144,12 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 ### 弹窗主题（预览窗配色预设）
 
-`windowTheme` 选定一套预览窗配色，取值见 `WINDOW_THEMES`（gray / midnight / silver / blue / green / purple / pink / custom），`themeColor` 仍是全局强调色。两个关键约定：
+`windowTheme` 选定一套预览窗配色，取值见 `WINDOW_THEMES`（gray / midnight / silver / blue / green / purple / pink / custom）。两个关键约定：
 
-- **令牌驱动**：预览窗的表面色/文字色不再写死，而是 `:host` 上的 `--tp-base / --tp-ink / --tp-surface / --tp-line / --tp-soft`（`--tp-line`、`--tp-soft` 由 `--tp-ink` 与 `--tp-surface` 用 `color-mix` 推导）。深色主题只改 `--tp-base`、`--tp-ink` 两个默认值，窗口规则全读令牌。`applyWindowTheme(root, preset)` 把预设写进**每个窗口 root 的内联变量**（内联优先，所以能压过主题默认值）：`kind: 'tint'` 的预设写 `--tp-surface: color-mix(in srgb, var(--tp-accent) 7%, var(--tp-base))`——**混到底色而不是写死白色**，这样深色主题下选浅色预设会得到"深底 + 淡淡的主色"，而不是一块刺眼的白色；`kind: 'dark'` 的预设直接给 `surface` / `ink`，无视应用主题（"深色"那张卡就是这个）。
-- **预设拥有强调色**：`clampSettings` 里非 `custom` 的预设会强制把 `themeColor` 改写成该预设的 `accent`（`custom` 才以 `themeColor` 为准）。否则一旦存储里 `windowTheme` 与 `themeColor` 不同步（手改、旧数据），窗口会按一个颜色调色、其余 UI 用另一个颜色。新增预设或新增读 `themeColor` 的地方时别绕过这条。
+- **令牌驱动**：预览窗的表面色/文字色不再写死，而是 `:host` 上的 `--tp-base / --tp-ink / --tp-surface / --tp-line / --tp-soft`（`--tp-line`、`--tp-soft` 由 `--tp-ink` 与 `--tp-surface` 用 `color-mix` 推导）。深色主题只改 `--tp-base`、`--tp-ink` 两个默认值，窗口规则全读令牌。`applyWindowTheme(root, preset, customColor)` 把预设写进**每个窗口 root 的内联变量**（内联优先，所以能压过主题默认值）：`kind: 'tint'` 的预设写 `--tp-surface: color-mix(in srgb, var(--tp-accent) 7%, var(--tp-base))`——**混到底色而不是写死白色**，这样深色主题下选浅色预设会得到"深底 + 淡淡的主色"，而不是一块刺眼的白色；`kind: 'dark'` 的预设直接给 `surface` / `ink`，无视应用主题（"深色"那张卡就是这个）。
+- **窗口配色只属于窗口**：`themeColor` 是**插件自己 UI 的强调色**（设置面板、链接高亮框、倒计时条、划词条——由 `selection.ts` / `applyVisualVars()` 里的 `overlay`、`highlight`、`progressBar` 分别写到各自元素上），只在「设置」tab 的「主题色」取色器里改；`windowTheme` 绝不写回它。窗口的强调色由 `applyWindowTheme()` 统一写：预设用自己的 `accent`，`custom` 用另一个独立设置项 `windowColor`（弹窗主题卡片里那张铅笔卡的取色器改的就是它）。因此 `applyVisualVars()` 和 `open()` **都不再给窗口 root 写 `--tp-accent`**，新增窗口上色的地方也别绕开 `applyWindowTheme` 自己写，否则同一个窗口会一半按预设、一半按插件主题色。历史包袱：旧数据里 `themeColor` 曾被预设强制改写（`clampSettings` 里那行已删），解耦后老用户的窗口配色保持原样，插件的强调色则停在最后一次被预设改写的值上——想改回默认色在「设置」tab 里点一下即可。
 
-设置面板「预览窗」tab 里的卡片是 4 列网格的窗口缩略图（`.win-themes` + `.mini*`），每张卡用自己的 `--card-accent` 上色，`custom` 那张是铅笔图标 + 内嵌 `<input type="color">`；选中项用 `color-mix(accent 30%, transparent)` 做外圈高亮。工具提示的名字来自 `windowTheme.<id>` 词条，新增预设要同步补两处 locale。
+设置面板「预览窗」tab 里的卡片是 4 列网格的窗口缩略图（`.win-themes` + `.mini*`），每张卡用自己的 `--card-accent` 上色（`custom` 那张取 `windowColor`，所以拖色时会实时跟着变），`custom` 那张是铅笔图标 + 内嵌 `<input type="color">`；选中项用 `color-mix(accent 30%, transparent)` 做外圈高亮。工具提示的名字来自 `windowTheme.<id>` 词条，新增预设要同步补两处 locale。
 
 ### 外观主题（深/浅/跟随系统）
 
@@ -187,16 +196,17 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 - **`manifest.action` 必须手写**（`wxt.config.ts` 里的 `action: {}`）：工具栏 `action` 只由 popup 入口生成，删掉 popup 后不写这一句，扩展在工具栏上就没有图标可点。MV2 目标由 WXT 的 `convertActionToMv2()` 转成 `browser_action`。
 - **图标点击由 `background.ts` 的 `bindIconToPanel()` 接**：Chrome/Edge 走 `sidePanel.setPanelBehavior({ openPanelOnActionClick: true })`——这是"声明式"的，一旦设置，`action.onClicked` 就再也不会触发，所以别指望用它做别的事；Firefox 完全没有 `sidePanel` API，只能在自己的点击监听里调 `sidebarAction.open()`，而且 MV2 的事件挂在 `browserAction` 而不是 `action` 上。`sidebarAction` 不在共享类型里，所以整段是"拓宽类型 + 运行时探测"，新浏览器接入时保持这个写法，别假设某个命名空间一定存在。
 
-`App.vue` 把设置分成 5 个 tab（`TABS` = preview / search / appearance / performance / protect），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：「预览窗」（id 是 `preview`）装总开关、触发方式、关闭触发器、位置/尺寸/模糊/弹窗主题/多窗口——触发方式和窗口外观都是"预览窗怎么出现、长什么样"，拆成两个 tab 只会让人来回点；划词搜索单独一站；应用主题与语言在「外观」；预热与节电在「性能」；链接保护与禁用站点在「保护」。新增设置项时放进语义最接近的那个 tab。
+`App.vue` 把设置分成 4 个 tab（`TABS` = preview / settings / performance / protect），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：「预览窗」（id 是 `preview`）装总开关、触发方式、关闭触发器、位置/尺寸/模糊/弹窗主题/多窗口——触发方式和窗口外观都是"预览窗怎么出现、长什么样"，拆成两个 tab 只会让人来回点；「设置」（id 是 `settings`）是划词搜索 + 应用主题（深浅）与**主题色**（插件强调色，`themeColor`）与插件语言这类"改完就生效、不涉及预览行为"的通用项，以及末尾的「恢复默认设置」按钮；预热与节电在「性能」；链接保护与禁用站点在「保护」。新增设置项时放进语义最接近的那个 tab。
 
-赞助卡片与「恢复默认设置」是**每个 tab 共用的底部块**：赞助那块抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它俩存在的，已删除。组件本身**没有样式块**，`.sponsor-section` / `.sponsor` 仍写在 `entrypoints/sidepanel/style.css` 里（面板是独立文档，那份全局 CSS 对它生效）；组件被别处复用时得自己带上样式。
+赞助卡片是**每个 tab 共用的底部块**：抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它存在的，已删除。组件本身**没有样式块**，`.sponsor-section` / `.sponsor` 仍写在 `entrypoints/sidepanel/style.css` 里（面板是独立文档，那份全局 CSS 对它生效）；组件被别处复用时得自己带上样式。它是面板最末一块（「恢复默认设置」按钮在「设置」tab 里，见下），沉底靠三件套：`#app { display:flex; flex-direction:column; min-height:100vh }` + `main { flex:1 }` + `.sponsor-section { margin-top:auto }`——内容比面板矮时它贴住底边不留空白，内容更高时它就是滚动区的最后一块（内层 `.flex-1` 让面板区自己吃掉剩余高度，所以不会把内容拉长）。`*{box-sizing:border-box}` 保证 `#app` 的 `padding-bottom` 算在 100vh 内，否则面板会凭空多出一条滚动条。**「恢复默认设置」是「设置」tab 最后一个 section 里的一个盒状按钮**（`.btn-reset`，唯一的红色破坏性控件；它原先在底部的 `footer` 里——`footer` 规则已随之下线，那段共用的尾巴上只剩赞助卡）。
 
-样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。两处为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖），sticky 从 `.hd` 挪到包住头部与 tab 条的 `.topbar`（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致）。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
+样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**，`public/icon/` 那套图标也再没有任何引用（真要用它得先在模板里重新引一次）。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
 ### 设置与存储
 
 - `settingsItem` = `local:tabpeek_settings`，定义在 `utils/storage.ts`。
 - 新增设置项要同时改三处：`TabPeekSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 sidepanel `App.vue` 的对应 tab 里加控件、两个 locale 补词条。
+- 两个颜色设置各有归属，别混：`themeColor` = 插件 UI 的强调色（「设置」tab 的「主题色」），`windowColor` = 弹窗主题选 `custom` 时的窗口强调色（那张铅笔卡里的取色器）。两者都用 `<input type="color">` 编辑（值恒为 `#rrggbb`），`clampSettings` 里只做 `|| DEFAULT_SETTINGS.x` 兜底、不做格式校验。**没有任何代码把其中一个写成另一个**——这是刻意的，改「弹窗主题」不该把整个插件换色。
 - `clampSettings` 的边界：`hoverDelayMs` 100–2000（默认 500）、`longPressMs` 200–2000（600）、`width` / `height` 20–100（视口百分比，默认 40 / 55）、`blurStrength` 0–100（百分比，默认 0 关闭）、`minSelectionChars` 1–20、`maxWindows` 1–6（默认 3）。**所有读取设置的地方都要过 `clampSettings`**，content 与 sidepanel 都这么做。
 - **单位约定**：延迟类设置**存储永远是毫秒**（`hoverDelayMs` / `longPressMs`，定时器直接用），只有设置面板的滑块与读数换成秒（`App.vue` 里两个 writable computed 做 `×1000 / ÷1000` 换算，`toFixed(2)` 去浮点噪声），这样不需要迁移老数据。宽高反过来，**存储就是视口百分比**，`clampSettings` 里 `clampWindowPercent()` 会把历史遗留的像素值（>100 只可能是 px）按固定参考视口 1440×900 折算一次——不能用 `innerWidth` 折算，因为设置面板的视口不是被浏览的页面，同一份数据在两处会算出不同百分比。
 - 宽高百分比最终由 `--tp-w` / `--tp-h` 两个 CSS 变量生效（`place()` 不再写内联 px 尺寸），而 `place()` 里的定位数学需要像素，所以走 `windowSize()` 按当前视口把百分比换算成 px；`preview.ts` 注册了 `resize` 监听重新 `place()` 所有非手动拖拽过的窗口，否则视口一变、窗口长大了却还停在旧坐标上可能出屏。

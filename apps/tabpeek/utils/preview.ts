@@ -321,8 +321,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   }
 
   /** "tint" presets mix the accent into the app theme's base surface (so dark
-   *  mode still works); "dark" presets bring their own surface and ink. */
-  function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset) {
+   *  mode still works); "dark" presets bring their own surface and ink. The
+   *  accent itself always comes from here too: a window is coloured by its own
+   *  theme (the preset's accent, or `windowColor` for "custom"), never by the
+   *  plugin accent (`themeColor`) that paints the rest of TabPeek's UI. */
+  function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset, customColor: string) {
+    root.style.setProperty("--tp-accent", preset.id === "custom" ? customColor : preset.accent);
     if (preset.kind === "dark") {
       root.style.setProperty("--tp-surface", preset.surface ?? "#1e2432");
       root.style.setProperty("--tp-ink", preset.ink ?? "#e7eaf0");
@@ -343,8 +347,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     overlay.style.setProperty("--tp-accent", s.themeColor);
     highlight.style.setProperty("--tp-accent", s.themeColor);
     for (const win of windows) {
-      win.root.style.setProperty("--tp-accent", s.themeColor);
-      applyWindowTheme(win.root, windowPreset(s));
+      applyWindowTheme(win.root, windowPreset(s), s.windowColor);
       win.root.style.setProperty("--tp-w", `${s.width}%`);
       win.root.style.setProperty("--tp-h", `${s.height}%`);
     }
@@ -647,8 +650,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     const root = document.createElement("div");
     root.className = "tp-win";
     root.style.zIndex = String(++zIndex);
-    root.style.setProperty("--tp-accent", s.themeColor);
-    applyWindowTheme(root, windowPreset(s));
+    applyWindowTheme(root, windowPreset(s), s.windowColor);
     root.style.setProperty("--tp-w", `${s.width}%`);
     root.style.setProperty("--tp-h", `${s.height}%`);
 

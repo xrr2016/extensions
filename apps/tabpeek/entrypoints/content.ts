@@ -23,16 +23,20 @@ import { stripTracking } from "@/utils/tracking";
  *  preview, and cancels a long-press (which is the same intent in reverse). */
 const DRAG_INTENT_PX = 12;
 
+/** The link currently under the pointer, plus where the pointer was when it got
+ *  there (kept so the Alt key can arm a hover that started without it). */
+type HoverTarget = { anchor: HTMLAnchorElement; url: string; x: number; y: number };
+
 function toAnchorInfo(
   anchor: HTMLAnchorElement,
   url: string,
-  e: MouseEvent,
+  pointer: { clientX: number; clientY: number },
   warnDangerous: boolean,
 ) {
   return {
     url,
     rect: anchor.getBoundingClientRect(),
-    pointer: { x: e.clientX, y: e.clientY },
+    pointer: { x: pointer.clientX, y: pointer.clientY },
     risk: warnDangerous ? riskFor(url, anchor.textContent ?? "") : undefined,
   };
 }
@@ -152,6 +156,7 @@ export default defineContentScript({
 
     let hoverTimer: ReturnType<typeof setTimeout> | null = null;
     let hoveringUrl: string | null = null;
+    let hoverTarget: HoverTarget | null = null;
 
     function clearHoverTimer() {
       if (hoverTimer) {
@@ -167,9 +172,44 @@ export default defineContentScript({
       return settings.triggerMode === "hover";
     }
 
+    /** Starts the hover countdown. Shared by the pointer path and the Alt-key
+     *  path, since in `altHover` the modifier may arrive after the pointer. */
+    function beginHover(hit: HoverTarget) {
+      preview?.keep(hit.url);
+      if (hoveringUrl === hit.url) return;
+      clearHoverTimer();
+      hoveringUrl = hit.url;
+      const info = toAnchorInfo(
+        hit.anchor,
+        hit.url,
+        { clientX: hit.x, clientY: hit.y },
+        clampSettings(settings).warnDangerous,
+      );
+      const delayMs = clampSettings(settings).hoverDelayMs;
+      hoverTimer = setTimeout(() => {
+        hoverTimer = null;
+        hoveringUrl = null;
+        preview?.cancelProgress();
+        void ensureUi().then(() => {
+          if (selection?.isVisible()) return; // don't stack a preview onto the toolbar
+          preview?.open(info);
+        });
+      }, delayMs);
+      void ensureUi().then(() => {
+        // Same guard as long-press: the pointer may have left meanwhile.
+        if (hoverTimer && hoveringUrl === hit.url) {
+          preview?.startProgress(hit.x, hit.y, delayMs);
+        }
+      });
+    }
+
     ctx.addEventListener(document, "pointerover", (e) => {
       const event = e as PointerEvent;
       const hit = anchorHref(event);
+      hoverTarget =
+        hit && settings.enabled
+          ? { anchor: hit.anchor, url: hit.url, x: event.clientX, y: event.clientY }
+          : null;
       // Hovering a link is intent even when it won't open a preview (e.g.
       // altHover without Alt): warm it through the Speculation Rules API.
       if (hit && settings.enabled) speculation.onIntent(hit.url);
@@ -178,34 +218,8 @@ export default defineContentScript({
       } else {
         preview?.highlightLink(null);
       }
-      if (hit && settings.enabled && triggerAllows(event)) {
-        preview?.keep(hit.url);
-        if (hoveringUrl === hit.url) return;
-        clearHoverTimer();
-        hoveringUrl = hit.url;
-        const info = toAnchorInfo(
-          hit.anchor,
-          hit.url,
-          event,
-          clampSettings(settings).warnDangerous,
-        );
-        const delayMs = clampSettings(settings).hoverDelayMs;
-        const { clientX, clientY } = event;
-        hoverTimer = setTimeout(() => {
-          hoverTimer = null;
-          hoveringUrl = null;
-          preview?.cancelProgress();
-          void ensureUi().then(() => {
-            if (selection?.isVisible()) return; // don't stack a preview onto the toolbar
-            preview?.open(info);
-          });
-        }, delayMs);
-        void ensureUi().then(() => {
-          // Same guard as long-press: the pointer may have left meanwhile.
-          if (hoverTimer && hoveringUrl === hit.url) {
-            preview?.startProgress(clientX, clientY, delayMs);
-          }
-        });
+      if (hoverTarget && triggerAllows(event)) {
+        beginHover(hoverTarget);
       } else {
         clearHoverTimer();
         const overUi = (event.composedPath() as Node[]).some(
@@ -213,6 +227,24 @@ export default defineContentScript({
         );
         if (!overUi) preview?.releaseExcept(null);
       }
+    });
+
+    // `altHover` must not care about the order: pressing Alt over a link that is
+    // already hovered starts the very same countdown, and letting go of Alt
+    // before the window opens cancels it — the modifier is the intent here, so
+    // hold it. `repeat` matters: Alt auto-repeats while held, and every repeat
+    // would otherwise restart the countdown of an already-opened window.
+    ctx.addEventListener(document, "keydown", (e) => {
+      const event = e as KeyboardEvent;
+      if (!settings.enabled || settings.triggerMode !== "altHover") return;
+      if (event.key !== "Alt" || event.repeat || hoveringUrl || !hoverTarget) return;
+      beginHover(hoverTarget);
+    });
+
+    ctx.addEventListener(document, "keyup", (e) => {
+      const event = e as KeyboardEvent;
+      if (settings.triggerMode !== "altHover" || event.key !== "Alt") return;
+      clearHoverTimer();
     });
 
     // "Close when clicking outside": a press anywhere that is not our own UI
@@ -233,6 +265,7 @@ export default defineContentScript({
     ctx.addEventListener(document, "pointerout", (e) => {
       const event = e as PointerEvent;
       if (anchorHref(event) && !event.relatedTarget) {
+        hoverTarget = null;
         clearHoverTimer();
         preview?.highlightLink(null); // pointer left the document
       }
