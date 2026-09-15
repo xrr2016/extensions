@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TabPeek — 极速悬停预览，告别标签海</title>
+    <meta
+      name="description"
+      content="TabPeek：Speculation Rules 链接预热，悬停即开；阅读模式、划词搜索，全部本地运行"
+    />
+    <link rel="icon" href="./assets/favicon-32.png" />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <header class="nav" id="top">
+      <a class="brand" href="#top">
+        <img src="./assets/icon-128.png" alt="TabPeek logo" />
+        <span>TabPeek</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#speed" data-i18n="nav.speed">极速预览</a>
+        <a href="#features" data-i18n="nav.features">功能</a>
+        <a href="#sponsor" data-i18n="nav.sponsor">赞助支持</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      </nav>
+      <button class="lang-btn" id="langBtn" type="button">EN</button>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <span class="hero-chip">⚡ <span data-i18n="hero.chip">极速预览 · 悬停即开</span></span>
+        <h1 class="hero-title"><span class="grad" data-i18n="hero.title">极速预览，告别标签海</span></h1>
+        <p class="hero-sub" data-i18n="hero.subtitle">链接预热秒开 · 阅读模式 · 划词搜索</p>
+        <p class="hero-desc">🚀 <span data-i18n="hero.desc">鼠标停在链接上的瞬间，目标页已经开始加载。</span></p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
+          <a class="btn" href="#" data-i18n="dl.edge">Edge 扩展</a>
+          <a class="btn" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
+          <a class="btn ghost" href="#" data-i18n="dl.manual">手动安装</a>
+        </div>
+        <a class="hero-try" href="#features">↓ <span data-i18n="hero.try">试一试</span></a>
+
+        <div class="hero-mock" aria-hidden="true">
+          <div class="mock-page">
+            <div class="mock-head"><i></i><i></i><i></i></div>
+            <div class="mock-line w70"></div>
+            <div class="mock-link">
+              <span class="mock-underline"></span>
+              <div class="mock-tip">
+                <div class="mock-tip-head">
+                  <span class="mock-chip">⚡</span>
+                  <b></b><i></i>
+                </div>
+                <div class="mock-tip-body"><i></i><i></i><i></i></div>
+              </div>
+            </div>
+            <div class="mock-line w90"></div>
+            <div class="mock-line w60"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Speed -->
+      <section class="speed" id="speed">
+        <h2 class="sec-title">⚡ <span class="grad" data-i18n="speed.title">极速预览，快在每一环</span></h2>
+        <p class="sec-sub" data-i18n="speed.subtitle">从悬停到呈现，三步把等待压缩到感知之外</p>
+        <div class="step-grid">
+          <div class="step">
+            <span class="no">01</span>
+            <h3 data-i18n="speed.s1t">悬停即预热</h3>
+            <p data-i18n="speed.s1d">鼠标停在链接上的刹那，浏览器原生 Speculation Rules 已把目标页加入下载队列——不经过任何第三方服务器。</p>
+          </div>
+          <div class="step">
+            <span class="no">02</span>
+            <h3 data-i18n="speed.s2t">预览窗秒开</h3>
+            <p data-i18n="speed.s2d">预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。</p>
+          </div>
+          <div class="step">
+            <span class="no">03</span>
+            <h3 data-i18n="speed.s3t">点击零等待</h3>
+            <p data-i18n="speed.s3d">开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。</p>
+          </div>
+        </div>
+        <div class="compare">
+          <div class="cmp-row">
+            <span class="cmp-label" data-i18n="speed.cold">冷启动加载</span>
+            <div class="cmp-bar cold"><i></i></div>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-label" data-i18n="speed.warm">TabPeek 预热后</span>
+            <div class="cmp-bar warm"><i>⚡</i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="features" id="features">
+        <h2 class="sec-title"><span class="grad" data-i18n="features.title">沉浸式浏览，告别标签海</span></h2>
+        <p class="sec-sub" data-i18n="features.subtitle">九项能力，全部本地运行，不上传任何数据</p>
+        <div class="grid">
+          <div class="card hot"><span class="ico">⚡</span><h3 data-i18n="f.warm.t">链接预热</h3><p data-i18n="f.warm.d">悬停瞬间即开始预取目标页，预览与打开更快。</p><span class="hot-tag" data-i18n="f.warm.tag">极速核心</span></div>
+          <div class="card"><span class="ico">🔗</span><h3 data-i18n="f.preview.t">链接预览</h3><p data-i18n="f.preview.d">悬停链接即浮出内容预览，是否打开由你决定。</p></div>
+          <div class="card"><span class="ico">📖</span><h3 data-i18n="f.reader.t">阅读模式</h3><p data-i18n="f.reader.d">无法内嵌的网站自动切换为无干扰阅读视图。</p></div>
+          <div class="card"><span class="ico">🪟</span><h3 data-i18n="f.multi.t">多窗口预览</h3><p data-i18n="f.multi.d">最多同时打开 6 个预览窗，左右对比阅读。</p></div>
+          <div class="card"><span class="ico">📐</span><h3 data-i18n="f.sidebar.t">侧边栏模式</h3><p data-i18n="f.sidebar.d">预览窗通高贴边，侧栏堆叠不遮挡正文。</p></div>
+          <div class="card"><span class="ico">🔍</span><h3 data-i18n="f.search.t">划词搜索</h3><p data-i18n="f.search.d">选中文字，一键 Google / Bing / 百度 / DuckDuckGo。</p></div>
+          <div class="card"><span class="ico">✨</span><h3 data-i18n="f.ai.t">AI 搜索</h3><p data-i18n="f.ai.d">Copilot / Gemini / 豆包 / Kimi，选完即问。</p></div>
+          <div class="card"><span class="ico">🎨</span><h3 data-i18n="f.theme.t">主题定制</h3><p data-i18n="f.theme.d">主题色、尺寸、位置、背景模糊随心调。</p></div>
+          <div class="card"><span class="ico">🔒</span><h3 data-i18n="f.privacy.t">隐私本地化</h3><p data-i18n="f.privacy.d">无账号、无服务器，数据不出本机。</p></div>
+        </div>
+      </section>
+
+      <!-- Sponsor -->
+      <section class="sponsor" id="sponsor">
+        <h2 class="sec-title">☕ <span class="grad" data-i18n="sponsor.title">完全免费，欢迎赞助</span></h2>
+        <p class="sec-sub" data-i18n="sponsor.subtitle">无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。</p>
+        <div class="sponsor-grid">
+          <a class="sponsor-card" href="https://ifdian.net/a/coldstoneboy" target="_blank" rel="noopener">
+            <span class="ico">🧋</span>
+            <h3 data-i18n="sponsor.afdian.t">爱发电</h3>
+            <p data-i18n="sponsor.afdian.d">国内访问，微信 / 支付宝均可</p>
+          </a>
+          <a class="sponsor-card" href="https://patreon.com/coldstoneboy" target="_blank" rel="noopener">
+            <span class="ico">☕</span>
+            <h3 data-i18n="sponsor.patreon.t">Patreon</h3>
+            <p data-i18n="sponsor.patreon.d">海外访问，按月或一次性支持</p>
+          </a>
+        </div>
+        <p class="sponsor-note" data-i18n="sponsor.note">赞助完全自愿，不影响任何功能的可用性。</p>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq" id="faq">
+        <h2 class="sec-title"><span class="grad" data-i18n="faq.title">常见问题</span></h2>
+        <details open>
+          <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
+          <p data-i18n="faq.a1">部分网站禁止被内嵌，TabPeek 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
+          <p data-i18n="faq.a2">不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q3">TabPeek 收费吗？</summary>
+          <p data-i18n="faq.a3">完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q4">预览为什么这么快？</summary>
+          <p data-i18n="faq.a4">TabPeek 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="f-col">
+        <div class="brand"><img src="./assets/icon-128.png" alt="" /><span>TabPeek</span></div>
+        <p data-i18n="footer.slogan">一点即预览，告别标签海。</p>
+      </div>
+      <div class="f-col">
+        <h4 data-i18n="footer.links">快速链接</h4>
+        <a href="#features" data-i18n="nav.features">功能</a>
+        <a href="#sponsor" data-i18n="nav.sponsor">赞助支持</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      </div>
+      <div class="f-col">
+        <h4 data-i18n="footer.sponsor">赞助</h4>
+        <a href="https://ifdian.net/a/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.afdian.t">爱发电</a>
+        <a href="https://patreon.com/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.patreon.t">Patreon</a>
+      </div>
+      <div class="f-col">
+        <h4 data-i18n="footer.contact">联系我们</h4>
+        <a href="mailto:hello@tabpeek.app">hello@tabpeek.app</a>
+      </div>
+      <div class="f-col">
+        <h4 data-i18n="footer.legal">条款</h4>
+        <a href="#" data-i18n="footer.privacy">隐私政策</a>
+        <a href="#" data-i18n="footer.terms">服务条款</a>
+      </div>
+    </footer>
+    <div class="copyright">© 2026 TabPeek · <span data-i18n="footer.rights">保留所有权利</span></div>
+
+    <script src="./js/main.js"></script>
+  </body>
+</html>

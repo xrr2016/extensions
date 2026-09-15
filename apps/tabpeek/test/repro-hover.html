@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /><title>TabPeek content-script repro</title></head>
+  <body>
+    <p>Go to <a id="target" href="https://example.com/article">the example article</a> for details.</p>
+    <pre id="log"></pre>
+    <script>
+      window.__log = (m) => {
+        document.getElementById('log').textContent += m + "\n";
+        console.log('[repro]', m);
+      };
+      const store = {};
+      const listeners = [];
+      const area = {
+        get: (k, cb) => {
+          const out = {};
+          for (const key of Array.isArray(k) ? k : [k]) out[key] = store[key];
+          if (cb) cb(out);
+          return Promise.resolve(out);
+        },
+        set: (obj, cb) => { Object.assign(store, obj); if (cb) cb(); return Promise.resolve(); },
+        remove: (k, cb) => { if (cb) cb(); return Promise.resolve(); },
+        // MV3 per-area event; @wxt-dev/storage watches this, not storage.onChanged.
+        onChanged: { addListener: (fn) => listeners.push(fn), removeListener: () => {} },
+      };
+      globalThis.chrome = {
+        runtime: {
+          id: 'repro-extension-id',
+          getURL: (p) => p,
+          lastError: undefined,
+          onMessage: { addListener: () => {}, hasListener: () => false },
+          // @wxt-dev/analytics opens a port from the content script at startup;
+          // without this the whole content script dies before wiring anything up.
+          connect: () => ({
+            postMessage: () => {},
+            disconnect: () => {},
+            onMessage: { addListener: () => {} },
+            onDisconnect: { addListener: () => {} },
+          }),
+          onConnect: { addListener: () => {} },
+          sendMessage: (msg) => {
+            window.__log('sendMessage ' + JSON.stringify(msg).slice(0, 80));
+            if (msg.type === 'tabpeek:fetch') {
+              return Promise.resolve({
+                ok: true, canEmbed: true, finalUrl: msg.url,
+                title: 'Example Domain', html: '<html><body><article><p>hello</p></article></body></html>',
+              });
+            }
+            return Promise.resolve({ ok: true });
+          },
+        },
+        storage: {
+          local: area,
+          session: area,
+          onChanged: { addListener: (fn) => listeners.push(fn), removeListener: () => {} },
+        },
+        tabs: { create: () => Promise.resolve({ id: 1 }), query: () => Promise.resolve([]) },
+      };
+      window.addEventListener('error', (e) => window.__log('WINDOW ERROR: ' + e.message));
+      window.addEventListener('unhandledrejection', (e) =>
+        window.__log('UNHANDLED REJECTION: ' + (e.reason?.message ?? e.reason)),
+      );
+    </script>
+    <script src="../.output/chrome-mv3/content-scripts/content.js"></script>
+    <script>
+      setTimeout(() => {
+        window.__log('dispatching pointerover on link');
+        const a = document.getElementById('target');
+        a.dispatchEvent(new PointerEvent('pointerover', {
+          bubbles: true, composed: true, clientX: 120, clientY: 60, pointerId: 1, isPrimary: true,
+        }));
+        setTimeout(() => {
+          const host = document.querySelector('tabpeek-ui');
+          window.__log('host present: ' + !!host);
+          if (host?.shadowRoot) {
+            window.__log('windows in shadow: ' + host.shadowRoot.querySelectorAll('.tp-win').length);
+            const win = host.shadowRoot.querySelector('.tp-win');
+            if (win) {
+              const r = win.getBoundingClientRect();
+              window.__log('win rect: ' + JSON.stringify({ x: r.x, y: r.y, w: r.width, h: r.height }));
+              const cs = getComputedStyle(win);
+              window.__log('win style display=' + cs.display + ' visibility=' + cs.visibility + ' z=' + cs.zIndex);
+            }
+          }
+        }, 1200);
+      }, 300);
+    </script>
+  </body>
+</html>

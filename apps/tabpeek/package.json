@@ -1,0 +1,31 @@
+{
+  "name": "@extensions/tabpeek",
+  "description": "悬停即预览，告别标签海",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "dev:doubao": "wxt -b doubao",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "vue-tsc --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "vue": "^3.5.29"
+  },
+  "devDependencies": {
+    "@wxt-dev/analytics": "^0.5.6",
+    "@wxt-dev/auto-icons": "^1.1.2",
+    "@wxt-dev/module-vue": "^1.0.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5",
+    "vue-tsc": "^3.2.5",
+    "web-ext": "^10.5.0",
+    "wxt": "^0.21.3"
+  }
+}

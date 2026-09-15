@@ -1,0 +1,71 @@
+{
+  "preview.openTab": "Open in new tab",
+  "preview.close": "Close",
+  "preview.pin": "Pin window (keep it open)",
+  "preview.unpin": "Unpin window",
+  "preview.readerBadge": "Reader mode",
+  "preview.failed": "Failed to load this page",
+
+  "selection.ai": "AI search",
+
+  "popup.enabled": "Enable TabPeek",
+  "popup.reset": "Reset to defaults",
+
+  "popup.section.trigger": "Preview trigger",
+  "trigger.hover": "On hover",
+  "trigger.altHover": "Alt + hover",
+  "trigger.click": "Click to preview",
+  "trigger.longPress": "Long press",
+  "trigger.delay": "Hover delay",
+  "trigger.longPressDelay": "Hold duration (progress bar shown)",
+
+  "popup.section.size": "Preview size",
+  "size.width": "Width",
+  "size.height": "Height",
+
+  "popup.section.theme": "Theme color",
+
+  "popup.section.position": "Preview position",
+  "position.link": "Follow link",
+  "position.mouse": "Follow mouse",
+  "position.bottom-right": "Bottom right",
+  "position.bottom-left": "Bottom left",
+  "position.top-right": "Top right",
+  "position.center": "Center",
+  "position.sidebar": "Sidebar",
+  "sidebarSide.left": "Left",
+  "sidebarSide.right": "Right",
+
+  "popup.section.blur": "Background blur",
+  "blur.strength": "Blur strength (0 = off)",
+
+  "popup.section.speculation": "Link warm-up",
+  "speculation.off": "Off",
+  "speculation.prefetch": "Prefetch",
+  "speculation.prerender": "Prerender",
+  "speculation.hint": "Download hovered links in advance for faster previews and opens; prerendering is heavier and Chrome-only",
+
+  "popup.section.selection": "Text selection search",
+  "selection.enable": "Show toolbar on text selection",
+  "selection.engines": "Search engines",
+  "selection.aiEngine": "AI engine",
+  "selection.background": "Open in background tab",
+  "selection.minLength": "Min selected chars",
+
+  "popup.section.language": "Language",
+
+  "popup.section.windows": "Multiple windows",
+  "windows.max": "Max open windows",
+  "windows.hint": "Open up to 6 previews at once; in sidebar mode they stack side by side.",
+
+  "popup.section.sponsor": "Support the author",
+  "sponsor.hint": "TabPeek is completely free — no account, no server. If it helps you, a sponsorship keeps development going.",
+  "sponsor.afdian": "Afdian",
+  "sponsor.patreon": "Patreon",
+
+  "popup.section.sites": "Disabled sites",
+  "sites.empty": "No disabled sites",
+  "sites.addPlaceholder": "example.com",
+  "sites.add": "Add",
+  "sites.current": "Disable current site"
+}

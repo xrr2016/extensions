@@ -1,0 +1,71 @@
+{
+  "preview.openTab": "在新标签页打开",
+  "preview.close": "关闭",
+  "preview.pin": "固定窗口（不自动关闭）",
+  "preview.unpin": "取消固定",
+  "preview.readerBadge": "阅读模式",
+  "preview.failed": "无法加载该页面内容",
+
+  "selection.ai": "AI 搜索",
+
+  "popup.enabled": "启用 TabPeek",
+  "popup.reset": "恢复默认设置",
+
+  "popup.section.trigger": "预览触发方式",
+  "trigger.hover": "悬停即触发",
+  "trigger.altHover": "Alt + 悬停",
+  "trigger.click": "点击链接预览",
+  "trigger.longPress": "长按链接",
+  "trigger.delay": "悬停延迟",
+  "trigger.longPressDelay": "长按时长（按住时显示进度条）",
+
+  "popup.section.size": "预览窗尺寸",
+  "size.width": "宽度",
+  "size.height": "高度",
+
+  "popup.section.theme": "预览窗主题色",
+
+  "popup.section.position": "预览窗位置",
+  "position.link": "跟随链接",
+  "position.mouse": "跟随鼠标",
+  "position.bottom-right": "右下角",
+  "position.bottom-left": "左下角",
+  "position.top-right": "右上角",
+  "position.center": "居中",
+  "position.sidebar": "侧边栏",
+  "sidebarSide.left": "靠左",
+  "sidebarSide.right": "靠右",
+
+  "popup.section.blur": "背景模糊",
+  "blur.strength": "模糊强度（0 为关闭）",
+
+  "popup.section.speculation": "链接预热",
+  "speculation.off": "关闭",
+  "speculation.prefetch": "预取（prefetch）",
+  "speculation.prerender": "预渲染（prerender）",
+  "speculation.hint": "悬停链接时提前下载目标页，让预览与打开更快；预渲染更耗资源，仅 Chrome 支持",
+
+  "popup.section.selection": "划词搜索",
+  "selection.enable": "选中文字时显示搜索工具条",
+  "selection.engines": "普通搜索引擎",
+  "selection.aiEngine": "AI 搜索引擎",
+  "selection.background": "在后台标签页打开",
+  "selection.minLength": "最小选中字数",
+
+  "popup.section.language": "插件语言",
+
+  "popup.section.windows": "多窗口预览",
+  "windows.max": "同时打开窗口数",
+  "windows.hint": "最多 6 个预览窗同时打开；侧边栏模式下并排堆叠。",
+
+  "popup.section.sponsor": "赞助支持",
+  "sponsor.hint": "TabPeek 完全免费，无账号、无服务器。如果它帮到了你，欢迎赞助支持后续开发。",
+  "sponsor.afdian": "爱发电",
+  "sponsor.patreon": "Patreon",
+
+  "popup.section.sites": "禁用站点",
+  "sites.empty": "暂无禁用站点",
+  "sites.addPlaceholder": "example.com",
+  "sites.add": "添加",
+  "sites.current": "禁用当前站点"
+}

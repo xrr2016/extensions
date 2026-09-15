@@ -1,0 +1,23 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 380px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 13px;
+  color: #1f2328;
+  background: #f6f8fa;
+}
+
+#app {
+  padding: 0 0 20px;
+}

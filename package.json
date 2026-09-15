@@ -1,0 +1,22 @@
+{
+  "name": "extensions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:tabpeek": "pnpm -F @extensions/tabpeek dev",
+    "dev:tabpeek:firefox": "pnpm -F @extensions/tabpeek dev:firefox",
+    "dev:tabpeek:doubao": "pnpm -F @extensions/tabpeek dev:doubao",
+    "build:tabpeek": "pnpm -F @extensions/tabpeek build",
+    "build:tabpeek:firefox": "pnpm -F @extensions/tabpeek build:firefox",
+    "zip:tabpeek": "pnpm -F @extensions/tabpeek zip",
+    "zip:tabpeek:firefox": "pnpm -F @extensions/tabpeek zip:firefox",
+    "compile:tabpeek": "pnpm -F @extensions/tabpeek compile",
+    "landing:tabpeek": "pnpm -F @extensions/tabpeek-landing dev",
+    "compile": "pnpm -r --if-present compile",
+    "build": "pnpm -r --if-present build"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0"
+  }
+}
