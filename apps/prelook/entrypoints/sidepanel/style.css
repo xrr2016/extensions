@@ -153,11 +153,6 @@ h2 {
 .grid3 input {
   accent-color: var(--tp-accent);
 }
-.sub {
-  padding-left: 4px;
-  border-left: 2px solid var(--tp-accent);
-  margin-left: 4px;
-}
 .grid3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

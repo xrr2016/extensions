@@ -297,7 +297,7 @@ function resetAll() {
             :options="positionOptions"
             :dividers="false"
           />
-          <div v-if="settings.position === 'sidebar'" class="seg sub">
+          <div v-if="settings.position === 'sidebar'" class="seg">
             <RadioGroup v-model="settings.sidebarSide" name="sidebarSide" :options="sideOptions" />
           </div>
         </section>
