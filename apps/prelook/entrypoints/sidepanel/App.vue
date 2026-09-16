@@ -267,7 +267,7 @@ function resetAll() {
         <section>
           <h2>{{ t("panel.section.trigger") }}</h2>
           <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
-          <label class="row">
+          <label class="row sz">
             <span
               >{{ t("trigger.delay") }}<b>{{ hoverDelaySec }}s</b></span
             >
@@ -372,7 +372,7 @@ function resetAll() {
 
         <section>
           <h2>{{ t("panel.section.blur") }}</h2>
-          <label class="row">
+          <label class="row sz">
             <span
               >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
             >
@@ -428,9 +428,9 @@ function resetAll() {
 
         <section>
           <h2>{{ t("panel.section.windows") }}</h2>
-          <label class="row">
+          <label class="row sz">
             <span
-              >{{ t("windows.max") }}<b>{{ settings.maxWindows }}</b></span
+              >{{ t("windows.max") }} <b>{{ settings.maxWindows }}</b></span
             >
             <SliderInput v-model="settings.maxWindows" :min="1" :max="MAX_WINDOWS_LIMIT" />
           </label>

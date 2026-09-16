@@ -78,7 +78,7 @@
   "panel.section.windows": "多窗口预览",
   "windows.autoPin": "自动固定预览窗",
   "windows.autoPinHint": "开启后新开出的预览窗自带固定，鼠标移开也不会关闭；已打开的窗口不受影响",
-  "windows.max": "同时打开窗口数",
+  "windows.max": "同开窗口数",
   "windows.hint": "最多 6 个预览窗同时打开；侧边栏模式下并排堆叠。",
   "panel.section.sponsor": "赞助支持",
   "sponsor.hint": "Prelook 完全免费。如果它帮到了你，欢迎赞助支持后续开发。",
