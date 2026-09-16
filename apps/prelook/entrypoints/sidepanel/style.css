@@ -25,11 +25,12 @@ body {
   background: #f6f8fa;
 }
 
-/* A column as tall as the panel, so `main` can absorb the leftover height and
-   let the sponsor block (its own `margin-top: auto`) sink to the bottom edge
-   instead of leaving a gap in the middle of a short tab. `border-box` keeps the
-   bottom padding inside 100vh. */
+/* A flex column as tall as the panel: `main` absorbs whatever height the
+   topbar actually renders at (fonts differ per machine), and the sponsor
+   block's own `margin-top: auto` sinks it to the bottom edge. */
 #app {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   overflow: hidden;
 }
@@ -92,11 +93,13 @@ body {
   margin-bottom: 12px;
 }
 main {
+  /* Fill the rest of the column: no hardcoded header height — the topbar's
+     rendered height varies with platform fonts and a fixed calc() drifts. */
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: calc(100vh - 40px - 24px);
   padding: 12px;
   padding-bottom: 0;
   overflow-y: auto;
