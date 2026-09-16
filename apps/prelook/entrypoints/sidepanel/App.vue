@@ -228,7 +228,7 @@ function resetAll() {
             <span
               >{{ t("trigger.longPressDelay") }}<b>{{ longPressSec }}s</b></span
             >
-            <input v-model.number="longPressSec" type="range" min="0.2" max="2" step="0.05" />
+            <input v-model.number="longPressSec" type="range" min="0.2" max="2" step="0.1" />
           </label>
           <label class="row switch-row">
             <span>{{ t("trigger.highlight") }}</span>
@@ -317,7 +317,7 @@ function resetAll() {
             <span
               >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
             >
-            <input v-model.number="settings.blurStrength" type="range" min="0" max="100" step="5" />
+            <input v-model.number="settings.blurStrength" type="range" min="0" max="100" step="1" />
           </label>
           <p class="hint muted">{{ t("blur.hint") }}</p>
         </section>
@@ -432,7 +432,7 @@ function resetAll() {
               v-model.number="settings.minSelectionChars"
               type="range"
               min="1"
-              max="20"
+              max="999"
               step="1"
             />
           </label>
