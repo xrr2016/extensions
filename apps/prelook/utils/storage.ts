@@ -95,8 +95,7 @@ export const WINDOW_PX_MAX = 2000;
  * Window size used to be configured in pixels (320-1200 x 240-900). Anything
  * above the percentage ceiling can only be such a legacy value, so convert it
  * against a fixed reference viewport — a per-machine conversion would give
- * different results in the settings panel and in a page. Also the reference
- * for the panel's percent↔px conversion when toggling `sizeUnit`.
+ * different results in the settings panel and in a page.
  */
 export const LEGACY_VP_W = 1440;
 export const LEGACY_VP_H = 900;
@@ -176,7 +175,7 @@ export interface PrelookSettings {
 export const DEFAULT_SETTINGS: PrelookSettings = {
   enabled: true,
   triggerMode: "hover",
-  hoverDelayMs: 500,
+  hoverDelayMs: 1000,
   longPressMs: 600,
   width: 40,
   height: 55,

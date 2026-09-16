@@ -17,6 +17,8 @@
                 : "light";
           }
           document.documentElement.setAttribute("data-theme", theme);
+          var meta = document.getElementById("metaThemeColor");
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#111318" : "#f8f9fb");
         } catch (e) {
           /* 存储不可用（隐私模式）时按系统偏好走 */
         }
@@ -31,6 +33,8 @@
       content="Prelook,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
     />
     <link rel="icon" type="image/webp" href="./assets/logo.webp" />
+    <!-- 移动端浏览器地址栏颜色跟主题走：首帧由下面的内联脚本按解析出的主题写入 -->
+    <meta name="theme-color" id="metaThemeColor" content="#f8f9fb" />
     <link rel="stylesheet" href="./css/style.css" />
     <meta property="og:title" content="Prelook — 悬停链接即预览，不必再点开" />
     <meta
@@ -41,6 +45,9 @@
     <meta property="og:image" content="./assets/logo.webp" />
   </head>
   <body>
+    <!-- 键盘用户跳过导航：Tab 一下即可直达正文 -->
+    <a class="skip-link" href="#main" data-i18n="a11y.skip">跳到主要内容</a>
+
     <!-- 导航栏 -->
     <nav class="navbar" id="top">
       <div class="nav-container">
@@ -52,7 +59,7 @@
         <!-- 顺序严格跟着页面走：功能 → 极速 → 评价 → FAQ → 安装。
              「安装」指页尾那条色带而不是 hero：hero 是第一屏，本来就在眼前，
              真要点导航找安装的人是在页面下半部分，指向底部才走得近。 -->
-        <div class="nav-menu">
+        <div class="nav-menu" id="navMenu">
           <a href="#features" class="nav-link" data-i18n="nav.features">功能</a>
           <a href="#speed" class="nav-link" data-i18n="nav.speed">极速</a>
           <a href="#reviews" class="nav-link" data-i18n="nav.reviews">评价</a>
@@ -101,13 +108,36 @@
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
+          <!-- 窄屏专用的菜单开关：桌面端不渲染，≤880px 才显示 -->
+          <button
+            type="button"
+            class="nav-burger"
+            id="navBurger"
+            aria-expanded="false"
+            aria-controls="navMenu"
+            aria-label="菜单"
+            data-i18n-aria="nav.menu"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+          </button>
         </div>
       </div>
     </nav>
 
     <!-- 英雄区域。这里也有安装入口，但它就是首屏，不需要锚点：
          全站唯一的"安装"锚点是页尾色带的 #get，导航与页脚都指那里。 -->
-    <section class="hero">
+    <section class="hero" id="main">
       <div class="hero-bg">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
@@ -614,73 +644,6 @@
             </div>
             <p class="review-text" data-i18n="reviews.r6.text">
               （占位）没有真实评价之前，这一段先别上线。
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-chrome.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r1.name">示例用户 A</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r1.text">（占位）这条换成真实评价的原文。</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-edge.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r2.name">示例用户 B</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r2.text">
-              （占位）昵称也要替换成评价者本人的。
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-firefox.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r3.name">示例用户 C</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r3.text">
-              （占位）建议照抄原文，不要自己润色改写。
             </p>
           </div>
         </div>

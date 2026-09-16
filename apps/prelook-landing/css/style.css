@@ -24,7 +24,8 @@
   --bg-tertiary: #e8ebf0;
   --text-primary: #1a1d23;
   --text-secondary: #4a5568;
-  --text-tertiary: #8899a6;
+  /* 正文级三级文字要过 WCAG AA（4.5:1），#8899a6 在浅底上只有 ~2.9:1 */
+  --text-tertiary: #64748b;
   --border: #e2e6ea;
 
   /* 渐变与阴影（都带主色，避免灰扑扑） */
@@ -74,7 +75,7 @@
   --bg-tertiary: #23272e;
   --text-primary: #edf0f5;
   --text-secondary: #b0b8c4;
-  --text-tertiary: #6a7a8a;
+  --text-tertiary: #7d8c9f;
   --border: #2d333b;
 
   --gradient-1: linear-gradient(135deg, #6d86ff 0%, #a78bfa 100%);
@@ -140,6 +141,26 @@ button {
 ::selection {
   background: var(--primary-light);
   color: var(--primary);
+}
+
+/* 键盘用户跳过导航：平时藏在视口外，Tab 聚焦时从顶部滑入 */
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 2000;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
 /* 噪声纹理：给纯色背景一点颗粒，深色下同样成立 */
@@ -308,6 +329,30 @@ body::after {
 .lang-toggle:hover {
   background: var(--bg-tertiary);
   color: var(--primary);
+}
+
+/* 汉堡开关：桌面端不占位，≤880px 才出现（见响应式一节） */
+.nav-burger {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.nav-burger:hover {
+  background: var(--bg-tertiary);
+  color: var(--primary);
+}
+
+.nav-burger svg {
+  width: 22px;
+  height: 22px;
 }
 
 .theme-toggle svg {
@@ -883,7 +928,8 @@ section {
 .compare-note {
   margin-top: var(--spacing-sm);
   font-size: 0.8125rem;
-  color: var(--text-tertiary);
+  /* 骑在 --bg-secondary 上，三级文字不够 4.5:1，用二级色 */
+  color: var(--text-secondary);
 }
 
 /* ---------- 用户评价 ---------- */
@@ -930,7 +976,8 @@ section {
   height: 26px;
 }
 
-/* 小圆环是和卡片同色的底"挖"出来的，不能用 border，否则两边颜色对不上 */
+/* 小圆环是和卡片同色的底"挖"出来的，不能用 border，否则两边颜色对不上。
+   卡片底色是 --bg-primary，这里必须取同一个令牌，取错了环就会显形成一圈灰。 */
 .review-badge {
   position: absolute;
   right: -3px;
@@ -942,7 +989,7 @@ section {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
 }
 
 .review-badge img {
@@ -977,7 +1024,7 @@ section {
 
 /* ---------- 常见问题 ---------- */
 .faq {
-  background: var(--bg-secondary);
+  /* background: var(--bg-secondary); */
 }
 
 .faq-list {
@@ -1392,8 +1439,49 @@ section {
 }
 
 @media (max-width: 880px) {
+  .nav-burger {
+    display: flex;
+  }
+
+  /* 导航折叠成贴着导航栏下缘的下拉面板（定位基准是 fixed 的 .navbar） */
   .nav-menu {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.25rem var(--spacing-md) 0.75rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-menu.open {
+    display: flex;
+    animation: menu-in 0.18s var(--ease-out-expo);
+  }
+
+  .nav-link {
+    padding: 0.75rem 0.25rem;
+    font-size: 1rem;
+  }
+
+  /* 竖排里下划线会横贯整行，收掉，选中态只用颜色表达 */
+  .nav-link::after {
+    content: none;
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
