@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import ColorInput from "@/components/ColorInput.vue";
+import DropdownSelect from "@/components/DropdownSelect.vue";
+import RadioGroup from "@/components/RadioGroup.vue";
 import SliderInput from "@/components/SliderInput.vue";
 import SponsorSection from "@/components/SponsorSection.vue";
 import ToggleSwitch from "@/components/ToggleSwitch.vue";
@@ -50,6 +52,41 @@ const THEMES = [
   { id: "light" as const, icon: "sun" },
   { id: "dark" as const, icon: "moon" },
 ];
+
+// RadioGroup options: translated labels stay reactive to the language setting,
+// engine labels come from the engine tables verbatim.
+const triggerOptions = computed(() =>
+  (["hover", "altHover", "longPress", "drag"] as const).map((m) => ({
+    value: m,
+    label: t(`trigger.${m}`),
+  })),
+);
+const positionOptions = computed(() =>
+  (
+    [
+      "top-left",
+      "bottom-right",
+      "bottom-left",
+      "top-right",
+      "center-top",
+      "center",
+      "center-bottom",
+      "sidebar",
+    ] as const
+  ).map((p) => ({ value: p, label: t(`position.${p}`) })),
+);
+const sideOptions = computed(() =>
+  (["left", "right"] as const).map((s) => ({ value: s, label: t(`sidebarSide.${s}`) })),
+);
+const searchOptions = SEARCH_ENGINES.map((e) => ({ value: e.id, label: e.label }));
+const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
+const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
+const speculationOptions = computed(() =>
+  (["off", "prefetch", "prerender"] as const).map((m) => ({
+    value: m,
+    label: t(`speculation.${m}`),
+  })),
+);
 
 const accentStyle = computed(() => ({ "--tp-accent": settings.value.themeColor }));
 
@@ -197,16 +234,7 @@ function resetAll() {
 
         <section>
           <h2>{{ t("panel.section.trigger") }}</h2>
-          <div class="seg-btns">
-            <label
-              v-for="m in ['hover', 'altHover', 'longPress', 'drag'] as const"
-              :key="m"
-              :class="{ on: settings.triggerMode === m }"
-            >
-              <input v-model="settings.triggerMode" type="radio" name="triggerMode" :value="m" />
-              {{ t(`trigger.${m}`) }}
-            </label>
-          </div>
+          <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
           <label class="row">
             <span
               >{{ t("trigger.delay") }}<b>{{ hoverDelaySec }}s</b></span
@@ -263,30 +291,14 @@ function resetAll() {
 
         <section>
           <h2>{{ t("panel.section.position") }}</h2>
-          <div class="grid3">
-            <label
-              v-for="p in [
-                'link',
-                'mouse',
-                'bottom-right',
-                'bottom-left',
-                'top-right',
-                'center-top',
-                'center',
-                'center-bottom',
-                'sidebar',
-              ] as const"
-              :key="p"
-            >
-              <input v-model="settings.position" type="radio" name="position" :value="p" />
-              {{ t(`position.${p}`) }}
-            </label>
-          </div>
+          <RadioGroup
+            v-model="settings.position"
+            name="position"
+            :options="positionOptions"
+            :dividers="false"
+          />
           <div v-if="settings.position === 'sidebar'" class="seg sub">
-            <label v-for="side in ['left', 'right'] as const" :key="side">
-              <input v-model="settings.sidebarSide" type="radio" name="sidebarSide" :value="side" />
-              {{ t(`sidebarSide.${side}`) }}
-            </label>
+            <RadioGroup v-model="settings.sidebarSide" name="sidebarSide" :options="sideOptions" />
           </div>
         </section>
 
@@ -403,28 +415,13 @@ function resetAll() {
             <ToggleSwitch v-model="settings.selectionSearch" />
           </label>
           <div class="row-label">{{ t("selection.engines") }}</div>
-          <div class="seg-btns">
-            <label
-              v-for="e in SEARCH_ENGINES"
-              :key="e.id"
-              :class="{ on: settings.searchEngine === e.id }"
-            >
-              <input
-                v-model="settings.searchEngine"
-                type="radio"
-                name="searchEngine"
-                :value="e.id"
-              />
-              {{ e.label }}
-            </label>
-          </div>
+          <RadioGroup
+            v-model="settings.searchEngine"
+            name="searchEngine"
+            :options="searchOptions"
+          />
           <div class="row-label">{{ t("selection.aiEngine") }}</div>
-          <div class="seg-btns">
-            <label v-for="e in AI_ENGINES" :key="e.id" :class="{ on: settings.aiEngine === e.id }">
-              <input v-model="settings.aiEngine" type="radio" name="aiEngine" :value="e.id" />
-              {{ e.label }}
-            </label>
-          </div>
+          <RadioGroup v-model="settings.aiEngine" name="aiEngine" :options="aiOptions" />
           <label class="row switch-row">
             <span>{{ t("selection.background") }}</span>
             <ToggleSwitch v-model="settings.openInBackground" />
@@ -501,17 +498,11 @@ function resetAll() {
       >
         <section>
           <h2>{{ t("panel.section.speculation") }}</h2>
-          <div class="seg">
-            <label v-for="m in ['off', 'prefetch', 'prerender'] as const" :key="m">
-              <input
-                v-model="settings.speculationMode"
-                type="radio"
-                name="speculationMode"
-                :value="m"
-              />
-              {{ t(`speculation.${m}`) }}
-            </label>
-          </div>
+          <RadioGroup
+            v-model="settings.speculationMode"
+            name="speculationMode"
+            :options="speculationOptions"
+          />
           <p class="hint muted">{{ t("speculation.hint") }}</p>
         </section>
 
@@ -519,9 +510,11 @@ function resetAll() {
           <h2>{{ t("panel.section.power") }}</h2>
           <label class="row">
             <span>{{ t("power.label") }}</span>
-            <select v-model="settings.powerSaver">
-              <option v-for="m in POWER_MODES" :key="m" :value="m">{{ t(`power.${m}`) }}</option>
-            </select>
+            <DropdownSelect
+              v-model="settings.powerSaver"
+              name="powerSaver"
+              :options="powerOptions"
+            />
           </label>
           <p class="hint muted">{{ t("power.hint") }}</p>
           <label class="row switch-row">

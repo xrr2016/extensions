@@ -35,7 +35,6 @@ function toAnchorInfo(
 ) {
   return {
     url,
-    rect: anchor.getBoundingClientRect(),
     pointer: { x: pointer.clientX, y: pointer.clientY },
     risk: warnDangerous ? riskFor(url, anchor.textContent ?? "") : undefined,
   };
@@ -418,14 +417,13 @@ export default defineContentScript({
         const rect = anchor.getBoundingClientRect();
         return {
           url: clean,
-          rect,
           pointer: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
           risk,
         };
       }
       const cx = Math.round(innerWidth / 2);
       const cy = Math.round(innerHeight / 2);
-      return { url: clean, rect: new DOMRect(cx, cy, 0, 0), pointer: { x: cx, y: cy }, risk };
+      return { url: clean, pointer: { x: cx, y: cy }, risk };
     }
 
     // Right-click menu entries: an explicit command, so it ignores the site

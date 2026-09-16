@@ -11,7 +11,6 @@ import {
 
 export interface AnchorInfo {
   url: string;
-  rect: DOMRect;
   pointer: { x: number; y: number };
   /** Offline risk hint for this link, shown read-only in the header */
   risk?: RiskReason;
@@ -63,8 +62,6 @@ interface WindowInstance {
   openBtnEl: HTMLButtonElement;
   closeBtnEl: HTMLButtonElement;
   lastPointer: { x: number; y: number };
-  lastAnchorTop: number;
-  lastAnchorBottom: number;
 }
 
 export interface PreviewSystem {
@@ -450,19 +447,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     let x: number;
     let y: number;
     switch (pos) {
-      case "link":
-        x = win.lastPointer.x - w / 2;
-        y = win.lastAnchorBottom + 12;
-        if (y + h > vh - 8) {
-          y = win.lastAnchorTop - h - 12;
-          if (y < 8) {
-            y = Math.min(win.lastAnchorBottom + 12, vh - h - 8);
-          }
-        }
-        break;
-      case "mouse":
-        x = win.lastPointer.x + 16;
-        y = win.lastPointer.y + 18;
+      case "top-left":
+        x = 16;
+        y = 16;
         break;
       case "top-right":
         x = vw - w - 16;
@@ -700,8 +687,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     if (existing) {
       if (info.sidebar !== undefined) existing.sidebar = info.sidebar;
       existing.manualPosition = false;
-      existing.lastAnchorTop = info.rect.top;
-      existing.lastAnchorBottom = info.rect.bottom;
       existing.lastPointer = info.pointer;
       place(existing);
       existing.root.style.zIndex = String(++zIndex);
@@ -794,8 +779,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       openBtnEl: openBtn,
       closeBtnEl: closeBtn,
       lastPointer: info.pointer,
-      lastAnchorTop: info.rect.top,
-      lastAnchorBottom: info.rect.bottom,
     };
     syncHeaderButtons(win);
 

@@ -1,7 +1,6 @@
 export type TriggerMode = "hover" | "altHover" | "longPress" | "drag";
 export type PreviewPosition =
-  | "link"
-  | "mouse"
+  | "top-left"
   | "bottom-right"
   | "bottom-left"
   | "top-right"
@@ -165,7 +164,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   height: 55,
   themeColor: "#4f6bf6",
   windowColor: "#8c959f",
-  position: "link",
+  position: "bottom-right",
   sidebarSide: "right",
   blurStrength: 5,
   selectionSearch: true,
@@ -266,6 +265,22 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
     triggerMode: TRIGGER_MODES.includes(s.triggerMode)
       ? s.triggerMode
       : DEFAULT_SETTINGS.triggerMode,
+    // `link`/`mouse` positions were removed; stored legacy values land on the
+    // default corner instead of an unselectable radio.
+    position: (
+      [
+        "top-left",
+        "bottom-right",
+        "bottom-left",
+        "top-right",
+        "center-top",
+        "center",
+        "center-bottom",
+        "sidebar",
+      ] as const
+    ).includes(s.position)
+      ? s.position
+      : DEFAULT_SETTINGS.position,
     windowTheme,
     // Two independent colours: the window theme only ever colours preview
     // windows (a preset's own accent, or `windowColor` for "custom"), while
