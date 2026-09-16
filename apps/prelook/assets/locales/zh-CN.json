@@ -27,7 +27,7 @@
   "trigger.drag": "拖动链接",
   "trigger.highlight": "悬停时高亮链接",
   "trigger.delay": "悬停延迟",
-  "trigger.longPressDelay": "长按时长（按住时显示进度条）",
+  "trigger.longPressDelay": "长按时长",
   "panel.section.size": "预览窗尺寸",
   "size.width": "宽度",
   "size.height": "高度",

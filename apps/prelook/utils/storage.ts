@@ -57,7 +57,6 @@ export interface SearchEngine {
 export const SEARCH_ENGINES: SearchEngine[] = [
   { id: "google", label: "Google", url: "https://www.google.com/search?q=%s" },
   { id: "bing", label: "Bing", url: "https://www.bing.com/search?q=%s" },
-  { id: "baidu", label: "百度", url: "https://www.baidu.com/s?wd=%s" },
   { id: "duckduckgo", label: "DuckDuckGo", url: "https://duckduckgo.com/?q=%s" },
 ];
 
@@ -160,7 +159,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   windowColor: "#4f6bf6",
   position: "link",
   sidebarSide: "right",
-  blurStrength: 0,
+  blurStrength: 5,
   selectionSearch: true,
   searchEngines: ["google", "bing", "baidu"],
   aiEngine: "deepseek",

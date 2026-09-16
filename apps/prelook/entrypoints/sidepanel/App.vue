@@ -203,7 +203,7 @@ function resetAll() {
           <h2>{{ t("panel.section.trigger") }}</h2>
           <div class="seg-btns">
             <label
-              v-for="m in ['hover', 'altHover', 'click', 'altClick', 'longPress', 'drag'] as const"
+              v-for="m in ['hover', 'altHover', 'altClick', 'click', 'longPress', 'drag'] as const"
               :key="m"
               :class="{ on: settings.triggerMode === m }"
             >
@@ -220,7 +220,7 @@ function resetAll() {
               type="range"
               min="0.1"
               max="2"
-              step="0.05"
+              step="0.1"
               :disabled="['click', 'altClick', 'longPress', 'drag'].includes(settings.triggerMode)"
             />
           </label>
