@@ -37,6 +37,7 @@ export default defineConfig({
     startUrls: ["https://bbs.hupu.com/4860"],
   },
   autoIcons: {
+    baseIconPath: "./assets/logo.jpg",
     developmentIndicator: "overlay",
   },
 });

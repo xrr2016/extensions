@@ -1,6 +1,6 @@
-import { translate } from '@/utils/i18n';
-import { DEFAULT_SETTINGS, settingsItem } from '@/utils/storage';
-import { stripTracking } from '@/utils/tracking';
+import { translate } from "@/utils/i18n";
+import { DEFAULT_SETTINGS, settingsItem } from "@/utils/storage";
+import { stripTracking } from "@/utils/tracking";
 
 interface FetchPreviewResult {
   ok: boolean;
@@ -22,29 +22,29 @@ const MAX_HTML_BYTES = 2 * 1024 * 1024;
  * response headers, mirroring what the browser would do for an <iframe>.
  */
 function embedAllowed(headers: Headers, hostOrigin: string): boolean {
-  const xfo = headers.get('x-frame-options')?.toUpperCase();
+  const xfo = headers.get("x-frame-options")?.toUpperCase();
   if (xfo) {
-    if (xfo === 'DENY' || xfo === 'SAMEORIGIN') {
-      const targetOrigin = headers.get('x-prelook-origin');
+    if (xfo === "DENY" || xfo === "SAMEORIGIN") {
+      const targetOrigin = headers.get("x-prelook-origin");
       if (!targetOrigin || targetOrigin !== hostOrigin) return false;
-    } else if (xfo.startsWith('ALLOW-FROM')) {
-      const from = xfo.slice('ALLOW-FROM'.length).trim();
+    } else if (xfo.startsWith("ALLOW-FROM")) {
+      const from = xfo.slice("ALLOW-FROM".length).trim();
       if (from !== hostOrigin) return false;
     }
   }
-  const csp = headers.get('content-security-policy') ?? '';
-  for (const directive of csp.split(';')) {
+  const csp = headers.get("content-security-policy") ?? "";
+  for (const directive of csp.split(";")) {
     const parts = directive.trim().split(/\s+/);
-    if (parts[0]?.toLowerCase() !== 'frame-ancestors') continue;
+    if (parts[0]?.toLowerCase() !== "frame-ancestors") continue;
     const sources = parts.slice(1);
-    if (sources.includes('*')) return true;
+    if (sources.includes("*")) return true;
     if (sources.includes("'none'")) return false;
-    const hostHost = hostOrigin.replace(/^\w+:\/\//, '');
+    const hostHost = hostOrigin.replace(/^\w+:\/\//, "");
     const matches = sources.some((s) => {
       if (s === "'self'") return false; // 'self' is the target itself, not the host page
-      if (s.startsWith('*.')) return hostHost.endsWith(s.slice(2)) || hostHost === s.slice(2);
-      if (s.includes('://')) return s.replace(/\/.*$/, '') === hostOrigin;
-      return hostHost === s.replace(/\/.*$/, '');
+      if (s.startsWith("*.")) return hostHost.endsWith(s.slice(2)) || hostHost === s.slice(2);
+      if (s.includes("://")) return s.replace(/\/.*$/, "") === hostOrigin;
+      return hostHost === s.replace(/\/.*$/, "");
     });
     return matches;
   }
@@ -60,10 +60,7 @@ function extractMeta(html: string, finalUrl: string) {
     matchRe(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ??
     matchRe(html, /<title[^>]*>([^<]*)<\/title>/i);
   const description =
-    matchRe(
-      html,
-      /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i,
-    ) ??
+    matchRe(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i) ??
     matchRe(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
   let favicon = matchRe(
     html,
@@ -76,35 +73,35 @@ function extractMeta(html: string, finalUrl: string) {
       favicon = undefined;
     }
   }
-  favicon ??= new URL('/favicon.ico', finalUrl).href;
+  favicon ??= new URL("/favicon.ico", finalUrl).href;
   return { title, description, favicon };
 }
 
 async function fetchPreview(url: string, hostOrigin: string): Promise<FetchPreviewResult> {
-  if (!/^https?:/i.test(url)) return { ok: false, canEmbed: false, error: 'unsupported-url' };
+  if (!/^https?:/i.test(url)) return { ok: false, canEmbed: false, error: "unsupported-url" };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(url, {
       signal: controller.signal,
-      credentials: 'omit',
-      redirect: 'follow',
+      credentials: "omit",
+      redirect: "follow",
     });
     // Reconstruct the pre-request embed decision. XFO/SAMEORIGIN compares
     // against the final origin after redirects; res.url gives us that.
     const headers = new Headers(res.headers);
-    if (headers.get('x-frame-options')?.toUpperCase() === 'SAMEORIGIN') {
+    if (headers.get("x-frame-options")?.toUpperCase() === "SAMEORIGIN") {
       try {
-        headers.set('x-prelook-origin', new URL(res.url).origin);
+        headers.set("x-prelook-origin", new URL(res.url).origin);
       } catch {
         /* ignore */
       }
     }
     const canEmbed = embedAllowed(headers, hostOrigin);
 
-    const contentType = res.headers.get('content-type') ?? '';
+    const contentType = res.headers.get("content-type") ?? "";
     let html: string | undefined;
-    if (contentType.includes('text/html')) {
+    if (contentType.includes("text/html")) {
       const text = await res.text();
       html = text.length > MAX_HTML_BYTES ? text.slice(0, MAX_HTML_BYTES) : text;
     }
@@ -125,9 +122,18 @@ async function fetchPreview(url: string, hostOrigin: string): Promise<FetchPrevi
   }
 }
 
-const MENU_ROOT = 'prelook-root';
-const MENU_POPUP = 'prelook-open-popup';
-const MENU_SIDEBAR = 'prelook-open-sidebar';
+const MENU_ROOT = "prelook-root";
+const MENU_POPUP = "prelook-open-popup";
+const MENU_SIDEBAR = "prelook-open-sidebar";
+
+/** Language the current menu set was built for; lets the settings watch skip
+ *  rebuilds that would not change anything. */
+let menuLanguage = "";
+/** Rebuilds must never overlap: startup, onInstalled and the settings watch's
+ *  immediate callback can all fire in the same install tick, and two
+ *  interleaved removeAll/create sequences make the second create collide on
+ *  the same ids ("Cannot create item with duplicate id"). */
+let menuQueue: Promise<void> = Promise.resolve();
 
 /** Context menus are not localised by the browser, so they are rebuilt from the
  *  stored UI language whenever that changes. */
@@ -140,21 +146,27 @@ async function setupContextMenus() {
   await browser.contextMenus.removeAll();
   browser.contextMenus.create({
     id: MENU_ROOT,
-    title: t('menu.root'),
-    contexts: ['link'],
+    title: t("menu.root"),
+    contexts: ["link"],
   });
   browser.contextMenus.create({
     id: MENU_POPUP,
     parentId: MENU_ROOT,
-    title: t('menu.popup'),
-    contexts: ['link'],
+    title: t("menu.popup"),
+    contexts: ["link"],
   });
   browser.contextMenus.create({
     id: MENU_SIDEBAR,
     parentId: MENU_ROOT,
-    title: t('menu.sidebar'),
-    contexts: ['link'],
+    title: t("menu.sidebar"),
+    contexts: ["link"],
   });
+  menuLanguage = language;
+}
+
+function rebuildContextMenus(): Promise<void> {
+  menuQueue = menuQueue.then(setupContextMenus, setupContextMenus);
+  return menuQueue;
 }
 
 /**
@@ -181,14 +193,12 @@ function bindIconToPanel() {
 
 export default defineBackground(() => {
   bindIconToPanel();
-  void setupContextMenus();
-  browser.runtime.onInstalled.addListener(() => void setupContextMenus());
-  let menuLanguage = '';
+  void rebuildContextMenus();
+  browser.runtime.onInstalled.addListener(() => void rebuildContextMenus());
   void settingsItem.watch((stored) => {
     const language = { ...DEFAULT_SETTINGS, ...stored }.language;
     if (language === menuLanguage) return;
-    menuLanguage = language;
-    void setupContextMenus();
+    void rebuildContextMenus();
   });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
@@ -198,36 +208,42 @@ export default defineBackground(() => {
     if (!url || tab?.id == null) return;
     // The content script owns the preview UI; it resolves the anchor itself.
     void browser.tabs
-      .sendMessage(tab.id, { type: 'prelook:preview', url, sidebar })
+      .sendMessage(tab.id, { type: "prelook:preview", url, sidebar })
       .catch(() => undefined);
   });
 
-  browser.runtime.onMessage.addListener((message: unknown, sender): Promise<unknown> | undefined => {
-    if (typeof message !== 'object' || message === null || !('type' in message)) {
+  browser.runtime.onMessage.addListener(
+    (message: unknown, sender): Promise<unknown> | undefined => {
+      if (typeof message !== "object" || message === null || !("type" in message)) {
+        return undefined;
+      }
+      const msg = message as Record<string, unknown>;
+
+      if (msg.type === "prelook:fetch") {
+        const hostOrigin = sender.tab?.url ? new URL(sender.tab.url).origin : "";
+        return fetchPreview(String(msg.url ?? ""), hostOrigin);
+      }
+
+      if (msg.type === "prelook:openTab") {
+        const raw = String(msg.url ?? "");
+        if (!/^https?:/i.test(raw)) return Promise.resolve({ ok: false });
+        // Safety net: the content script already cleans preview URLs, but every tab
+        // this extension opens should go out without tracking parameters anyway.
+        return settingsItem
+          .getValue()
+          .then((stored) => {
+            const s = { ...DEFAULT_SETTINGS, ...stored };
+            return s.stripTracking === false ? raw : stripTracking(raw);
+          })
+          .catch(() => stripTracking(raw))
+          .then((url) =>
+            browser.tabs
+              .create({ url, active: msg.background !== true })
+              .then(() => ({ ok: true })),
+          );
+      }
+
       return undefined;
-    }
-    const msg = message as Record<string, unknown>;
-
-    if (msg.type === 'prelook:fetch') {
-      const hostOrigin = sender.tab?.url ? new URL(sender.tab.url).origin : '';
-      return fetchPreview(String(msg.url ?? ''), hostOrigin);
-    }
-
-    if (msg.type === 'prelook:openTab') {
-      const raw = String(msg.url ?? '');
-      if (!/^https?:/i.test(raw)) return Promise.resolve({ ok: false });
-      // Safety net: the content script already cleans preview URLs, but every tab
-      // this extension opens should go out without tracking parameters anyway.
-      return settingsItem
-        .getValue()
-        .then((stored) => {
-          const s = { ...DEFAULT_SETTINGS, ...stored };
-          return s.stripTracking === false ? raw : stripTracking(raw);
-        })
-        .catch(() => stripTracking(raw))
-        .then((url) => browser.tabs.create({ url, active: msg.background !== true }).then(() => ({ ok: true })));
-    }
-
-    return undefined;
-  });
+    },
+  );
 });

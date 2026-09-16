@@ -373,18 +373,22 @@ export default defineContentScript({
       if (target?.closest?.("a[href]")) e.preventDefault();
     });
 
+    // Long-press and drag both set this to the link's URL so the click that
+    // follows release is swallowed. The check must NOT depend on anchorHref:
+    // the preview window may have opened directly over the link, so the click
+    // target can land inside prelook-ui (the shadow host) instead of the
+    // original <a>. Calling anchorHref in that case returns null (it bails on
+    // uiHost.contains), the click escapes preventDefault, and the browser
+    // navigates — opening a new tab for target="_blank" links.
     ctx.addEventListener(
       document,
       "click",
       (e) => {
         const event = e as MouseEvent;
         if (suppressClickUrl) {
-          const hit = anchorHref(event);
           suppressClickUrl = null;
-          if (hit && settings.enabled) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
+          e.preventDefault();
+          e.stopPropagation();
           return;
         }
         const mode = settings.triggerMode;
