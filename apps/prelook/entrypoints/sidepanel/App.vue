@@ -14,10 +14,13 @@ import {
   SEARCH_ENGINES,
   WINDOW_PCT_MAX,
   WINDOW_PCT_MIN,
+  WINDOW_PX_MAX,
+  WINDOW_PX_MIN,
   WINDOW_THEMES,
   clampSettings,
   settingsItem,
   type PrelookSettings,
+  type SizeUnit,
 } from "@/utils/storage";
 import { watchTheme } from "@/utils/theme";
 import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
@@ -81,6 +84,35 @@ const sideOptions = computed(() =>
 const searchOptions = SEARCH_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
+
+// Window size remembers separate percent and px values: the sliders bind to
+// whichever pair the unit selector points at, so switching unit never
+// overwrites the other unit's values.
+const sizeUnitOptions = computed(() =>
+  (["percent", "px"] as const).map((u) => ({ value: u, label: t(`size.unit.${u}`) })),
+);
+const sizeBounds = computed(() =>
+  settings.value.sizeUnit === "px"
+    ? { min: WINDOW_PX_MIN, max: WINDOW_PX_MAX, unit: "px" as const }
+    : { min: WINDOW_PCT_MIN, max: WINDOW_PCT_MAX, unit: "%" as const },
+);
+const widthValue = computed({
+  get: () => (settings.value.sizeUnit === "px" ? settings.value.widthPx : settings.value.width),
+  set: (v: number) => {
+    if (settings.value.sizeUnit === "px") settings.value.widthPx = v;
+    else settings.value.width = v;
+  },
+});
+const heightValue = computed({
+  get: () => (settings.value.sizeUnit === "px" ? settings.value.heightPx : settings.value.height),
+  set: (v: number) => {
+    if (settings.value.sizeUnit === "px") settings.value.heightPx = v;
+    else settings.value.height = v;
+  },
+});
+function setSizeUnit(unit: SizeUnit) {
+  settings.value.sizeUnit = unit;
+}
 const speculationOptions = computed(() =>
   (["off", "prefetch", "prerender"] as const).map((m) => ({
     value: m,
@@ -304,26 +336,35 @@ function resetAll() {
 
         <section>
           <h2>{{ t("panel.section.size") }}</h2>
-          <label class="row">
-            <span
-              >{{ t("size.width") }}<b>{{ settings.width }}%</b></span
-            >
-            <SliderInput
-              v-model="settings.width"
-              :min="WINDOW_PCT_MIN"
-              :max="WINDOW_PCT_MAX"
-              unit="%"
+          <label class="row sz">
+            <span>{{ t("size.unit") }}</span>
+            <RadioGroup
+              :model-value="settings.sizeUnit"
+              name="sizeUnit"
+              :options="sizeUnitOptions"
+              @update:model-value="setSizeUnit($event as SizeUnit)"
             />
           </label>
-          <label class="row">
+          <label class="row sz">
             <span
-              >{{ t("size.height") }}<b>{{ settings.height }}%</b></span
+              >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBounds.unit }}</b></span
             >
             <SliderInput
-              v-model="settings.height"
-              :min="WINDOW_PCT_MIN"
-              :max="WINDOW_PCT_MAX"
-              unit="%"
+              v-model="widthValue"
+              :min="sizeBounds.min"
+              :max="sizeBounds.max"
+              :unit="sizeBounds.unit"
+            />
+          </label>
+          <label class="row sz">
+            <span
+              >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBounds.unit }}</b></span
+            >
+            <SliderInput
+              v-model="heightValue"
+              :min="sizeBounds.min"
+              :max="sizeBounds.max"
+              :unit="sizeBounds.unit"
               :disabled="settings.position === 'sidebar'"
             />
           </label>

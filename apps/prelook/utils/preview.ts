@@ -346,13 +346,19 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     return deps.getPower().level !== "off";
   }
 
-  /** Configured percentages, resolved against the viewport for layout maths. */
+  /** Configured size, resolved against the viewport for layout maths. */
   function windowSize(): { w: number; h: number } {
     const s = settings();
+    if (s.sizeUnit === "px") return { w: s.widthPx, h: s.heightPx };
     return {
       w: Math.round((innerWidth * s.width) / 100),
       h: Math.round((innerHeight * s.height) / 100),
     };
+  }
+
+  /** The size as a CSS value: `%` follows the viewport, `px` is fixed. */
+  function cssSize(s: PrelookSettings, v: number): string {
+    return `${v}${s.sizeUnit === "px" ? "px" : "%"}`;
   }
 
   /** Actual size of a window: a corner-dragged one keeps its pixels. */
@@ -401,8 +407,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     highlight.style.setProperty("--tp-accent", s.themeColor);
     for (const win of windows) {
       applyWindowTheme(win.root, windowPreset(s), s.windowColor);
-      win.root.style.setProperty("--tp-w", `${s.width}%`);
-      win.root.style.setProperty("--tp-h", `${s.height}%`);
+      win.root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
+      win.root.style.setProperty("--tp-h", cssSize(s, s.sizeUnit === "px" ? s.heightPx : s.height));
       win.root.classList.toggle("tp-nofrost", frostDisabled());
     }
   }
@@ -483,7 +489,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     y += stack;
     x = Math.min(Math.max(8, x), Math.max(8, vw - w - 8));
     y = Math.min(Math.max(8, y), Math.max(8, vh - h - 8));
-    // Size comes from the --tp-w/--tp-h percentages, so it follows the viewport.
+    // Size comes from the --tp-w/--tp-h custom properties: a percentage follows
+    // the viewport, px stays fixed on resize (place() re-runs either way).
     win.root.style.left = `${x}px`;
     win.root.style.top = `${y}px`;
     win.root.style.right = "auto";
@@ -710,8 +717,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     root.className = "tp-win";
     root.style.zIndex = String(++zIndex);
     applyWindowTheme(root, windowPreset(s), s.windowColor);
-    root.style.setProperty("--tp-w", `${s.width}%`);
-    root.style.setProperty("--tp-h", `${s.height}%`);
+    root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
+    root.style.setProperty("--tp-h", cssSize(s, s.sizeUnit === "px" ? s.heightPx : s.height));
     root.classList.toggle("tp-nofrost", frostDisabled());
 
     const head = document.createElement("div");

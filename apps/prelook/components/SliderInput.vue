@@ -45,7 +45,7 @@ const label = computed(() => `${model.value.toFixed(props.decimals ?? 0)}${props
   --pct: 0;
   position: relative;
   display: inline-flex;
-  flex: 0 1 55%;
+  flex: 0 1 100%;
   min-width: 0;
 }
 .bubble {

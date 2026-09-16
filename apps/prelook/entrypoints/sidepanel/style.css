@@ -120,6 +120,13 @@ h2 {
   gap: 10px;
   margin: 7px 0;
 }
+
+/* Size rows: a fixed label column so the unit group and both sliders share
+   the same left edge instead of following each label's own width. */
+.row.sz > span {
+  min-width: 88px;
+}
+
 .row span {
   display: flex;
   gap: 6px;

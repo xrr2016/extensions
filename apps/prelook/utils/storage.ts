@@ -9,6 +9,7 @@ export type PreviewPosition =
   | "center-bottom"
   | "sidebar";
 export type Language = "zh-CN" | "en";
+export type SizeUnit = "percent" | "px";
 export type SidebarSide = "left" | "right";
 export type SpeculationMode = "off" | "prefetch" | "prerender";
 export type ThemeMode = "system" | "light" | "dark";
@@ -82,23 +83,33 @@ export const POWER_MODES: PowerMode[] = ["auto", "on", "max", "off"];
 /** Trigger modes, for validating stored settings (values can be removed over time). */
 export const TRIGGER_MODES: TriggerMode[] = ["hover", "altHover", "longPress", "drag"];
 
-/** Window width/height bounds, in percent of the viewport. */
+/** Window width/height bounds as a percentage of the viewport. */
 export const WINDOW_PCT_MIN = 20;
 export const WINDOW_PCT_MAX = 100;
+
+/** Window width/height bounds in pixels (when `sizeUnit` is "px"). */
+export const WINDOW_PX_MIN = 200;
+export const WINDOW_PX_MAX = 2000;
 
 /**
  * Window size used to be configured in pixels (320-1200 x 240-900). Anything
  * above the percentage ceiling can only be such a legacy value, so convert it
  * against a fixed reference viewport — a per-machine conversion would give
- * different results in the settings panel and in a page.
+ * different results in the settings panel and in a page. Also the reference
+ * for the panel's percent↔px conversion when toggling `sizeUnit`.
  */
-const LEGACY_VP_W = 1440;
-const LEGACY_VP_H = 900;
+export const LEGACY_VP_W = 1440;
+export const LEGACY_VP_H = 900;
 
 function clampWindowPercent(value: number, legacyRef: number, fallback: number): number {
   if (!Number.isFinite(value) || value <= 0) return fallback;
   const pct = value > WINDOW_PCT_MAX ? Math.round((value / legacyRef) * 100) : Math.round(value);
   return Math.min(WINDOW_PCT_MAX, Math.max(WINDOW_PCT_MIN, pct));
+}
+
+function clampPxSize(value: number, fallback: number): number {
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return Math.min(WINDOW_PX_MAX, Math.max(WINDOW_PX_MIN, Math.round(value)));
 }
 
 export interface PrelookSettings {
@@ -107,9 +118,16 @@ export interface PrelookSettings {
   hoverDelayMs: number;
   /** Hold duration before the preview opens in longPress mode */
   longPressMs: number;
-  /** Preview window size as a percentage of the viewport */
+  /** Preview window size as a percentage of the viewport (when `sizeUnit` is
+   *  "percent"); px mode reads `widthPx`/`heightPx` instead — each unit keeps
+   *  its own values, so switching never overwrites the other. */
   width: number;
   height: number;
+  /** Preview window size in px (when `sizeUnit` is "px") */
+  widthPx: number;
+  heightPx: number;
+  /** Unit the preview window size is expressed in */
+  sizeUnit: SizeUnit;
   /** Accent of Prelook's own UI: the settings panel, the link frame, the hover
    *  countdown and the selection toolbar. Never touched by the window theme. */
   themeColor: string;
@@ -162,6 +180,9 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   longPressMs: 600,
   width: 40,
   height: 55,
+  widthPx: 640,
+  heightPx: 480,
+  sizeUnit: "percent",
   themeColor: "#4f6bf6",
   windowColor: "#8c959f",
   position: "bottom-right",
@@ -237,12 +258,27 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
   const windowTheme: WindowTheme = WINDOW_THEMES.some((w) => w.id === s.windowTheme)
     ? s.windowTheme
     : DEFAULT_SETTINGS.windowTheme;
+  // A bogus unit would make every size clamp pick the wrong bounds.
+  const sizeUnit: SizeUnit = s.sizeUnit === "px" ? "px" : "percent";
+  // One-shot migration: `widthPx`/`heightPx` did not exist while the px unit
+  // briefly stored its value in `width`/`height` — seed the px fields from it.
+  const pxFieldsAbsent = s.widthPx === undefined && s.heightPx === undefined;
+  const seedPx = sizeUnit === "px" && pxFieldsAbsent;
   return {
     ...rest,
     hoverDelayMs: Math.min(2000, Math.max(100, s.hoverDelayMs || DEFAULT_SETTINGS.hoverDelayMs)),
     longPressMs: Math.min(2000, Math.max(200, s.longPressMs || DEFAULT_SETTINGS.longPressMs)),
     width: clampWindowPercent(s.width, LEGACY_VP_W, DEFAULT_SETTINGS.width),
     height: clampWindowPercent(s.height, LEGACY_VP_H, DEFAULT_SETTINGS.height),
+    widthPx: clampPxSize(
+      seedPx ? s.width : (s.widthPx ?? DEFAULT_SETTINGS.widthPx),
+      DEFAULT_SETTINGS.widthPx,
+    ),
+    heightPx: clampPxSize(
+      seedPx ? s.height : (s.heightPx ?? DEFAULT_SETTINGS.heightPx),
+      DEFAULT_SETTINGS.heightPx,
+    ),
+    sizeUnit,
     blurStrength: clampBlurStrength(rest.blurStrength, legacyBlurPx),
     minSelectionChars: Math.min(20, Math.max(1, s.minSelectionChars)),
     // An engine id can disappear between versions; falling back beats
