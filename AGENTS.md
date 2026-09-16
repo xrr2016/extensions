@@ -5,7 +5,7 @@
 **多浏览器插件 monorepo**（pnpm workspace，根包名 `extensions`）。`apps/` 下按"每个产品两个目录"扁平排列：插件本体 + 落地页。当前产品：
 
 - **TabPeek** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置面板（侧边栏）、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在侧边栏设置面板与 landing 放了爱发电 + Patreon 赞助入口。
-- **tabpeek-landing** — 纯静态产品官网（零构建，直接部署），版式参考 `yuumi.coldstoneboy.cn`：**令牌驱动的设计系统**（`css/style.css` 顶部的 `--primary/--bg-*/--text-*/--shadow-*/--spacing-*/--radius-*`，与参考站同一套命名）、固定模糊导航栏 + 下划线 scroll-spy、`features → speed → download → sponsor → faq → footer` 的区块顺序（锚点 `#features`/`#speed`/`#download`/`#sponsor`/`#faq`）。**深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.tabpeek-landing-theme`。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份），下载按钮仍是 `href="#"` 占位。滚动入场用 IntersectionObserver + 每帧几何兜底（`sweepReveals`：IO 是采样而非穿越检测，快速滚动会漏，兜底保证没有区块停在 `opacity:0`）。不引外部字体（Google Fonts 在国内不可达），用系统字体栈。
+- **tabpeek-landing** — 纯静态产品官网（零构建，直接部署），版式参考 `yuumi.coldstoneboy.cn`：**令牌驱动的设计系统**（`css/style.css` 顶部的 `--primary/--bg-*/--text-*/--shadow-*/--spacing-*/--radius-*`，与参考站同一套命名）、固定模糊导航栏 + 下划线 scroll-spy、`features → speed → download → reviews → sponsor → faq → footer` 的区块顺序（锚点 `#features`/`#speed`/`#download`/`#reviews`/`#sponsor`/`#faq`），**区块底色严格深浅交替**（`--bg-secondary` 与 `--bg-primary` 逐段切换，卡片永远取与所在区块相反的那一档），所以**插入新段落要把后面几段的底色整体翻一遍**，否则会出现两段同色连成一片、看不出分段。`#reviews` 是三栏评价墙（`.reviews-grid` 用 CSS `columns` 而不是 grid——卡片高矮不一时才能排成参考图那种错落感），**里面六条全是标注了"（占位）"的占位文案，不是真实评价**：TabPeek 尚未上架、没有任何真实评价，所以刻意不编造昵称与五星好评；上线前必须逐条换成可核实的原文（`reviews.rN.name` / `reviews.rN.text` 两个语言都要改，并替换头像右下角的浏览器图标），**不要为了版式好看而杜撰或改写原话**。**深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.tabpeek-landing-theme`。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份）。`#download` 段是**一排四颗等权按钮**（`.install-row` / `.install-btn`：Chrome / Edge / Firefox / 手动安装，`href="#"` 占位），**刻意不给 Chrome 任何强调样式**——那会暗示"只该装 Chrome"；前三颗挂 `assets/browser-chrome.svg` / `browser-edge.svg` / `browser-firefox.svg`（Wikimedia Commons 的官方多色 logo，**必须用 `<img>` 引文件而不是内联**：Chrome 与 Edge 的 SVG 都定义了 `id="a"/"b"/"c"` 的渐变，内联进同一个文档会互相覆盖），第四颗是内联的"外链"线性图标。滚动入场用 IntersectionObserver + 每帧几何兜底（`sweepReveals`：IO 是采样而非穿越检测，快速滚动会漏，兜底保证没有区块停在 `opacity:0`）。不引外部字体（Google Fonts 在国内不可达），用系统字体栈。
 
 ## 常用命令
 
@@ -60,7 +60,7 @@ apps/
     index.html  css/  js/  assets/  scripts/serve.mjs
 ```
 
-**新插件接入清单**：建 `apps/<name>/`（可复制 tabpeek 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 把图标放进 landing `assets/`（插件的尺寸由 `assets/icon.png` 经 auto-icons 生成，两边各管各的）。
+**新插件接入清单**：建 `apps/<name>/`（可复制 tabpeek 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 把插件 `assets/icon.png` 复制一份到 landing `assets/`（插件的各尺寸由 auto-icons 从这一张生成，landing 直接用原图）。
 
 ## 运行期架构
 
@@ -236,7 +236,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 - **新增界面文案**：`utils/i18n.ts` 是扁平 key（`t('preview.close')`），zh-CN 与 en 必须同时补齐；sidepanel `App.vue` 模板里的动态 key 是 `panel.tab.${tab}` / `trigger.${mode}` / `position.${p}` / `sidebarSide.${side}` / `speculation.${m}` 模式，另有 `t(`sponsor.${s.id}`)` 这种模板拼 key 的写法。
 - **content script 匹配** `<all_urls>` 且仅 main frame（WXT 默认不写 `all_frames`）；`entrypoints/content.ts` 中 `runAt`（camelCase），WXT 0.21 不认 `run_at`。 manifest 权限是 `tabs` / `storage` / `contextMenus`（右键菜单），**加权限后必须重载扩展**。**改 manifest 权限后必须重载扩展并刷新目标网页**，旧页面里的 content script 已失效。
 - Manifest 改动（权限/名称）只改各 app 的 `wxt.config.ts`；`.output/`、`.wxt/` 是生成物，不要编辑。
-- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），图标也是**各管各的**：landing 的 `assets/icon-128.png`、`assets/favicon-32.png` 是页面自己在用的文件（`index.html` 里引），插件侧的图标源图是 `assets/icon.png`（auto-icons）。两张图内容相近但不是同一份文件，改其中一边时想让另一边跟上得手动导出一次。
+- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），图标是**同一张图的拷贝**：landing 的 `assets/icon.png` 就是插件 `assets/icon.png`（auto-icons 的源图）**原样复制**过来的，`index.html` 里三处引用同一份文件——`<link rel="icon">`（站点图标）、导航栏 logo（36px）、页脚 logo（40px）。原样用是刻意的：省掉一套需要手工重新导出的派生尺寸（历史上 landing 放的是 128/32 两张独立导出图，结果和插件图标完全不是同一个设计——绿色拼图 vs 现在的紫罗兰"页面+放大镜"——谁也没发现），代价是 favicon 也要下整张 190KB 的源图。**插件图标一改就要重新 `cp apps/tabpeek/assets/icon.png apps/tabpeek-landing/assets/icon.png`**；landing 是独立部署的静态站，不能写 `../tabpeek/assets/icon.png` 这种跨目录路径。
 
 ## 回归自检
 
@@ -253,7 +253,7 @@ node -e "const a=Object.keys(require('./apps/tabpeek/assets/locales/zh-CN.json')
 
 ## 附加模块（analytics / auto-icons）
 
-- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。这是插件图标的**唯一来源**——历史上还有一份 `public/icon/`（16/32/48/128 四个 png，原给设置面板头部的 `<img src="/icon/32.png">` 用），那个引用随面板头部一起删掉后已无人引用，整目录已删除；landing 的 `assets/` 里是它自己的拷贝，不要再从插件目录同步。
+- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。这是插件图标的**唯一来源**——历史上还有一份 `public/icon/`（16/32/48/128 四个 png，原给设置面板头部的 `<img src="/icon/32.png">` 用），那个引用随面板头部一起删掉后已无人引用，整目录已删除；landing 的 `assets/icon.png` 是这张源图的拷贝（见「关键约定」一节），改了源图记得同步过去。
 - `app.config.ts` 是运行时应用配置（`defineAppConfig` 由 WXT 自动导入，不用手写 import）。**文件存在就必须有 default export**，空文件会让构建直接失败：`[MISSING_EXPORT] "default" is not exported by "app.config.ts"`。
 - `@wxt-dev/analytics` 会把客户端代码注入各入口（content script、sidepanel **和 background SW** 都验证过），在**模块求值阶段**就调用 `runtime.connect`。也就是说这个调用一旦抛错，整个入口在挂任何监听之前就挂掉——排查“什么都不响应”时先看这里。GA4 需要 `WXT_GA_API_SECRET` 与真实 `measurementId`。
 

@@ -30,7 +30,7 @@
       name="keywords"
       content="TabPeek,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
     />
-    <link rel="icon" href="./assets/favicon-32.png" />
+    <link rel="icon" type="image/png" href="./assets/icon.png" />
     <link rel="stylesheet" href="./css/style.css" />
     <meta property="og:title" content="TabPeek — 极速悬停预览，告别标签海" />
     <meta
@@ -38,14 +38,14 @@
       content="悬停链接即预览，禁嵌站点自动转阅读模式。全部本地运行，免费且无需账号。"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="./assets/icon-128.png" />
+    <meta property="og:image" content="./assets/icon.png" />
   </head>
   <body>
     <!-- 导航栏 -->
     <nav class="navbar" id="top">
       <div class="nav-container">
         <a href="#top" class="nav-brand">
-          <img src="./assets/icon-128.png" alt="TabPeek" width="36" height="36" class="logo" />
+          <img src="./assets/icon.png" alt="TabPeek" width="36" height="36" class="logo" />
           <span class="brand-name">TabPeek</span>
         </a>
 
@@ -53,6 +53,7 @@
           <a href="#features" class="nav-link" data-i18n="nav.features">功能</a>
           <a href="#speed" class="nav-link" data-i18n="nav.speed">极速</a>
           <a href="#download" class="nav-link" data-i18n="nav.download">安装</a>
+          <a href="#reviews" class="nav-link" data-i18n="nav.reviews">评价</a>
           <a href="#sponsor" class="nav-link" data-i18n="nav.sponsor">赞助</a>
           <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
         </div>
@@ -511,141 +512,59 @@
     <section id="download" class="download">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Download</span>
+          <span class="section-tag">Install</span>
           <h2 class="section-title" data-i18n="download.title">现在就用起来</h2>
           <p class="section-subtitle" data-i18n="download.subtitle">
             三个浏览器，同一份代码。装完即用，不用注册也不用登录。
           </p>
         </div>
 
-        <div class="download-grid">
-          <div class="download-card featured">
-            <div class="download-badge" data-i18n="download.badge">推荐</div>
-            <div class="download-header">
-              <div class="download-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="9"></circle>
-                  <line x1="3" y1="12" x2="21" y2="12"></line>
-                  <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"></path>
-                </svg>
-              </div>
-              <div class="download-info">
-                <h3 data-i18n="download.chrome.t">Chrome 版</h3>
-                <span class="version">v0.1.0</span>
-              </div>
-            </div>
-
-            <div class="download-features">
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f1">十二项功能全部开放</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f2">商店自动更新</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f3">不用注册登录</span>
-              </div>
-            </div>
-
-            <a class="btn btn-download" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
-            <div class="download-meta">
-              <span data-i18n="download.meta.mv3">MV3</span>
-              <span data-i18n="download.store.chrome">Chrome 网上应用店</span>
-            </div>
-          </div>
-
-          <div class="download-card">
-            <div class="download-header">
-              <div class="download-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                  <polyline points="2 17 12 22 22 17"></polyline>
-                  <polyline points="2 12 12 17 22 12"></polyline>
-                </svg>
-              </div>
-              <div class="download-info">
-                <h3 data-i18n="download.edge.t">Edge 版</h3>
-                <span class="version">v0.1.0</span>
-              </div>
-            </div>
-
-            <div class="download-features">
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f1">十二项功能全部开放</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f2">商店自动更新</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f3">不用注册登录</span>
-              </div>
-            </div>
-
-            <a class="btn btn-download" href="#" data-i18n="dl.edge">Edge 扩展</a>
-            <div class="download-meta">
-              <span data-i18n="download.meta.mv3">MV3</span>
-              <span data-i18n="download.store.edge">Edge 加载项</span>
-            </div>
-          </div>
-
-          <div class="download-card">
-            <div class="download-header">
-              <div class="download-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-              </div>
-              <div class="download-info">
-                <h3 data-i18n="download.firefox.t">Firefox 版</h3>
-                <span class="version">v0.1.0</span>
-              </div>
-            </div>
-
-            <div class="download-features">
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f1">十二项功能全部开放</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f2ff">附加组件自动更新</span>
-              </div>
-              <div class="feature-row">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span data-i18n="download.f3">不用注册登录</span>
-              </div>
-            </div>
-
-            <a class="btn btn-download" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
-            <div class="download-meta">
-              <span data-i18n="download.meta.mv2">MV2</span>
-              <span data-i18n="download.store.firefox">Firefox 附加组件</span>
-            </div>
-          </div>
+        <div class="install-row">
+          <a class="btn install-btn" href="#">
+            <img
+              class="browser-logo"
+              src="./assets/browser-chrome.svg"
+              alt=""
+              width="24"
+              height="24"
+            />
+            <span data-i18n="install.chrome">Chrome 安装</span>
+          </a>
+          <a class="btn install-btn" href="#">
+            <img
+              class="browser-logo"
+              src="./assets/browser-edge.svg"
+              alt=""
+              width="24"
+              height="24"
+            />
+            <span data-i18n="install.edge">Edge 安装</span>
+          </a>
+          <a class="btn install-btn" href="#">
+            <img
+              class="browser-logo"
+              src="./assets/browser-firefox.svg"
+              alt=""
+              width="24"
+              height="24"
+            />
+            <span data-i18n="install.firefox">Firefox 安装</span>
+          </a>
+          <a class="btn install-btn" href="#">
+            <svg
+              class="browser-logo"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span data-i18n="dl.manual">手动安装</span>
+          </a>
         </div>
 
         <div class="requirements">
@@ -668,10 +587,163 @@
               <span class="req-value" data-i18n="req.net.v">仅你预览的网站</span>
             </div>
           </div>
-          <p class="manual-install">
-            <span data-i18n="download.manual.hint">其他浏览器，或想离线安装？</span>
-            <a href="#" data-i18n="dl.manual">手动安装</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 用户评价 -->
+    <!-- ⚠️ 下面六条是占位内容，不是真实评价。上线前必须逐条替换：把 reviews.rN.name /
+         reviews.rN.text 两个语言都改成可核实的真实评价（例如商店后台里的原文与昵称），
+         并按评价者实际使用的浏览器改掉卡片右上角的浏览器图标。
+         不要为了让版式好看而编造评价或改写原话。 -->
+    <section id="reviews" class="reviews">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Reviews</span>
+          <h2 class="section-title" data-i18n="reviews.title">用户怎么说</h2>
+          <p class="section-subtitle" data-i18n="reviews.subtitle">
+            别只听我们说——看看装上之后的人怎么讲。
           </p>
+        </div>
+
+        <div class="reviews-grid">
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-chrome.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r1.name">示例用户 A</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r1.text">
+              （占位）这条换成真实评价的原文。
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-edge.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r2.name">示例用户 B</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r2.text">
+              （占位）昵称也要替换成评价者本人的。
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-firefox.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r3.name">示例用户 C</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r3.text">
+              （占位）建议照抄原文，不要自己润色改写。
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-chrome.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r4.name">示例用户 D</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r4.text">
+              （占位）长短不一的评价会自然形成错落的三栏。
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-edge.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r5.name">示例用户 E</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r5.text">
+              （占位）头像右下角的小图标表示评价者用的浏览器。
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <div class="review-avatar">
+                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
+                  ></path>
+                </svg>
+                <span class="review-badge">
+                  <img src="./assets/browser-firefox.svg" alt="" width="20" height="20" />
+                </span>
+              </div>
+              <div class="review-who">
+                <span class="review-name" data-i18n="reviews.r6.name">示例用户 F</span>
+                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-text" data-i18n="reviews.r6.text">
+              （占位）没有真实评价之前，这一段先别上线。
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -794,7 +866,7 @@
         <div class="footer-content">
           <div class="footer-brand">
             <img
-              src="./assets/icon-128.png"
+              src="./assets/icon.png"
               alt="TabPeek"
               width="40"
               height="40"

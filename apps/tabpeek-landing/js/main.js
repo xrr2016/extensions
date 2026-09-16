@@ -7,6 +7,7 @@
       'nav.features': '功能',
       'nav.speed': '极速',
       'nav.download': '安装',
+      'nav.reviews': '评价',
       'nav.sponsor': '赞助',
       'nav.faq': 'FAQ',
       'nav.theme': '切换深浅色主题',
@@ -106,20 +107,9 @@
 
       'download.title': '现在就用起来',
       'download.subtitle': '三个浏览器，同一份代码。装完即用，不用注册也不用登录。',
-      'download.badge': '推荐',
-      'download.chrome.t': 'Chrome 版',
-      'download.edge.t': 'Edge 版',
-      'download.firefox.t': 'Firefox 版',
-      'download.f1': '十二项功能全部开放',
-      'download.f2': '商店自动更新',
-      'download.f2ff': '附加组件自动更新',
-      'download.f3': '不用注册登录',
-      'download.manual.hint': '其他浏览器，或想离线安装？',
-      'download.meta.mv3': 'MV3',
-      'download.meta.mv2': 'MV2',
-      'download.store.chrome': 'Chrome 网上应用店',
-      'download.store.edge': 'Edge 加载项',
-      'download.store.firefox': 'Firefox 附加组件',
+      'install.chrome': 'Chrome 安装',
+      'install.edge': 'Edge 安装',
+      'install.firefox': 'Firefox 安装',
       'req.title': '安装前你需要知道',
       'req.browser.l': '支持浏览器',
       'req.browser.v': 'Chrome / Edge / Firefox',
@@ -129,6 +119,23 @@
       'req.perm.v': '标签页、存储、右键菜单',
       'req.net.l': '网络访问',
       'req.net.v': '仅你预览的网站',
+
+      // 占位评价：上线前必须换成可核实的真实评价原文与昵称，
+      // 不要为了让版式好看而编造或改写原话。
+      'reviews.title': '用户怎么说',
+      'reviews.subtitle': '别只听我们说——看看装上之后的人怎么讲。',
+      'reviews.r1.name': '示例用户 A',
+      'reviews.r1.text': '（占位）这条换成真实评价的原文。',
+      'reviews.r2.name': '示例用户 B',
+      'reviews.r2.text': '（占位）昵称也要替换成评价者本人的。',
+      'reviews.r3.name': '示例用户 C',
+      'reviews.r3.text': '（占位）建议照抄原文，不要自己润色改写。',
+      'reviews.r4.name': '示例用户 D',
+      'reviews.r4.text': '（占位）长短不一的评价会自然形成错落的三栏。',
+      'reviews.r5.name': '示例用户 E',
+      'reviews.r5.text': '（占位）头像右下角的小图标表示评价者用的浏览器。',
+      'reviews.r6.name': '示例用户 F',
+      'reviews.r6.text': '（占位）没有真实评价之前，这一段先别上线。',
 
       'sponsor.title': '完全免费，欢迎赞助',
       'sponsor.subtitle':
@@ -174,6 +181,7 @@
       'nav.features': 'Features',
       'nav.speed': 'Speed',
       'nav.download': 'Install',
+      'nav.reviews': 'Reviews',
       'nav.sponsor': 'Sponsor',
       'nav.faq': 'FAQ',
       'nav.theme': 'Toggle color theme',
@@ -278,20 +286,9 @@
 
       'download.title': 'Get it running',
       'download.subtitle': 'Three browsers, one codebase. Install and go — no sign-up, no login.',
-      'download.badge': 'Recommended',
-      'download.chrome.t': 'Chrome version',
-      'download.edge.t': 'Edge version',
-      'download.firefox.t': 'Firefox version',
-      'download.f1': 'All twelve features open',
-      'download.f2': 'Auto-updates from the store',
-      'download.f2ff': 'Auto-updates from the add-on site',
-      'download.f3': 'No sign-up required',
-      'download.manual.hint': 'Another browser, or prefer an offline install?',
-      'download.meta.mv3': 'MV3',
-      'download.meta.mv2': 'MV2',
-      'download.store.chrome': 'Chrome Web Store',
-      'download.store.edge': 'Edge Add-ons',
-      'download.store.firefox': 'Firefox Add-ons',
+      'install.chrome': 'Install Chrome',
+      'install.edge': 'Install Edge',
+      'install.firefox': 'Install Firefox',
       'req.title': 'Before you install',
       'req.browser.l': 'Browsers',
       'req.browser.v': 'Chrome / Edge / Firefox',
@@ -301,6 +298,23 @@
       'req.perm.v': 'Tabs, storage, context menus',
       'req.net.l': 'Network',
       'req.net.v': 'Only sites you preview',
+
+      // Placeholder reviews: replace every entry with a verifiable real review
+      // before shipping. Never invent reviews or rewrite the original wording.
+      'reviews.title': 'What our users say',
+      'reviews.subtitle': 'Not just our word for it — here is what users say.',
+      'reviews.r1.name': 'Sample user A',
+      'reviews.r1.text': '(Placeholder) Replace this with the text of a real review.',
+      'reviews.r2.name': 'Sample user B',
+      'reviews.r2.text': '(Placeholder) Swap the name for the actual reviewer.',
+      'reviews.r3.name': 'Sample user C',
+      'reviews.r3.text': '(Placeholder) Copy the wording as-is from the source; do not polish it.',
+      'reviews.r4.name': 'Sample user D',
+      'reviews.r4.text': '(Placeholder) Uneven lengths are what makes the three columns stagger.',
+      'reviews.r5.name': 'Sample user E',
+      'reviews.r5.text': '(Placeholder) The small icon shows which browser the reviewer used.',
+      'reviews.r6.name': 'Sample user F',
+      'reviews.r6.text': '(Placeholder) Do not publish this section until real reviews exist.',
 
       'sponsor.title': 'Free forever — sponsorship welcome',
       'sponsor.subtitle':
@@ -496,7 +510,8 @@
     .concat(Array.prototype.slice.call(document.querySelectorAll('.section-header')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.features-grid .feature-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.steps-grid .step-card')))
-    .concat(Array.prototype.slice.call(document.querySelectorAll('.download-grid .download-card')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.install-row .install-btn')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.reviews-grid .review-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-content .sponsor-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.faq-list details')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.compare, .requirements-grid')))
@@ -528,7 +543,13 @@
 
   if (!reduceMotion && 'IntersectionObserver' in window) {
     // 同组卡片按序号错峰出现（最多 350ms），避免整片一起闪
-    ['.features-grid', '.steps-grid', '.download-grid', '.sponsor-content'].forEach(function (sel) {
+    [
+      '.features-grid',
+      '.steps-grid',
+      '.install-row',
+      '.reviews-grid',
+      '.sponsor-content',
+    ].forEach(function (sel) {
       var group = document.querySelector(sel);
       if (!group) return;
       Array.prototype.slice.call(group.children).forEach(function (child, index) {
