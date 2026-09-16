@@ -1,0 +1,98 @@
+name: CI
+
+# The repo has no test framework, so this runs the checks AGENTS.md documents as
+# the regression suite (类型检查 + 构建 + 词条对齐) plus a smoke check of the
+# built manifests. Every step must stay green on a clean clone: nothing here is
+# allowed to depend on a locally generated file.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Keep the major in step with the lockfile this repo is installed with
+      # (pnpm 12 / lockfileVersion 9.0); another major can reject the lockfile.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check (vue-tsc)
+        run: pnpm compile
+
+      # zh-CN.json and en.json must carry the same keys: a missing one renders as
+      # the raw key in the UI (see utils/i18n.ts), which no type covers.
+      - name: Locale key parity
+        run: |
+          node -e '
+          const { readFileSync } = require("node:fs");
+          const keys = (p) => Object.keys(JSON.parse(readFileSync(p, "utf8")));
+          const zh = keys("apps/tabpeek/assets/locales/zh-CN.json");
+          const en = keys("apps/tabpeek/assets/locales/en.json");
+          const only = (a, b) => a.filter((k) => !b.includes(k));
+          const zhOnly = only(zh, en);
+          const enOnly = only(en, zh);
+          console.log("zh-CN: " + zh.length + " keys, en: " + en.length + " keys");
+          if (zhOnly.length || enOnly.length) {
+            console.error("::error::locale keys out of sync — zh-only: " + zhOnly + " / en-only: " + enOnly);
+            process.exit(1);
+          }
+          '
+
+      - name: Build (Chrome/Edge, MV3)
+        run: pnpm build:tabpeek
+
+      - name: Build (Firefox, MV2)
+        run: pnpm build:tabpeek:firefox
+
+      # A build can succeed while the manifest silently loses a key the extension
+      # cannot work without (the hand-written `action`, the side panel entry, the
+      # MV2/MV3 background shape). Assert the shape, not just the exit code.
+      - name: Manifest smoke check
+        run: |
+          node -e '
+          const { readFileSync } = require("node:fs");
+          const load = (p) => JSON.parse(readFileSync(p, "utf8"));
+          const problems = [];
+          const need = (ok, msg) => { if (!ok) problems.push(msg); };
+
+          const chrome = load("apps/tabpeek/.output/chrome-mv3/manifest.json");
+          need(chrome.manifest_version === 3, "chrome: manifest_version must be 3");
+          need(!!chrome.action, "chrome: `action` is missing (no toolbar icon to click)");
+          need(!!chrome.side_panel?.default_path, "chrome: side_panel.default_path is missing (settings unreachable)");
+          need(!!chrome.background?.service_worker, "chrome: background.service_worker is missing");
+          need(chrome.permissions?.includes("storage"), "chrome: `storage` permission is missing (settings never save)");
+          need(chrome.permissions?.includes("sidePanel"), "chrome: `sidePanel` permission is missing");
+          need(!!chrome.host_permissions?.includes("<all_urls>"), "chrome: host_permissions no longer covers <all_urls>");
+          need(chrome.content_scripts?.some((c) => c.matches?.includes("<all_urls>")), "chrome: no content script matching <all_urls>");
+
+          const firefox = load("apps/tabpeek/.output/firefox-mv2/manifest.json");
+          need(firefox.manifest_version === 2, "firefox: manifest_version must be 2");
+          need(!!firefox.browser_action, "firefox: browser_action is missing (MV2 form of `action`)");
+          need(!!firefox.sidebar_action?.default_panel, "firefox: sidebar_action.default_panel is missing (settings unreachable)");
+          need(!!firefox.background?.scripts, "firefox: background.scripts is missing");
+          need(firefox.permissions?.includes("storage"), "firefox: `storage` permission is missing");
+          need(firefox.content_scripts?.some((c) => c.matches?.includes("<all_urls>")), "firefox: no content script matching <all_urls>");
+
+          if (problems.length) {
+            for (const p of problems) console.error("::error::" + p);
+            process.exit(1);
+          }
+          console.log("manifests ok: chrome-mv3 (MV3) + firefox-mv2 (MV2)");
+          '

@@ -526,10 +526,42 @@ body::after {
   background: var(--border);
 }
 
+/* 安装入口就在 hero 里。两列而不是一行四颗：hero 的文字栏只有 ~557px，
+   一行塞不下四颗带图标的按钮。max-width 是给单列后的平板准备的，
+   否则每颗会被拉到半屏宽。 */
 .hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+/* 四个入口等权：Chrome 不做强调，避免暗示"只该装 Chrome" */
+.install-btn {
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  /* 两列并排时"Firefox 安装"最长，折行会把它顶成两行高 */
+  white-space: nowrap;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* 前三颗挂浏览器官方多色 logo，第四颗是内联的"外链"线性图标 */
+.browser-logo {
+  width: 22px;
+  height: 22px;
+  flex: none;
 }
 
 /* 英雄区域右侧的产品示意 */
@@ -545,272 +577,79 @@ body::after {
   max-width: 520px;
 }
 
-.preview-window {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  overflow: hidden;
-}
-
-.window-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-}
-
-.window-controls {
-  display: flex;
-  gap: 6px;
-}
-
-.control {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.control.close {
-  background: #ef4444;
-}
-.control.minimize {
-  background: #f59e0b;
-}
-.control.maximize {
-  background: #10b981;
-}
-
-.window-title {
-  margin: 0 auto;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.window-content {
-  position: relative;
-  padding: var(--spacing-md);
-  min-height: 292px;
-}
-
-.mock-article {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.mock-heading {
-  width: 55%;
-  height: 16px;
-  border-radius: 4px;
-  background: var(--bg-tertiary);
-}
-
-.mock-line {
-  height: 9px;
-  border-radius: 5px;
-  background: var(--bg-tertiary);
-}
-
-.mock-line.short {
-  width: 62%;
-}
-
-.mock-link-row {
-  position: relative;
-  margin: 14px 0 6px;
-}
-
-.mock-link {
-  display: block;
-  width: 168px;
-  height: 11px;
-  border-radius: 6px;
-  background: var(--gradient-1);
-  opacity: 0.85;
-}
-
-/* 悬浮预览窗（纯 CSS 示意） */
-.mock-pop {
+/* 录屏后面垫一层柔光，免得它像一块贴上去的白色方块 */
+.app-preview::before {
+  content: '';
   position: absolute;
-  left: 96px;
-  top: 26px;
-  width: 268px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  overflow: hidden;
-  animation: float 5s ease-in-out infinite;
-}
-
-.mock-pop-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-}
-
-.mock-favicon {
-  width: 18px;
-  height: 18px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  background: var(--gradient-1);
-  color: #fff;
-  font-size: 10px;
-  line-height: 1;
-}
-
-.mock-pop-title {
-  flex: 1;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--bg-tertiary);
-}
-
-.mock-pop-close {
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  background: var(--bg-tertiary);
-}
-
-.mock-pop-body {
-  padding: 10px 12px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mock-pop-body span {
-  height: 8px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
-}
-
-.mock-pop-body span:nth-child(1) {
-  width: 96%;
-}
-.mock-pop-body span:nth-child(2) {
-  width: 84%;
-}
-.mock-pop-body span:nth-child(3) {
-  width: 90%;
-}
-
-/* 倒计时进度条：对应真实预览窗里的那条 */
-.mock-progress {
-  height: 3px;
-  background: var(--bg-tertiary);
-}
-
-.mock-progress i {
-  display: block;
-  height: 100%;
-  background: var(--gradient-1);
-  animation: loadbar 3.6s ease-in-out infinite;
-}
-
-@keyframes loadbar {
-  0% {
-    width: 0;
-  }
-  60% {
-    width: 100%;
-  }
-  100% {
-    width: 100%;
-  }
-}
-
-@keyframes shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.floating-cards {
-  position: absolute;
-  inset: 0;
+  inset: -8% -4%;
+  background: radial-gradient(closest-side, rgba(79, 107, 246, 0.3), transparent 72%);
+  filter: blur(30px);
   pointer-events: none;
 }
 
-.float-card {
+.demo-frame {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+/* 宽高属性自带 928×700 的宽高比，元数据到位前也占得住位置。
+   录屏内容永远是浅色页面，所以它不参与深浅主题切换。 */
+.demo-video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.demo-toggle {
   position: absolute;
+  right: 12px;
+  bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.85rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  font-weight: 600;
-  animation: float 3.4s ease-in-out infinite;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  /* 固定浅色而不取主题令牌：它压在白色录屏上，深色主题里跟着变深就糊了 */
+  color: #4a5160;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  opacity: 0.72;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
-.float-card .card-icon {
-  width: 20px;
-  height: 20px;
-  flex: none;
+.demo-toggle:hover,
+.demo-toggle:focus-visible {
+  opacity: 1;
 }
 
-.card-hover {
-  top: 15%;
-  right: -28px;
-  color: var(--primary);
+.demo-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
-.card-warm {
-  bottom: 27%;
-  left: -32px;
-  color: var(--success);
-  animation-delay: 0.2s;
+/* 正在播放时给的是"暂停"图标，暂停时换成"播放"图标 */
+.demo-toggle .icon-play {
+  display: none;
 }
 
-.card-reader {
-  bottom: 4%;
-  right: 2%;
-  color: var(--warning);
-  animation-delay: 0.45s;
+.demo-toggle[data-paused='true'] .icon-play {
+  display: block;
 }
 
-.float-card .card-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.float-card .card-text {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-tertiary);
-}
-
-.float-card .card-value {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--text-primary);
+.demo-toggle[data-paused='true'] .icon-pause {
+  display: none;
 }
 
 /* ---------- 区块标题 ---------- */
@@ -1098,90 +937,9 @@ section {
   color: var(--text-tertiary);
 }
 
-/* ---------- 安装 ---------- */
-.download {
-  background: var(--bg-secondary);
-}
-
-.install-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  max-width: 980px;
-  margin: 0 auto;
-}
-
-/* 四个入口等权：Chrome 不做强调，避免暗示“只该装 Chrome” */
-.install-btn {
-  flex: 1 1 200px;
-  max-width: 260px;
-  padding: 0.9rem 1.25rem;
-  gap: 0.625rem;
-  font-size: 1.0625rem;
-  font-weight: 700;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.install-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: var(--shadow-md);
-}
-
-.browser-logo {
-  width: 28px;
-  height: 28px;
-  flex: none;
-}
-
-.requirements {
-  margin-top: var(--spacing-xl);
-  text-align: center;
-}
-
-.requirements h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-md);
-}
-
-.requirements-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--spacing-sm);
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.req-item {
-  display: flex;
-  flex-direction: column;
-  padding: var(--spacing-md);
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  text-align: left;
-}
-
-.req-label {
-  font-size: 0.8125rem;
-  color: var(--text-tertiary);
-  margin-bottom: 0.25rem;
-}
-
-.req-value {
-  font-size: 0.9375rem;
-  font-weight: 600;
-}
-
 /* ---------- 用户评价 ---------- */
 .reviews {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
 }
 
 /* 用多栏而不是 grid：卡片高矮不一时能自然排成参考图那种错落的三列 */
@@ -1193,7 +951,7 @@ section {
 .review-card {
   break-inside: avoid;
   margin-bottom: var(--spacing-md);
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-radius: var(--radius-xl);
   padding: var(--spacing-md);
 }
@@ -1270,7 +1028,7 @@ section {
 
 /* ---------- 赞助 ---------- */
 .sponsor {
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
 }
 
 .sponsor-content {
@@ -1285,7 +1043,7 @@ section {
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: var(--spacing-xl) var(--spacing-lg);
@@ -1344,7 +1102,7 @@ section {
 
 /* ---------- 常见问题 ---------- */
 .faq {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
 }
 
 .faq-list {
@@ -1356,7 +1114,7 @@ section {
 }
 
 .faq details {
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -1399,7 +1157,7 @@ section {
 
 /* ---------- 页脚 ---------- */
 .footer {
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-top: 1px solid var(--border);
   padding: var(--spacing-2xl) 0 var(--spacing-md);
 }
@@ -1487,6 +1245,11 @@ section {
     order: 0;
   }
 
+  /* 单列之后视觉不再是"半栏"，可以吃满更多宽度 */
+  .app-preview {
+    max-width: 620px;
+  }
+
   .hero-description {
     max-width: 100%;
     margin-inline: auto;
@@ -1497,11 +1260,6 @@ section {
   .hero-actions {
     justify-content: center;
   }
-
-  .float-card {
-    display: none;
-  }
-
   .features-grid,
   .steps-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1513,10 +1271,6 @@ section {
 
   .step-card::after {
     content: none;
-  }
-
-  .requirements-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1531,8 +1285,9 @@ section {
     --spacing-2xl: 3.5rem;
   }
 
+  /* 手机上演示视频照样留着，只是挪到标题与下载按钮之后：先给结论，再给演示 */
   .hero-visual {
-    display: none;
+    order: 2;
   }
 
   .hero {
@@ -1589,24 +1344,19 @@ section {
     font-size: 2rem;
   }
 
-  .hero-actions {
-    flex-direction: column;
-  }
-
-  .hero-actions .btn {
-    width: 100%;
-  }
-
-  .requirements-grid {
-    grid-template-columns: 1fr;
-  }
-
   .hero-stats {
     gap: var(--spacing-sm);
   }
 
   .stat-value {
     font-size: 1.25rem;
+  }
+}
+
+/* 再窄就只能一行一颗了：两列时每颗只剩 ~140px，装不下"Firefox 安装 + 图标" */
+@media (max-width: 380px) {
+  .hero-actions {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1623,12 +1373,6 @@ section {
 
   .cmp-bar.cold i,
   .cmp-bar.warm i {
-    width: 100%;
-    animation: none;
-  }
-
-  /* 动画被上面的规则掐掉后，宽度会退回 auto（= 0），这里补回终态 */
-  .mock-progress i {
     width: 100%;
     animation: none;
   }

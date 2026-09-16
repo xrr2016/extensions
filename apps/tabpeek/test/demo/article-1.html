@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>先看一眼再决定 — 比特手记</title>
+    <link rel="stylesheet" href="article.css" />
+    <link rel="icon" href="favicon-bits.svg" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <span class="brand-mark">B</span>
+        <span class="brand-name">比特手记</span>
+      </div>
+    </header>
+
+    <article class="article">
+      <div class="cover"></div>
+      <h1 class="title">先看一眼再决定</h1>
+      <div class="meta">冷石 · 2026 年 2 月 27 日 · 9 分钟</div>
+
+      <p>先把页面看一眼，再决定要不要为它开一个标签页。这半秒钟省掉的不是加载时间，而是「回头再看」这个永远不会兑现的承诺。</p>
+
+      <p>麻烦在于，不是每个页面都愿意被嵌进一个小窗口。多数网页的正文只占整个页面的百分之几，剩下的是导航、推荐和浮层——它们不是错误，只是跟「读」这件事没关系。</p>
+
+      <p>阅读模式要做的事情很朴素：找到正文，把它挪到一个干净的容器里。难的是第一步——机器怎么知道哪一块是正文。</p>
+
+      <h2>最省事的判据是字数</h2>
+
+      <p>把页面里所有段落容器扫一遍，谁的正文文字最多，谁就是正文。这个判据粗糙，却很难失败，因为推荐位和导航栏的共同特征是链接密度高、段落文字少。</p>
+
+      <ul>
+        <li>段落少于三段，直接跳过</li>
+        <li>链接文字超过正文两倍，判定为列表页而不是文章</li>
+        <li>只保留正文容器，其余整棵子树丢掉</li>
+      </ul>
+
+      <h2>干净的前提是安全</h2>
+
+      <p>提取出来的内容最后会被塞进预览窗的 shadow DOM，所以清洗不是美化步骤，而是安全边界：只保留链接与图片的必要属性，剥掉脚本式链接，把相对地址补全成绝对地址。</p>
+    </article>
+  </body>
+</html>

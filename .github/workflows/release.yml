@@ -1,0 +1,84 @@
+name: Release build
+
+# Builds the store zips for a published release and attaches them to it, so the
+# release page carries the exact artifact that was built from that tag.
+#
+# `workflow_dispatch` builds the same zips without cutting a release — the files
+# then only land in the run's artifacts, which is what you want for a re-build or
+# a test upload.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# A release build must never be cancelled by a newer one.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # Required: `gh release upload` writes release assets with this token.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # A tag can be cut without CI having run on its commit; shipping a zip built
+      # from a tree that no longer type-checks is the expensive failure.
+      - name: Type check (vue-tsc)
+        run: pnpm compile
+
+      # The zip filename and the manifest `version` both come from
+      # apps/tabpeek/package.json, so a mismatched tag means the released artifact
+      # would not identify itself as this release (`v0.1.0` and `0.1.0` both pass).
+      - name: Check the release tag matches the extension version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "$TAG" ]; then
+            echo "No release tag (workflow_dispatch run) — skipping the version guard."
+            exit 0
+          fi
+          version=$(node -p "require('./apps/tabpeek/package.json').version")
+          tag="${TAG#v}"
+          echo "tag=$TAG  apps/tabpeek/package.json=$version"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Release tag '$TAG' does not match apps/tabpeek/package.json ($version). Bump the version and retag, or the built zip would carry a different version than this release."
+            exit 1
+          fi
+
+      # Chrome/Edge zip + Firefox zip + the Firefox sources zip (WXT emits the
+      # sources zip for Firefox only, which AMO review asks for).
+      - name: Build zips
+        run: |
+          pnpm zip:tabpeek
+          pnpm zip:tabpeek:firefox
+
+      - name: Upload the zips as run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tabpeek-zips
+          path: apps/tabpeek/.output/*.zip
+          if-no-files-found: error
+
+      - name: Attach the zips to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" apps/tabpeek/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"

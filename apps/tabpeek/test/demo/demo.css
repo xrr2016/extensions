@@ -1,0 +1,177 @@
+/* Host page for the demo recording. Deliberately plain and single-column: the
+   only thing that should draw the eye in the take is TabPeek's own UI. */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --ink: #16181d;
+  --ink-2: #4a5160;
+  --ink-3: #8b93a3;
+  --line: #e6e8ee;
+  --accent: #2f57d6;
+  --bg: #ffffff;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    "Hiragino Sans GB", sans-serif;
+  font-size: 19px;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── top bar ─────────────────────────────────────────────────────────────── */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+.brand-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #2f57d6, #6f4ff2);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+}
+
+.nav {
+  display: flex;
+  gap: 22px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.nav a:hover {
+  color: var(--ink);
+}
+
+.topbar-end {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-sub {
+  font-size: 14px;
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 14px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d7dbe6, #aeb6c8);
+}
+
+/* ── post ────────────────────────────────────────────────────────────────── */
+
+.page {
+  padding: 30px 20px 80px;
+}
+
+.post {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.post-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.38;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.post-meta {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.post-author {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.dot {
+  color: #c8cdd8;
+}
+
+.post-body {
+  margin-top: 26px;
+}
+
+.post-body p {
+  margin: 0 0 22px;
+  color: #23262e;
+}
+
+.post-body blockquote {
+  margin: 26px 0;
+  padding: 2px 0 2px 18px;
+  border-left: 3px solid #d9dee9;
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.post-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(47, 87, 214, 0.35);
+}
+
+.post-body a:hover {
+  text-decoration-color: var(--accent);
+}

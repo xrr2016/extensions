@@ -6,7 +6,7 @@
     'zh-CN': {
       'nav.features': '功能',
       'nav.speed': '极速',
-      'nav.download': '安装',
+      'nav.install': '安装',
       'nav.reviews': '评价',
       'nav.sponsor': '赞助',
       'nav.faq': 'FAQ',
@@ -25,17 +25,15 @@
       'hero.stat2l': '窗并行预览',
       'hero.stat3v': '0',
       'hero.stat3l': '数据上传',
-      'hero.float1t': '悬停触发',
-      'hero.float1v': '0.5 秒',
-      'hero.float2t': '链接预热',
-      'hero.float2v': '已就绪',
-      'hero.float3t': '禁嵌站点',
-      'hero.float3v': '已转阅读',
+      'hero.videoAria': 'TabPeek 使用演示：指针停在链接上，预览窗浮出并渲染这个页面',
+      'hero.videoPlay': '播放演示',
+      'hero.videoPause': '暂停演示',
 
-      'dl.chrome': '添加至 Chrome',
-      'dl.edge': 'Edge 扩展',
-      'dl.firefox': 'Firefox 附加组件',
-      'dl.manual': '手动安装',
+      // 安装入口就在 hero 里，四颗等权
+      'install.chrome': 'Chrome 安装',
+      'install.edge': 'Edge 安装',
+      'install.firefox': 'Firefox 安装',
+      'install.manual': '手动安装',
 
       'features.title': '沉浸式浏览，告别标签海',
       'features.subtitle': '十二项能力，全部本地运行，不上传任何数据',
@@ -105,21 +103,6 @@
       'speed.warm': 'TabPeek 预热后',
       'speed.note': '示意对比：预热后的预览窗直接呈现本地已有内容。',
 
-      'download.title': '现在就用起来',
-      'download.subtitle': '三个浏览器，同一份代码。装完即用，不用注册也不用登录。',
-      'install.chrome': 'Chrome 安装',
-      'install.edge': 'Edge 安装',
-      'install.firefox': 'Firefox 安装',
-      'req.title': '安装前你需要知道',
-      'req.browser.l': '支持浏览器',
-      'req.browser.v': 'Chrome / Edge / Firefox',
-      'req.account.l': '账号',
-      'req.account.v': '不需要，装完即用',
-      'req.perm.l': '申请权限',
-      'req.perm.v': '标签页、存储、右键菜单',
-      'req.net.l': '网络访问',
-      'req.net.v': '仅你预览的网站',
-
       // 占位评价：上线前必须换成可核实的真实评价原文与昵称，
       // 不要为了让版式好看而编造或改写原话。
       'reviews.title': '用户怎么说',
@@ -180,7 +163,7 @@
     en: {
       'nav.features': 'Features',
       'nav.speed': 'Speed',
-      'nav.download': 'Install',
+      'nav.install': 'Install',
       'nav.reviews': 'Reviews',
       'nav.sponsor': 'Sponsor',
       'nav.faq': 'FAQ',
@@ -200,17 +183,16 @@
       'hero.stat2l': 'previews at once',
       'hero.stat3v': '0',
       'hero.stat3l': 'data uploaded',
-      'hero.float1t': 'Hover trigger',
-      'hero.float1v': '0.5 s',
-      'hero.float2t': 'Link warm-up',
-      'hero.float2v': 'Ready',
-      'hero.float3t': 'Blocked site',
-      'hero.float3v': 'Reader mode',
+      'hero.videoAria':
+        'TabPeek in action: the pointer rests on a link and a preview window opens with that page',
+      'hero.videoPlay': 'Play the demo',
+      'hero.videoPause': 'Pause the demo',
 
-      'dl.chrome': 'Add to Chrome',
-      'dl.edge': 'Edge Add-on',
-      'dl.firefox': 'Firefox Add-on',
-      'dl.manual': 'Manual install',
+      // The install entries live in the hero; all four carry equal weight
+      'install.chrome': 'Install for Chrome',
+      'install.edge': 'Install for Edge',
+      'install.firefox': 'Install for Firefox',
+      'install.manual': 'Manual install',
 
       'features.title': 'Immersive browsing, goodbye tab clutter',
       'features.subtitle': 'Twelve features, all local — nothing is uploaded',
@@ -283,21 +265,6 @@
       'speed.cold': 'Cold load',
       'speed.warm': 'After TabPeek warm-up',
       'speed.note': 'Illustrative: a warmed preview window shows what is already on your machine.',
-
-      'download.title': 'Get it running',
-      'download.subtitle': 'Three browsers, one codebase. Install and go — no sign-up, no login.',
-      'install.chrome': 'Install Chrome',
-      'install.edge': 'Install Edge',
-      'install.firefox': 'Install Firefox',
-      'req.title': 'Before you install',
-      'req.browser.l': 'Browsers',
-      'req.browser.v': 'Chrome / Edge / Firefox',
-      'req.account.l': 'Account',
-      'req.account.v': 'Not needed, install and go',
-      'req.perm.l': 'Permissions',
-      'req.perm.v': 'Tabs, storage, context menus',
-      'req.net.l': 'Network',
-      'req.net.v': 'Only sites you preview',
 
       // Placeholder reviews: replace every entry with a verifiable real review
       // before shipping. Never invent reviews or rewrite the original wording.
@@ -411,6 +378,8 @@
     }
     document.title = TITLES[current];
     writeStore(LANG_KEY, current);
+    // 演示视频那个按钮的文案跟着播放状态走，切换语言时也要重算一遍
+    syncDemoButton();
   }
 
   if (langBtn) {
@@ -510,11 +479,10 @@
     .concat(Array.prototype.slice.call(document.querySelectorAll('.section-header')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.features-grid .feature-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.steps-grid .step-card')))
-    .concat(Array.prototype.slice.call(document.querySelectorAll('.install-row .install-btn')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.reviews-grid .review-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-content .sponsor-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.faq-list details')))
-    .concat(Array.prototype.slice.call(document.querySelectorAll('.compare, .requirements-grid')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.compare')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-thanks, .footer-content')));
 
   var reduceMotion =
@@ -546,7 +514,6 @@
     [
       '.features-grid',
       '.steps-grid',
-      '.install-row',
       '.reviews-grid',
       '.sponsor-content',
     ].forEach(function (sel) {
@@ -578,6 +545,47 @@
       revealObserver.observe(el);
     });
     sweepReveals();
+  }
+
+  /* ---------- hero 演示视频 ---------- */
+  // 一段真实录屏。静音 + 循环才允许自动播放，而"减少动态效果"和浏览器的省电
+  // 策略都可能让它播不起来——播不动就停在 poster 上，按钮回到"播放"图标，
+  // 不要留一个不动的框让人以为是坏了。
+  var demoVideo = document.getElementById('demoVideo');
+  var demoToggle = document.getElementById('demoToggle');
+
+  function syncDemoButton() {
+    if (!demoVideo || !demoToggle) return;
+    var paused = demoVideo.paused;
+    var key = paused ? 'hero.videoPlay' : 'hero.videoPause';
+    demoToggle.setAttribute('data-paused', paused ? 'true' : 'false');
+    // 保持 data-i18n-aria 与当前状态一致，applyLang 才会补上对的文案
+    demoToggle.setAttribute('data-i18n-aria', key);
+    var label = I18N[current][key];
+    if (label !== undefined) {
+      demoToggle.setAttribute('aria-label', label);
+      demoToggle.title = label;
+    }
+  }
+
+  function playDemo() {
+    var attempt = demoVideo.play();
+    if (attempt && attempt.catch) {
+      attempt.catch(function () {
+        syncDemoButton();
+      });
+    }
+  }
+
+  if (demoVideo && demoToggle) {
+    demoToggle.addEventListener('click', function () {
+      if (demoVideo.paused) playDemo();
+      else demoVideo.pause();
+    });
+    demoVideo.addEventListener('play', syncDemoButton);
+    demoVideo.addEventListener('pause', syncDemoButton);
+    if (!reduceMotion) playDemo();
+    syncDemoButton();
   }
 
   /* ---------- 按钮涟漪 ---------- */

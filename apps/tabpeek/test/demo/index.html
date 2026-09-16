@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>同时开三十个标签页之后，我重写了阅读流程 — 比特手记</title>
+    <link rel="stylesheet" href="demo.css" />
+    <link rel="icon" href="favicon-bits.svg" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#top">
+          <span class="brand-mark">B</span>
+          <span class="brand-name">比特手记</span>
+        </a>
+        <nav class="nav">
+          <a href="#top">文章</a>
+          <a href="#top">标签</a>
+          <a href="#top">关于</a>
+        </nav>
+        <div class="topbar-end">
+          <a class="btn-sub" href="#top">订阅</a>
+          <span class="avatar"></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <article class="post">
+        <header class="post-head">
+          <h1 class="post-title">同时开三十个标签页之后，我重写了阅读流程</h1>
+          <div class="post-meta">
+            <span class="post-author">冷石</span>
+            <span class="dot">·</span>
+            <time>2026 年 3 月 14 日</time>
+            <span class="dot">·</span>
+            <span>效率</span>
+          </div>
+        </header>
+
+        <div class="post-body">
+          <p>
+            上个月我把浏览器恢复了一次出厂设置，想看看自己究竟在用哪些功能。结果是：书签栏空空如也，标签页却常年开着三十个。真正的问题不是标签页太多，而是「先开着，回头再看」这个动作——它把决定一路推迟，推到你再也不会回来看。我把这套流程换成了<a
+              id="link-internal"
+              href="article-1.html"
+              >先看一眼再决定</a
+            >：指针停在链接上半秒钟，那个页面长什么样，已经摆在眼前。
+          </p>
+
+          <p>除此之外还有两件事值得做：把已经打开的标签页按主题归拢到侧边栏，让它们不再抢注意力；以及承认有些页面你永远不会读第二遍，关掉它并不会损失什么。</p>
+
+          <blockquote>把决定提前到「看见链接」的那一刻，比事后整理三十个标签页便宜得多。</blockquote>
+
+          <p>
+            浏览器本身也在往这个方向走。Chrome 的<a
+              id="link-external"
+              href="https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API"
+              >Speculation Rules API</a
+            >让页面可以提前告诉浏览器「我猜用户下一步会去这里」，于是真正点开的时候几乎不需要等。
+          </p>
+
+          <p>这套流程用了三个月，标签页数量从三十个降到五个以内，读进去的东西反而多了。</p>
+        </div>
+      </article>
+    </main>
+
+    <script>
+      // The previewed post lives on this same server, but is addressed through
+      // `localhost` rather than the IP it is served on: an IP-literal host is
+      // exactly what TabPeek's own risk hint flags, and that badge would be an
+      // artefact of the recording setup rather than anything about the link.
+      document.getElementById("link-internal").href =
+        `${location.origin.replace("127.0.0.1", "localhost")}/apps/tabpeek/test/demo/article-1.html`;
+    </script>
+    <script src="mock.js"></script>
+    <script src="../../.output/chrome-mv3/content-scripts/content.js"></script>
+  </body>
+</html>

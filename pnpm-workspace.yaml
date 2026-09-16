@@ -1,5 +1,11 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+# pnpm 12 blocks dependency build scripts and, until every entry below is a
+# boolean, it fails the whole install with ERR_PNPM_IGNORED_BUILDS — so this
+# placeholder broke `pnpm install` on any fresh clone. `false` keeps the script
+# blocked, which is how this repo has always been built: @wxt-dev/analytics only
+# runs `wxt prepare` for its own package, while the .wxt artifacts TabPeek needs
+# come from apps/tabpeek's own postinstall (`wxt prepare`).
 allowBuilds:
-  '@wxt-dev/analytics': set this to true or false
+  '@wxt-dev/analytics': false

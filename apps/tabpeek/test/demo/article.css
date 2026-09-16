@@ -1,0 +1,90 @@
+/* Stands in for "the page behind the link". It is loaded inside a preview
+   iframe roughly 600px wide, so it is laid out fluidly rather than at the
+   1200px the recording's own host page targets. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #fff;
+  color: #16181d;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    "Hiragino Sans GB", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+.topbar {
+  border-bottom: 1px solid #e6e8ee;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #2f57d6, #6f4ff2);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+}
+
+.article {
+  padding: 22px 28px 64px;
+}
+
+.cover {
+  height: 96px;
+  border-radius: 10px;
+  background: linear-gradient(120deg, #dfe6ff 0%, #eae2ff 45%, #ffe6f2 100%);
+}
+
+.title {
+  margin: 20px 0 0;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #8b93a3;
+}
+
+.article p {
+  margin: 16px 0 0;
+  color: #23262e;
+}
+
+.article h2 {
+  margin: 26px 0 0;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.article ul {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: #23262e;
+}
+
+.article li {
+  margin: 6px 0;
+}

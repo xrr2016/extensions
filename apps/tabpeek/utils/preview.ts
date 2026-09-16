@@ -105,9 +105,12 @@ const MIN_RESIZE_H = 160;
 const MAX_BLUR_PX = 14;
 const MAX_DIM = 0.5;
 
-/** Window fade-in/out duration; keep in sync with the .tp-win transition. */
-const FADE_MS = 180;
-/** Teardown delay after the fade; also the "no fade" case's frame of slack. */
+/** Window exit animation length; keep in sync with the .tp-win.tp-out
+ *  transition. Only the exit is mirrored here — it is what the teardown waits
+ *  for, while the (longer) entrance is pure CSS. */
+const EXIT_MS = 160;
+/** Teardown delay after the exit animation; also the "no animation" case's frame
+ *  of slack. */
 const FADE_SLACK_MS = 40;
 
 /** How long the "every slot is pinned" notice stays on screen. */
@@ -144,7 +147,7 @@ const STYLE = `
   position: fixed; inset: 0; z-index: 2147483640; pointer-events: none;
   backdrop-filter: blur(var(--tp-blur, 0px));
   background: rgba(0, 0, 0, var(--tp-dim, 0));
-  opacity: 0; transition: opacity .18s ease;
+  opacity: 0; transition: opacity .2s linear;
 }
 .tp-overlay.tp-on { opacity: 1; }
 .tp-win {
@@ -156,12 +159,23 @@ const STYLE = `
      lives on .tp-body (and on the header's own fill), and overflow: hidden still
      clips both to the rounded corners. */
   border: 1px solid var(--tp-line); box-shadow: 0 12px 40px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.12);
-  /* Starts transparent; .tp-in fades it in, .tp-out fades it out before the
-     element is dropped from the DOM (see closeWindow). */
-  opacity: 0; transition: opacity .18s ease;
+  /* Tencent console dialog motion (TDesign's tokens): a 200ms decelerating
+     entrance zooming up from 92%, and a shorter accelerated exit. The resting
+     state is .tp-in, which must leave transform at none — a live transform
+     makes the window a backdrop root of its own, and the header's frosted blur
+     would then sample the window instead of the page behind it. */
+  --tp-in-motion: .2s cubic-bezier(0, 0, .15, 1);
+  --tp-out-motion: .16s cubic-bezier(.38, 0, .24, 1);
+  /* Origin is set per window in place(): the window grows out of the link. */
+  transform-origin: 50% 50%;
+  opacity: 0; transform: scale(.92);
+  transition: opacity var(--tp-in-motion), transform var(--tp-in-motion);
 }
-.tp-win.tp-in { opacity: 1; }
-.tp-win.tp-out { opacity: 0; pointer-events: none; }
+.tp-win.tp-in { opacity: 1; transform: none; }
+.tp-win.tp-out {
+  opacity: 0; transform: scale(.96); pointer-events: none;
+  transition: opacity var(--tp-out-motion), transform var(--tp-out-motion);
+}
 .tp-win.tp-sidebar { border-radius: 0; height: 100vh; }
 .tp-head {
   display: flex; align-items: center; gap: 8px; padding: 8px 10px;
@@ -319,8 +333,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   /** 0 while power is being saved — the CSS transition is off as well (the
    *  `data-tp-motion` host attribute), so the element goes straight to its
    *  final opacity and only the teardown delay is left. */
-  function fadeMs(): number {
-    return deps.getPower().reduceMotion ? 0 : FADE_MS;
+  function exitMs(): number {
+    return deps.getPower().reduceMotion ? 0 : EXIT_MS;
   }
 
   /** Backdrop strength after the power state has had its say: blurring the page
@@ -422,9 +436,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       win.root.style.left = "auto";
       if (s.sidebarSide === "right") {
         win.root.style.right = `${offset}px`;
+        win.root.style.transformOrigin = "100% 50%";
       } else {
         win.root.style.right = "auto";
         win.root.style.left = `${offset}px`;
+        win.root.style.transformOrigin = "0% 50%";
       }
       return;
     }
@@ -474,6 +490,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.root.style.left = `${x}px`;
     win.root.style.top = `${y}px`;
     win.root.style.right = "auto";
+    // The zoom plays out of the link rather than the window's own centre, so a
+    // preview appears to come from where the pointer is. Percentages, because
+    // the window's pixel size changes with the viewport.
+    const { x: px, y: py } = win.lastPointer;
+    win.root.style.transformOrigin = `${originPercent(px - x, w)}% ${originPercent(py - y, h)}%`;
   }
 
   function find(url: string): WindowInstance | undefined {
@@ -530,7 +551,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
 
   /** `win.closed` flips immediately (so it stops counting as open, stops being
    *  positioned and ignores clicks); the element itself lingers only long enough
-   *  to fade out, then is removed. */
+   *  to animate out, then is removed. */
   /** Immediate (but still animated) close of every unpinned window. */
   function dismissUnpinned() {
     for (const win of [...windows]) {
@@ -555,11 +576,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.root.classList.remove("tp-in");
     win.root.classList.add("tp-out");
     win.fadeTimer = setTimeout(() => {
-      // Release the frame only once it is invisible, so the fade never shows a
+      // Release the frame only once it is invisible, so the exit never shows a
       // blank iframe.
       win.iframe?.setAttribute("src", "about:blank");
       win.root.remove();
-    }, fadeMs() + FADE_SLACK_MS);
+    }, exitMs() + FADE_SLACK_MS);
   }
 
   /** The backdrop is a focus effect: it only appears while the pointer is on a
@@ -845,9 +866,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         resizing = true;
         rzX = e.clientX;
         rzY = e.clientY;
-        const r = root.getBoundingClientRect();
-        rzW = r.width;
-        rzH = r.height;
+        // Layout size, not the visual rect: while the entrance zoom is still
+        // running a transform makes getBoundingClientRect report a smaller box.
+        rzW = root.offsetWidth;
+        rzH = root.offsetHeight;
         root.classList.add("tp-resizing");
         grip.setPointerCapture?.(e.pointerId);
       });
@@ -1024,6 +1046,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     applyPower,
     destroy,
   };
+}
+
+/** A point inside a box, as a transform-origin percentage (clamped, so a pointer
+ *  outside the window still yields a usable corner). */
+function originPercent(offset: number, size: number): number {
+  return Math.min(100, Math.max(0, (offset / size) * 100));
 }
 
 function safeHostname(url: string): string {

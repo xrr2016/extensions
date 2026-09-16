@@ -52,7 +52,7 @@
         <div class="nav-menu">
           <a href="#features" class="nav-link" data-i18n="nav.features">功能</a>
           <a href="#speed" class="nav-link" data-i18n="nav.speed">极速</a>
-          <a href="#download" class="nav-link" data-i18n="nav.download">安装</a>
+          <a href="#install" class="nav-link" data-i18n="nav.install">安装</a>
           <a href="#reviews" class="nav-link" data-i18n="nav.reviews">评价</a>
           <a href="#sponsor" class="nav-link" data-i18n="nav.sponsor">赞助</a>
           <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
@@ -103,8 +103,8 @@
       </div>
     </nav>
 
-    <!-- 英雄区域 -->
-    <section class="hero">
+    <!-- 英雄区域（安装入口就在这里，导航的"安装"锚点指过来） -->
+    <section id="install" class="hero">
       <div class="hero-bg">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
@@ -145,103 +145,87 @@
             </div>
           </div>
 
+          <!-- 四个入口等权：Chrome 不做强调，避免暗示"只该装 Chrome" -->
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
-            <a class="btn btn-outline" href="#" data-i18n="dl.edge">Edge 扩展</a>
-            <a class="btn btn-outline" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
+            <a class="btn install-btn" href="#">
+              <img
+                class="browser-logo"
+                src="./assets/browser-chrome.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+              <span data-i18n="install.chrome">Chrome 安装</span>
+            </a>
+            <a class="btn install-btn" href="#">
+              <img
+                class="browser-logo"
+                src="./assets/browser-edge.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+              <span data-i18n="install.edge">Edge 安装</span>
+            </a>
+            <a class="btn install-btn" href="#">
+              <img
+                class="browser-logo"
+                src="./assets/browser-firefox.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+              <span data-i18n="install.firefox">Firefox 安装</span>
+            </a>
+            <a class="btn install-btn" href="#">
+              <svg
+                class="browser-logo"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              <span data-i18n="install.manual">手动安装</span>
+            </a>
           </div>
         </div>
 
         <div class="hero-visual">
           <div class="app-preview">
-            <div class="preview-window">
-              <div class="window-header">
-                <div class="window-controls">
-                  <span class="control close"></span>
-                  <span class="control minimize"></span>
-                  <span class="control maximize"></span>
-                </div>
-                <span class="window-title">TabPeek</span>
-              </div>
-
-              <div class="window-content">
-                <div class="mock-article">
-                  <div class="mock-heading"></div>
-                  <div class="mock-line"></div>
-                  <div class="mock-line short"></div>
-
-                  <div class="mock-link-row">
-                    <span class="mock-link"></span>
-                    <div class="mock-pop">
-                      <div class="mock-pop-head">
-                        <span class="mock-favicon">⚡</span>
-                        <span class="mock-pop-title"></span>
-                        <span class="mock-pop-close"></span>
-                      </div>
-                      <div class="mock-pop-body">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                      <div class="mock-progress"><i></i></div>
-                    </div>
-                  </div>
-
-                  <div class="mock-line"></div>
-                  <div class="mock-line short"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="floating-cards" aria-hidden="true">
-              <div class="float-card card-hover">
-                <svg
-                  class="card-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M3 3l7.5 18 2.5-7 7-2.5z"></path>
+            <div class="demo-frame">
+              <video
+                class="demo-video"
+                id="demoVideo"
+                width="928"
+                height="700"
+                poster="assets/demo-poster.webp"
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                data-i18n-aria="hero.videoAria"
+              >
+                <source src="assets/demo.mp4" type="video/mp4" />
+              </video>
+              <button
+                class="demo-toggle"
+                id="demoToggle"
+                type="button"
+                data-i18n-aria="hero.videoPause"
+              >
+                <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="7" y="5" width="3.6" height="14" rx="1.2"></rect>
+                  <rect x="13.4" y="5" width="3.6" height="14" rx="1.2"></rect>
                 </svg>
-                <div class="card-content">
-                  <span class="card-text" data-i18n="hero.float1t">悬停触发</span>
-                  <span class="card-value" data-i18n="hero.float1v">0.5 秒</span>
-                </div>
-              </div>
-
-              <div class="float-card card-warm">
-                <svg
-                  class="card-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8.5 5.6v12.8l10.4-6.4z"></path>
                 </svg>
-                <div class="card-content">
-                  <span class="card-text" data-i18n="hero.float2t">链接预热</span>
-                  <span class="card-value" data-i18n="hero.float2v">已就绪</span>
-                </div>
-              </div>
-
-              <div class="float-card card-reader">
-                <svg
-                  class="card-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                </svg>
-                <div class="card-content">
-                  <span class="card-text" data-i18n="hero.float3t">禁嵌站点</span>
-                  <span class="card-value" data-i18n="hero.float3v">已转阅读</span>
-                </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -504,89 +488,6 @@
           <p class="compare-note" data-i18n="speed.note">
             示意对比：预热后的预览窗直接呈现本地已有内容。
           </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 安装 -->
-    <section id="download" class="download">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Install</span>
-          <h2 class="section-title" data-i18n="download.title">现在就用起来</h2>
-          <p class="section-subtitle" data-i18n="download.subtitle">
-            三个浏览器，同一份代码。装完即用，不用注册也不用登录。
-          </p>
-        </div>
-
-        <div class="install-row">
-          <a class="btn install-btn" href="#">
-            <img
-              class="browser-logo"
-              src="./assets/browser-chrome.svg"
-              alt=""
-              width="24"
-              height="24"
-            />
-            <span data-i18n="install.chrome">Chrome 安装</span>
-          </a>
-          <a class="btn install-btn" href="#">
-            <img
-              class="browser-logo"
-              src="./assets/browser-edge.svg"
-              alt=""
-              width="24"
-              height="24"
-            />
-            <span data-i18n="install.edge">Edge 安装</span>
-          </a>
-          <a class="btn install-btn" href="#">
-            <img
-              class="browser-logo"
-              src="./assets/browser-firefox.svg"
-              alt=""
-              width="24"
-              height="24"
-            />
-            <span data-i18n="install.firefox">Firefox 安装</span>
-          </a>
-          <a class="btn install-btn" href="#">
-            <svg
-              class="browser-logo"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              aria-hidden="true"
-            >
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-            <span data-i18n="dl.manual">手动安装</span>
-          </a>
-        </div>
-
-        <div class="requirements">
-          <h4 data-i18n="req.title">安装前你需要知道</h4>
-          <div class="requirements-grid">
-            <div class="req-item">
-              <span class="req-label" data-i18n="req.browser.l">支持浏览器</span>
-              <span class="req-value" data-i18n="req.browser.v">Chrome / Edge / Firefox</span>
-            </div>
-            <div class="req-item">
-              <span class="req-label" data-i18n="req.account.l">账号</span>
-              <span class="req-value" data-i18n="req.account.v">不需要，装完即用</span>
-            </div>
-            <div class="req-item">
-              <span class="req-label" data-i18n="req.perm.l">申请权限</span>
-              <span class="req-value" data-i18n="req.perm.v">标签页、存储、右键菜单</span>
-            </div>
-            <div class="req-item">
-              <span class="req-label" data-i18n="req.net.l">网络访问</span>
-              <span class="req-value" data-i18n="req.net.v">仅你预览的网站</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -885,7 +786,7 @@
               <h4 data-i18n="footer.links">快速链接</h4>
               <a href="#features" data-i18n="nav.features">功能</a>
               <a href="#speed" data-i18n="nav.speed">极速</a>
-              <a href="#download" data-i18n="nav.download">安装</a>
+              <a href="#install" data-i18n="nav.install">安装</a>
               <a href="#faq" data-i18n="nav.faq">FAQ</a>
             </div>
 
