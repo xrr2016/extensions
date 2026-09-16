@@ -21,12 +21,9 @@ export const SELECTION_STYLE = `
   font-size: 12.5px; line-height: 1.2; color: #1f2328; cursor: pointer; white-space: nowrap;
 }
 .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, #fff); color: var(--tp-accent, #4f6bf6); }
-.tp-sel button.tp-ai { color: #fff; background: var(--tp-accent, #4f6bf6); margin-left: 2px; }
-.tp-sel button.tp-ai:hover { filter: brightness(1.1); }
 :host([data-tp-theme='dark']) .tp-sel { background: #1e2126; border-color: #333941; box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4); }
 :host([data-tp-theme='dark']) .tp-sel button { color: #e6e8eb; }
 :host([data-tp-theme='dark']) .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 24%, #1e2126); }
-:host([data-tp-theme='dark']) .tp-sel button.tp-ai { color: #fff; }
 `;
 
 export interface SelectionDeps {
@@ -65,7 +62,6 @@ export function createSelectionSystem(
     const ai = AI_ENGINES.find((e) => e.id === s.aiEngine);
     if (ai) {
       const btn = document.createElement("button");
-      btn.className = "tp-ai";
       btn.textContent = `✨ ${deps.i18n.t("selection.ai")}`;
       btn.title = ai.url.includes("%s")
         ? `${deps.i18n.t("selection.ai")} · ${ai.label}`

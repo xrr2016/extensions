@@ -46,6 +46,17 @@ function riskFor(url: string, anchorText: string): RiskReason | undefined {
   return assessLink(url, anchorText)?.reason;
 }
 
+/** A link "is an image" when it wraps an <img> or points at an image file —
+ *  the kinds of links users typically open straight to the picture. */
+function isImageLink(anchor: HTMLAnchorElement, url: string): boolean {
+  if (anchor.querySelector("img")) return true;
+  try {
+    return /\.(jpe?g|png|gif|webp|svg|bmp|ico|avif)$/i.test(new URL(url).pathname);
+  } catch {
+    return false;
+  }
+}
+
 export default defineContentScript({
   matches: ["<all_urls>"],
   runAt: "document_idle",
@@ -149,6 +160,7 @@ export default defineContentScript({
       } catch {
         return null;
       }
+      if (settings.skipImages && isImageLink(anchor, href)) return null;
       if (isSiteDisabled(settings.disabledSites, location.hostname)) return null;
       // Cleaned here, once: keep()/find()/open()/fetch all compare this same value.
       return { anchor, url: clampSettings(settings).stripTracking ? stripTracking(href) : href };

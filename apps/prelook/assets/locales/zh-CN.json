@@ -26,6 +26,7 @@
   "trigger.highlight": "触发时高亮链接",
   "trigger.delay": "悬停延迟",
   "trigger.longPressDelay": "长按时长",
+  "images.skip": "不对图片链接显示预览窗",
   "panel.section.size": "预览窗尺寸",
   "size.width": "宽度",
   "size.height": "高度",

@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import ColorInput from "@/components/ColorInput.vue";
+import SliderInput from "@/components/SliderInput.vue";
 import SponsorSection from "@/components/SponsorSection.vue";
+import ToggleSwitch from "@/components/ToggleSwitch.vue";
 import { translate } from "@/utils/i18n";
 import {
   AI_ENGINES,
@@ -188,7 +191,7 @@ function resetAll() {
         <section>
           <label class="row switch-row">
             <span>{{ t("panel.enabled") }}</span>
-            <input v-model="settings.enabled" type="checkbox" />
+            <ToggleSwitch v-model="settings.enabled" />
           </label>
         </section>
 
@@ -208,12 +211,13 @@ function resetAll() {
             <span
               >{{ t("trigger.delay") }}<b>{{ hoverDelaySec }}s</b></span
             >
-            <input
-              v-model.number="hoverDelaySec"
-              type="range"
-              min="0.1"
-              max="2"
-              step="0.1"
+            <SliderInput
+              v-model="hoverDelaySec"
+              :min="0.1"
+              :max="2"
+              :step="0.1"
+              unit="s"
+              :decimals="1"
               :disabled="['longPress', 'drag'].includes(settings.triggerMode)"
             />
           </label>
@@ -221,11 +225,22 @@ function resetAll() {
             <span
               >{{ t("trigger.longPressDelay") }}<b>{{ longPressSec }}s</b></span
             >
-            <input v-model.number="longPressSec" type="range" min="0.2" max="2" step="0.1" />
+            <SliderInput
+              v-model="longPressSec"
+              :min="0.2"
+              :max="2"
+              :step="0.1"
+              unit="s"
+              :decimals="1"
+            />
           </label>
           <label class="row switch-row">
             <span>{{ t("trigger.highlight") }}</span>
-            <input v-model="settings.highlightLinks" type="checkbox" />
+            <ToggleSwitch v-model="settings.highlightLinks" />
+          </label>
+          <label class="row switch-row">
+            <span>{{ t("images.skip") }}</span>
+            <ToggleSwitch v-model="settings.skipImages" />
           </label>
         </section>
 
@@ -233,15 +248,15 @@ function resetAll() {
           <h2>{{ t("panel.section.close") }}</h2>
           <label class="row switch-row">
             <span>{{ t("close.outside") }}</span>
-            <input v-model="settings.closeOnOutsideClick" type="checkbox" />
+            <ToggleSwitch v-model="settings.closeOnOutsideClick" />
           </label>
           <label class="row switch-row">
             <span>{{ t("close.leave") }}</span>
-            <input v-model="settings.closeOnMouseLeave" type="checkbox" />
+            <ToggleSwitch v-model="settings.closeOnMouseLeave" />
           </label>
           <label class="row switch-row">
             <span>{{ t("close.scroll") }}</span>
-            <input v-model="settings.closeOnScroll" type="checkbox" />
+            <ToggleSwitch v-model="settings.closeOnScroll" />
           </label>
           <p class="hint muted">{{ t("close.hint") }}</p>
         </section>
@@ -281,24 +296,22 @@ function resetAll() {
             <span
               >{{ t("size.width") }}<b>{{ settings.width }}%</b></span
             >
-            <input
-              v-model.number="settings.width"
-              type="range"
+            <SliderInput
+              v-model="settings.width"
               :min="WINDOW_PCT_MIN"
               :max="WINDOW_PCT_MAX"
-              step="1"
+              unit="%"
             />
           </label>
           <label class="row">
             <span
               >{{ t("size.height") }}<b>{{ settings.height }}%</b></span
             >
-            <input
-              v-model.number="settings.height"
-              type="range"
+            <SliderInput
+              v-model="settings.height"
               :min="WINDOW_PCT_MIN"
               :max="WINDOW_PCT_MAX"
-              step="1"
+              unit="%"
               :disabled="settings.position === 'sidebar'"
             />
           </label>
@@ -310,7 +323,7 @@ function resetAll() {
             <span
               >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
             >
-            <input v-model.number="settings.blurStrength" type="range" min="0" max="100" step="1" />
+            <SliderInput v-model="settings.blurStrength" :min="0" :max="100" unit="%" />
           </label>
           <p class="hint muted">{{ t("blur.hint") }}</p>
         </section>
@@ -366,17 +379,11 @@ function resetAll() {
             <span
               >{{ t("windows.max") }}<b>{{ settings.maxWindows }}</b></span
             >
-            <input
-              v-model.number="settings.maxWindows"
-              type="range"
-              min="1"
-              :max="MAX_WINDOWS_LIMIT"
-              step="1"
-            />
+            <SliderInput v-model="settings.maxWindows" :min="1" :max="MAX_WINDOWS_LIMIT" />
           </label>
           <label class="row switch-row">
             <span>{{ t("windows.autoPin") }}</span>
-            <input v-model="settings.autoPin" type="checkbox" />
+            <ToggleSwitch v-model="settings.autoPin" />
           </label>
           <p class="hint muted">{{ t("windows.hint") }}</p>
           <p class="hint muted">{{ t("windows.autoPinHint") }}</p>
@@ -393,7 +400,7 @@ function resetAll() {
           <h2>{{ t("panel.section.selection") }}</h2>
           <label class="row switch-row">
             <span>{{ t("selection.enable") }}</span>
-            <input v-model="settings.selectionSearch" type="checkbox" />
+            <ToggleSwitch v-model="settings.selectionSearch" />
           </label>
           <div class="row-label">{{ t("selection.engines") }}</div>
           <div class="seg-btns">
@@ -411,27 +418,22 @@ function resetAll() {
               {{ e.label }}
             </label>
           </div>
-          <label class="row">
-            <span>{{ t("selection.aiEngine") }}</span>
-            <select v-model="settings.aiEngine">
-              <option v-for="e in AI_ENGINES" :key="e.id" :value="e.id">{{ e.label }}</option>
-            </select>
-          </label>
+          <div class="row-label">{{ t("selection.aiEngine") }}</div>
+          <div class="seg-btns">
+            <label v-for="e in AI_ENGINES" :key="e.id" :class="{ on: settings.aiEngine === e.id }">
+              <input v-model="settings.aiEngine" type="radio" name="aiEngine" :value="e.id" />
+              {{ e.label }}
+            </label>
+          </div>
           <label class="row switch-row">
             <span>{{ t("selection.background") }}</span>
-            <input v-model="settings.openInBackground" type="checkbox" />
+            <ToggleSwitch v-model="settings.openInBackground" />
           </label>
           <label class="row">
             <span
               >{{ t("selection.minLength") }}<b>{{ settings.minSelectionChars }}</b></span
             >
-            <input
-              v-model.number="settings.minSelectionChars"
-              type="range"
-              min="1"
-              max="999"
-              step="1"
-            />
+            <SliderInput v-model="settings.minSelectionChars" :min="1" :max="999" />
           </label>
         </section>
 
@@ -472,7 +474,7 @@ function resetAll() {
           </div>
           <label class="row">
             <span>{{ t("appearance.accent") }}</span>
-            <input v-model="settings.themeColor" type="color" />
+            <ColorInput v-model="settings.themeColor" />
           </label>
         </section>
 
@@ -524,7 +526,7 @@ function resetAll() {
           <p class="hint muted">{{ t("power.hint") }}</p>
           <label class="row switch-row">
             <span>{{ t("motion.label") }}</span>
-            <input v-model="settings.reduceMotion" type="checkbox" />
+            <ToggleSwitch v-model="settings.reduceMotion" />
           </label>
           <p class="hint muted">{{ t("motion.hint") }}</p>
         </section>
@@ -540,12 +542,12 @@ function resetAll() {
           <h2>{{ t("panel.section.protect") }}</h2>
           <label class="row switch-row">
             <span>{{ t("protect.tracking") }}</span>
-            <input v-model="settings.stripTracking" type="checkbox" />
+            <ToggleSwitch v-model="settings.stripTracking" />
           </label>
           <p class="hint muted">{{ t("protect.trackingHint") }}</p>
           <label class="row switch-row">
             <span>{{ t("protect.warn") }}</span>
-            <input v-model="settings.warnDangerous" type="checkbox" />
+            <ToggleSwitch v-model="settings.warnDangerous" />
           </label>
           <p class="hint muted">{{ t("protect.warnHint") }}</p>
         </section>

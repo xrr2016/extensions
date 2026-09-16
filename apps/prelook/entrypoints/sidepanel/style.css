@@ -126,16 +126,6 @@ h2 {
   font-weight: 500;
   font-size: 12px;
 }
-.row input[type="range"] {
-  width: 55%;
-  accent-color: var(--tp-accent);
-}
-.row input[type="color"] {
-  width: 36px;
-  height: 26px;
-  border: 0;
-  background: none;
-}
 .row select {
   max-width: 55%;
   padding: 4px 6px;
@@ -144,11 +134,6 @@ h2 {
 }
 .switch-row {
   cursor: pointer;
-}
-.switch-row input {
-  accent-color: var(--tp-accent);
-  width: 16px;
-  height: 16px;
 }
 
 /* Joined button group (radio row): one bordered capsule with thin dividers
@@ -524,9 +509,6 @@ html[data-theme="dark"] .tabs .chip.on {
   background: transparent;
   border-bottom: 2px solid var(--tp-accent);
   color: var(--tp-accent);
-}
-html[data-theme="dark"] .row input[type="range"] {
-  accent-color: var(--tp-accent);
 }
 html[data-theme="dark"] .row select,
 html[data-theme="dark"] .row-inline input,

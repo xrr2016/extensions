@@ -139,6 +139,8 @@ export interface PrelookSettings {
   stripTracking: boolean;
   /** Show a read-only risk hint in the preview header for suspect links */
   warnDangerous: boolean;
+  /** Don't preview links that wrap an image or point at an image file */
+  skipImages: boolean;
   /** Close triggers for preview windows (pinned windows ignore all of them) */
   closeOnOutsideClick: boolean;
   closeOnMouseLeave: boolean;
@@ -182,6 +184,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   windowTheme: "silver",
   stripTracking: true,
   warnDangerous: true,
+  skipImages: false,
   closeOnOutsideClick: true,
   closeOnMouseLeave: false,
   closeOnScroll: false,

@@ -26,6 +26,7 @@
   "trigger.highlight": "Highlight link on trigger",
   "trigger.delay": "Hover delay",
   "trigger.longPressDelay": "Hold duration (progress bar shown)",
+  "images.skip": "Don't preview image links",
   "panel.section.size": "Preview size",
   "size.width": "Width (% of viewport)",
   "size.height": "Height (% of viewport)",
