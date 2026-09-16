@@ -5,7 +5,9 @@ export type PreviewPosition =
   | "bottom-right"
   | "bottom-left"
   | "top-right"
+  | "center-top"
   | "center"
+  | "center-bottom"
   | "sidebar";
 export type Language = "zh-CN" | "en";
 export type SidebarSide = "left" | "right";

@@ -263,7 +263,9 @@ function resetAll() {
                 'bottom-right',
                 'bottom-left',
                 'top-right',
+                'center-top',
                 'center',
+                'center-bottom',
                 'sidebar',
               ] as const"
               :key="p"

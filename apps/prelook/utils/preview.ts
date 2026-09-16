@@ -476,6 +476,16 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         x = (vw - w) / 2;
         y = (vh - h) / 2;
         break;
+      // Horizontally centred like `center`, but parked in the upper / lower
+      // third of the free space so the page's own centre line stays visible.
+      case "center-top":
+        x = (vw - w) / 2;
+        y = (vh - h) / 3;
+        break;
+      case "center-bottom":
+        x = (vw - w) / 2;
+        y = ((vh - h) * 2) / 3;
+        break;
       case "bottom-right":
       default:
         x = vw - w - 16;
