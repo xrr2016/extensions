@@ -63,7 +63,9 @@ body {
   display: none;
 }
 .tabs .chip {
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
   white-space: nowrap;
   font-family: inherit;
   padding: 4px 12px;
@@ -77,6 +79,7 @@ main {
   flex: 1;
   flex-direction: column;
   padding: 0 12px;
+  padding-top: 12px;
 }
 section {
   background: #fff;
