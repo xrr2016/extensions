@@ -1,10 +1,7 @@
 {
   "name": "@extensions/tabpeek-landing",
-  "description": "TabPeek 产品官网（纯静态）",
+  "description": "TabPeek 产品官网",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "node scripts/serve.mjs"
-  }
+  "type": "module"
 }

@@ -452,36 +452,12 @@ body::after {
   padding: 0 var(--spacing-md);
 }
 
-.hero-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: var(--spacing-md);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
-.badge-primary {
-  background: var(--primary);
-  color: #fff;
-}
-
-.badge-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
 .hero-title {
-  font-size: clamp(2.25rem, 4.4vw, 3.5rem);
+  /* Ten full-width glyphs at the 4.4vw ramp: the cap must keep the whole
+     one-line title inside the hero's text column (~553px on wide screens).
+     3.5rem × 10 chars ≈ 554px — exactly one pixel over, which is why it broke
+     into two balanced lines on large monitors. */
+  font-size: clamp(2.25rem, 4.4vw, 3.25rem);
   font-weight: 800;
   line-height: 1.12;
   margin-bottom: var(--spacing-md);
@@ -496,36 +472,6 @@ body::after {
   max-width: 32rem;
 }
 
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
-}
-
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border);
-}
-
 /* 安装入口就在 hero 里。两列而不是一行四颗：hero 的文字栏只有 ~557px，
    一行塞不下四颗带图标的按钮。max-width 是给单列后的平板准备的，
    否则每颗会被拉到半屏宽。 */
@@ -535,6 +481,9 @@ body::after {
   gap: 0.625rem;
   max-width: 560px;
   margin-inline: auto;
+  /* Gap used to come from .hero-stats' bottom margin above; with the stats
+     removed this needs its own spacing. */
+  margin-top: var(--spacing-xl);
 }
 
 /* 四个入口等权：Chrome 不做强调，避免暗示"只该装 Chrome" */
@@ -579,7 +528,7 @@ body::after {
 
 /* 录屏后面垫一层柔光，免得它像一块贴上去的白色方块 */
 .app-preview::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -8% -4%;
   background: radial-gradient(closest-side, rgba(79, 107, 246, 0.3), transparent 72%);
@@ -644,11 +593,11 @@ body::after {
   display: none;
 }
 
-.demo-toggle[data-paused='true'] .icon-play {
+.demo-toggle[data-paused="true"] .icon-play {
   display: block;
 }
 
-.demo-toggle[data-paused='true'] .icon-pause {
+.demo-toggle[data-paused="true"] .icon-pause {
   display: none;
 }
 
@@ -1026,80 +975,6 @@ section {
   color: var(--text-secondary);
 }
 
-/* ---------- 赞助 ---------- */
-.sponsor {
-  background: var(--bg-primary);
-}
-
-.sponsor-content {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-lg);
-}
-
-.sponsor-card {
-  width: 300px;
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl) var(--spacing-lg);
-  text-align: center;
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.sponsor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.sponsor-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-light);
-  border-radius: 50%;
-}
-
-.sponsor-icon svg {
-  width: 32px;
-  height: 32px;
-  color: var(--primary);
-}
-
-.sponsor-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: var(--spacing-xs);
-}
-
-.sponsor-card p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-md);
-}
-
-.sponsor-card .btn {
-  margin-top: auto;
-}
-
-.sponsor-thanks {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
-  margin-top: var(--spacing-xl);
-}
-
 /* ---------- 常见问题 ---------- */
 .faq {
   background: var(--bg-secondary);
@@ -1155,55 +1030,252 @@ section {
   color: var(--text-secondary);
 }
 
+/* ---------- 收尾 CTA（满幅色带） ---------- */
+/* 整段是一个饱和色块，不参与 --bg-* 的深浅交替，所以浅色/深色各写一版渐变：
+   深色主题下压暗一档，白字和白色按钮才不至于刺眼。 */
+.cta-band {
+  background: linear-gradient(135deg, #4f6bf6 0%, #6553f0 55%, #8b5cf6 100%);
+  color: #fff;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .cta-band {
+  background: linear-gradient(135deg, #3a4fc4 0%, #4b3ec0 55%, #6638b8 100%);
+}
+
+.cta-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.cta-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.cta-title {
+  margin-top: var(--spacing-md);
+  font-size: clamp(1.75rem, 3.2vw, 2.625rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.cta-sub {
+  margin-top: var(--spacing-sm);
+  font-size: 1.0625rem;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.cta-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  max-width: 560px;
+  margin-top: var(--spacing-lg);
+}
+
+/* 色带上固定用白底深字：--bg-primary 在深色主题里是近黑色，压在紫底上像四块补丁 */
+.cta-actions .install-btn {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: transparent;
+  color: #1f2333;
+}
+
+.cta-actions .install-btn:hover {
+  background: #fff;
+  border-color: transparent;
+  color: #4f6bf6;
+}
+
+/* ---------- 色带右侧插画 ---------- */
+/* 用「前一层用负 margin 压住后一层」而不是绝对定位：窗口高度由内容决定，
+   绝对定位要按内容高度算偏移，改一行骨架线就得重算一次。 */
+.cta-art {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.art-win {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(12, 16, 40, 0.3);
+}
+
+.art-back {
+  width: 72%;
+  transform: rotate(5deg);
+}
+
+.art-front {
+  width: 84%;
+  align-self: flex-start;
+  /* 百分比 margin 按容器宽度算，这里就是"往上压 12% 的容器宽" */
+  margin: -12% 0 0 -4%;
+  transform: rotate(-3deg);
+  z-index: 1;
+  box-shadow: 0 26px 56px rgba(12, 16, 40, 0.38);
+}
+
+.art-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 11px;
+  background: #1f2333;
+}
+
+.art-bar > i {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.art-pill {
+  flex: 1;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* 预览窗那一条：浅色玻璃 + 主色，跟产品里的窗口标题栏同一个意思 */
+.art-bar-preview {
+  background: color-mix(in srgb, #4f6bf6 17%, #fff);
+  border-bottom: 1px solid rgba(79, 107, 246, 0.26);
+}
+
+.art-bar-preview .art-pill {
+  background: rgba(31, 35, 51, 0.18);
+}
+
+.art-favicon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #4f6bf6, #a78bfa);
+}
+
+.art-btns {
+  display: flex;
+  gap: 5px;
+}
+
+.art-btns i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: rgba(31, 35, 51, 0.18);
+}
+
+.art-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.art-line {
+  height: 10px;
+  border-radius: 5px;
+  background: #e9ecf3;
+}
+
+.art-line.w60 {
+  width: 60%;
+}
+.art-line.w70 {
+  width: 70%;
+}
+.art-line.w80 {
+  width: 80%;
+}
+.art-line.w85 {
+  width: 85%;
+}
+
 /* ---------- 页脚 ---------- */
+/* 上面那一段是满幅色带，所以这里不再需要 border-top：颜色边界本身就是分界 */
 .footer {
   background: var(--bg-primary);
-  border-top: 1px solid var(--border);
   padding: var(--spacing-2xl) 0 var(--spacing-md);
 }
 
 .footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   max-width: 22rem;
 }
 
+.footer-brand-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .footer-logo {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md);
+}
+
+.footer-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .footer-brand p {
   font-size: 0.9375rem;
+  line-height: 1.7;
   color: var(--text-tertiary);
 }
 
+/* 四栏等宽平铺，而不是靠 gap 撑开的 flex——栏数变了也不用重算间距 */
 .footer-links {
-  display: flex;
-  gap: var(--spacing-2xl);
+  width: 300px;
+  margin-left: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  place-items: end;
 }
 
 .footer-column h4 {
   font-size: 0.9375rem;
   font-weight: 600;
-  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
 }
 
 .footer-column a {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   transition: color 0.2s ease;
 }
 
@@ -1216,18 +1288,65 @@ section {
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-sm);
-  padding-top: var(--spacing-md);
+  padding-top: var(--spacing-lg);
   border-top: 1px solid var(--border);
   font-size: 0.875rem;
   color: var(--text-tertiary);
 }
 
-.to-top {
+/* 右下角一组：备案号 + 回到顶部。备案号是硬编码的中文法定标识，没有词条。 */
+.footer-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.footer-filing {
   transition: color 0.2s ease;
 }
 
+.footer-filing:hover {
+  color: var(--primary);
+}
+
+/* Floating back-to-top button: hidden until the user scrolls past the fold,
+   then fades in. Fixed to the bottom-right so it never overlaps the nav. */
+.to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+.to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 .to-top:hover {
   color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.to-top svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* ---------- 响应式 ---------- */
@@ -1255,8 +1374,6 @@ section {
     margin-inline: auto;
   }
 
-  .hero-badges,
-  .hero-stats,
   .hero-actions {
     justify-content: center;
   }
@@ -1276,6 +1393,34 @@ section {
 
 @media (max-width: 880px) {
   .nav-menu {
+    display: none;
+  }
+}
+
+/* 色带在窄屏立起来：文案居中、插画挪到下面并收窄。
+   断点压到 820px 而不是 960：768–960 这一档还放得下左右两栏，
+   提前立起来只会让色带上下空出一大片。 */
+@media (max-width: 820px) {
+  .cta-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .cta-actions {
+    margin-inline: auto;
+  }
+
+  .cta-art {
+    max-width: 380px;
+    width: 100%;
+    margin: var(--spacing-lg) auto 0;
+    align-self: center;
+  }
+}
+
+/* 手机上只留色块和按钮：插画会让这一段占掉整整一屏，而这一段的意义就是那四颗按钮 */
+@media (max-width: 600px) {
+  .cta-art {
     display: none;
   }
 }
@@ -1314,12 +1459,12 @@ section {
   }
 
   .footer-content {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
   }
 
   .footer-links {
-    width: 100%;
-    flex-wrap: wrap;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-lg);
   }
 
@@ -1332,24 +1477,11 @@ section {
     align-items: flex-start;
     gap: 0.5rem;
   }
-
-  .sponsor-card {
-    width: 100%;
-    max-width: 420px;
-  }
 }
 
 @media (max-width: 520px) {
   .hero-title {
     font-size: 2rem;
-  }
-
-  .hero-stats {
-    gap: var(--spacing-sm);
-  }
-
-  .stat-value {
-    font-size: 1.25rem;
   }
 }
 

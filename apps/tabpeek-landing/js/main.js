@@ -8,32 +8,26 @@
       'nav.speed': '极速',
       'nav.install': '安装',
       'nav.reviews': '评价',
-      'nav.sponsor': '赞助',
       'nav.faq': 'FAQ',
       'nav.theme': '切换深浅色主题',
       'nav.lang': '切换语言',
 
-      'hero.badge1': '完全免费',
-      'hero.badge2': '本地运行',
-      'hero.badge3': '无需账号',
       'hero.title1': '极速预览，',
       'hero.title2': '告别标签海',
       'hero.desc': '鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。',
-      'hero.stat1v': '6',
-      'hero.stat1l': '种触发方式',
-      'hero.stat2v': '6',
-      'hero.stat2l': '窗并行预览',
-      'hero.stat3v': '0',
-      'hero.stat3l': '数据上传',
       'hero.videoAria': 'TabPeek 使用演示：指针停在链接上，预览窗浮出并渲染这个页面',
       'hero.videoPlay': '播放演示',
       'hero.videoPause': '暂停演示',
 
-      // 安装入口就在 hero 里，四颗等权
+      // 安装入口：hero 与页尾色带各一份，四颗等权
       'install.chrome': 'Chrome 安装',
       'install.edge': 'Edge 安装',
       'install.firefox': 'Firefox 安装',
       'install.manual': '手动安装',
+
+      'cta.badge': '三个浏览器，同一份代码',
+      'cta.title': '现在就用起来',
+      'cta.sub': '装完即用，不用注册，也不用登录。',
 
       'features.title': '沉浸式浏览，告别标签海',
       'features.subtitle': '十二项能力，全部本地运行，不上传任何数据',
@@ -120,16 +114,6 @@
       'reviews.r6.name': '示例用户 F',
       'reviews.r6.text': '（占位）没有真实评价之前，这一段先别上线。',
 
-      'sponsor.title': '完全免费，欢迎赞助',
-      'sponsor.subtitle':
-        '无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。',
-      'sponsor.afdian.t': '爱发电',
-      'sponsor.afdian.d': '国内访问，微信 / 支付宝均可',
-      'sponsor.patreon.t': 'Patreon',
-      'sponsor.patreon.d': '海外访问，按月或一次性支持',
-      'sponsor.action': '去发电',
-      'sponsor.note': '赞助完全自愿，不影响任何功能的可用性。',
-
       'faq.title': '常见问题',
       'faq.subtitle': '还有疑问？先看这几条。',
       'faq.q1': '预览窗口是空白的怎么办？',
@@ -148,14 +132,10 @@
       'faq.a5':
         '不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。',
 
-      'footer.about': 'TabPeek 由冷石Boy开发，一款把预览做进浏览器的免费扩展。',
+      'footer.about': 'TabPeek 极速预览，告别标签海。',
       'footer.slogan': '一点即预览，告别标签海。',
       'footer.links': '快速链接',
-      'footer.sponsor': '赞助',
       'footer.contact': '联系我们',
-      'footer.legal': '条款',
-      'footer.privacy': '隐私政策',
-      'footer.terms': '服务条款',
       'footer.rights': '保留所有权利',
       'footer.top': '回到顶部',
     },
@@ -165,34 +145,28 @@
       'nav.speed': 'Speed',
       'nav.install': 'Install',
       'nav.reviews': 'Reviews',
-      'nav.sponsor': 'Sponsor',
       'nav.faq': 'FAQ',
       'nav.theme': 'Toggle color theme',
       'nav.lang': 'Switch language',
 
-      'hero.badge1': 'Free forever',
-      'hero.badge2': 'Runs locally',
-      'hero.badge3': 'No account',
       'hero.title1': 'Instant previews, ',
       'hero.title2': 'goodbye tab clutter',
       'hero.desc':
         'The instant your cursor lands on a link, its page is already loading — preview first, decide after.',
-      'hero.stat1v': '6',
-      'hero.stat1l': 'trigger modes',
-      'hero.stat2v': '6',
-      'hero.stat2l': 'previews at once',
-      'hero.stat3v': '0',
-      'hero.stat3l': 'data uploaded',
       'hero.videoAria':
         'TabPeek in action: the pointer rests on a link and a preview window opens with that page',
       'hero.videoPlay': 'Play the demo',
       'hero.videoPause': 'Pause the demo',
 
-      // The install entries live in the hero; all four carry equal weight
+      // Install entries: one set in the hero, one in the closing band, all equal
       'install.chrome': 'Install for Chrome',
       'install.edge': 'Install for Edge',
       'install.firefox': 'Install for Firefox',
       'install.manual': 'Manual install',
+
+      'cta.badge': 'Three browsers, one codebase',
+      'cta.title': 'Get it running today',
+      'cta.sub': 'Install and go — no sign-up, no login.',
 
       'features.title': 'Immersive browsing, goodbye tab clutter',
       'features.subtitle': 'Twelve features, all local — nothing is uploaded',
@@ -283,16 +257,6 @@
       'reviews.r6.name': 'Sample user F',
       'reviews.r6.text': '(Placeholder) Do not publish this section until real reviews exist.',
 
-      'sponsor.title': 'Free forever — sponsorship welcome',
-      'sponsor.subtitle':
-        'No account, no server, no paid tier: every feature is open. If TabPeek helps you, a sponsorship keeps development going.',
-      'sponsor.afdian.t': 'Afdian',
-      'sponsor.afdian.d': 'For China — WeChat or Alipay',
-      'sponsor.patreon.t': 'Patreon',
-      'sponsor.patreon.d': 'Everywhere else — monthly or one-off',
-      'sponsor.action': 'Support me',
-      'sponsor.note': 'Sponsoring is entirely optional and unlocks nothing extra.',
-
       'faq.title': 'FAQ',
       'faq.subtitle': 'Still curious? Start here.',
       'faq.q1': 'The preview window is blank — what now?',
@@ -314,11 +278,7 @@
       'footer.about': 'TabPeek is a free extension by 冷石Boy that puts previews right in the browser.',
       'footer.slogan': 'Peek first, tab less.',
       'footer.links': 'Links',
-      'footer.sponsor': 'Sponsor',
       'footer.contact': 'Contact',
-      'footer.legal': 'Legal',
-      'footer.privacy': 'Privacy policy',
-      'footer.terms': 'Terms of service',
       'footer.rights': 'All rights reserved',
       'footer.top': 'Back to top',
     },
@@ -441,9 +401,13 @@
       if (section.offsetTop <= scrollPos) activeId = section.id;
     });
 
-    // 滚到底部时高亮最后一项：页脚较矮，否则永远点不亮
+    // 滚到底部时高亮最后一项：页脚较矮，否则永远点不亮。
+    // 先确认页面真的能滚——加载途中文档还没被撑高时，"0 + 视口高 >= 文档高"
+    // 会成立，于是最后一项（现在是「安装」）会在首屏被误点亮，且要等到下一次
+    // 成功的滚动更新才纠正。
+    var canScroll = document.documentElement.scrollHeight > window.innerHeight + 4;
     var isAtBottom =
-      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      canScroll && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
     if (isAtBottom) activeId = spySections[spySections.length - 1].id;
 
     navLinks.forEach(function (link) {
@@ -463,6 +427,7 @@
       requestAnimationFrame(function () {
         updateActiveNav();
         sweepReveals();
+        updateToTop();
         spyTicking = false;
       });
     },
@@ -474,16 +439,29 @@
   });
   updateActiveNav();
 
+  /* ---------- 浮动回到顶部 ---------- */
+  var toTopBtn = document.querySelector('.to-top');
+  function updateToTop() {
+    if (!toTopBtn) return;
+    toTopBtn.classList.toggle('is-visible', window.scrollY > 400);
+  }
+  if (toTopBtn) {
+    toTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    updateToTop();
+  }
+
   /* ---------- 滚动入场 ---------- */
   var revealTargets = []
     .concat(Array.prototype.slice.call(document.querySelectorAll('.section-header')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.features-grid .feature-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.steps-grid .step-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.reviews-grid .review-card')))
-    .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-content .sponsor-card')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.faq-list details')))
     .concat(Array.prototype.slice.call(document.querySelectorAll('.compare')))
-    .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-thanks, .footer-content')));
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.cta-copy, .cta-art')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.footer-content')));
 
   var reduceMotion =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -515,7 +493,6 @@
       '.features-grid',
       '.steps-grid',
       '.reviews-grid',
-      '.sponsor-content',
     ].forEach(function (sel) {
       var group = document.querySelector(sel);
       if (!group) return;
