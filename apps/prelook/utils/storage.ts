@@ -67,10 +67,10 @@ export const SEARCH_ENGINES: SearchEngine[] = [
  * selection to the clipboard and opens the plain URL instead.
  */
 export const AI_ENGINES: SearchEngine[] = [
-  { id: "deepseek", label: "DeepSeek", url: "https://chat.deepseek.com/" },
-  { id: "doubao", label: "豆包", url: "https://www.doubao.com/chat/?q=%s" },
   { id: "kimi", label: "Kimi", url: "https://kimi.moonshot.cn/?q=%s" },
+  { id: "doubao", label: "豆包", url: "https://www.doubao.com/chat/?q=%s" },
   { id: "perplexity", label: "Perplexity", url: "https://www.perplexity.ai/search?q=%s" },
+  { id: "deepseek", label: "DeepSeek", url: "https://chat.deepseek.com/" },
 ];
 
 export const MAX_WINDOWS_LIMIT = 6;
@@ -162,7 +162,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   blurStrength: 5,
   selectionSearch: true,
   searchEngines: ["google", "bing", "baidu"],
-  aiEngine: "deepseek",
+  aiEngine: "kimi",
   openInBackground: false,
   minSelectionChars: 2,
   language: "zh-CN",
@@ -177,8 +177,8 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   stripTracking: true,
   warnDangerous: true,
   closeOnOutsideClick: true,
-  closeOnMouseLeave: true,
-  closeOnScroll: true,
+  closeOnMouseLeave: false,
+  closeOnScroll: false,
   disabledSites: [],
 };
 
