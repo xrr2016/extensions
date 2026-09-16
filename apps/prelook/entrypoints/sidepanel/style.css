@@ -30,10 +30,8 @@ body {
    instead of leaving a gap in the middle of a short tab. `border-box` keeps the
    bottom padding inside 100vh. */
 #app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  padding: 0 0 20px;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .flex-1 {
@@ -43,9 +41,6 @@ body {
 /* The tab strip stays put while the panel scrolls: it is the only way to reach
    the other sections, so it must always be on screen. */
 .topbar {
-  position: sticky;
-  top: 10px;
-  z-index: 5;
   background: #fff;
   border-bottom: 1px solid #e8ebef;
 }
@@ -54,38 +49,59 @@ body {
    wrapping into a second row. */
 .tabs {
   display: flex;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 20px;
+  padding: 4px 12px 0;
+  border-bottom: 1px solid #eceff2;
   overflow-x: auto;
   scrollbar-width: none;
 }
 .tabs::-webkit-scrollbar {
   display: none;
 }
+/* Classic text tabs: every chip reserves a 2px bottom slot so activating never
+   shifts layout; the active one fills it with the accent. The underline must
+   stay inside the chip's border box — the bar clips overflow (overflow-x: auto
+   also clips vertically), so no negative-margin overlap trick here. */
 .tabs .chip {
-  flex: 1 1 0;
-  min-width: 0;
-  text-align: center;
-  white-space: nowrap;
+  flex: 0 0 auto;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  border-radius: 0;
+  padding: 6px 2px;
   font-family: inherit;
-  padding: 4px 12px;
+  font-size: 13px;
+  color: #57606a;
+}
+.tabs .chip:hover {
+  color: var(--tp-accent);
+}
+.tabs .chip.on {
+  /* Must re-clear the pill background: the generic `.chip.on` fill sits later
+     in this file at equal specificity. */
+  background: transparent;
+  border-bottom: 2px solid var(--tp-accent);
+  color: var(--tp-accent);
 }
 
 .tabs-content {
   margin-bottom: 12px;
 }
 main {
-  display: flex;
   flex: 1;
+  display: flex;
   flex-direction: column;
-  padding: 0 12px;
-  padding-top: 12px;
+  box-sizing: border-box;
+  height: calc(100vh - 40px - 24px);
+  padding: 12px;
+  padding-bottom: 0;
+  overflow-y: auto;
 }
 section {
   background: #fff;
   border-radius: 12px;
   padding: 12px 14px;
-  margin-top: 10px;
+  margin-bottom: 10px;
   border: 1px solid #eceff2;
 }
 h2 {
@@ -135,41 +151,43 @@ h2 {
   height: 16px;
 }
 
-/* Single-choice control: a real radio group (name + hidden input) styled as a
-   row of buttons, so keyboard arrows and screen readers still work. */
+/* Joined button group (radio row): one bordered capsule with thin dividers
+   between segments; the active segment is raised in white with accent text.
+   A real radio group (name + hidden input), so keyboard arrows and screen
+   readers still work. */
 .seg-btns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  display: flex;
   margin: 6px 0;
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  background: #f5f6f8;
+  overflow: hidden;
 }
 .seg-btns label {
   position: relative;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 4px;
-  border-radius: 8px;
+  padding: 7px 4px;
   cursor: pointer;
   text-align: center;
-  border: 1px solid #d8dee4;
-  background: #fff;
   color: #57606a;
   font-size: 11px;
   line-height: 1.25;
   transition:
     background 0.12s ease,
-    border-color 0.12s ease,
     color 0.12s ease;
 }
+.seg-btns label + label {
+  border-left: 1px solid #e0e4e9;
+}
 .seg-btns label:hover {
-  border-color: var(--tp-accent);
   color: var(--tp-accent);
 }
 .seg-btns label.on {
-  background: var(--tp-accent);
-  border-color: var(--tp-accent);
-  color: #fff;
+  background: #fff;
+  color: var(--tp-accent);
 }
 /* Invisible radio stretched over the whole button: the input itself receives the
    click, so selection never depends on label->control click forwarding. */
@@ -458,7 +476,6 @@ html[data-theme="dark"] .row-inline button {
   color: #c8cdd4;
 }
 html[data-theme="dark"] .seg-btns label:hover {
-  border-color: var(--tp-accent);
   color: var(--tp-accent);
 }
 html[data-theme="dark"] .picker {
@@ -467,11 +484,46 @@ html[data-theme="dark"] .picker {
 /* Must out-specify the dark card/button rules above, or the selected option
    loses its accent fill in dark mode. */
 html[data-theme="dark"] .theme-cards label.on,
-html[data-theme="dark"] .seg-btns label.on,
 html[data-theme="dark"] .chip.on {
   background: var(--tp-accent);
   border-color: var(--tp-accent);
   color: #fff;
+}
+/* The joined button group stays filled-dark in dark mode: the active segment
+   is the raised one, never an accent-filled pill. Placed after (and matching)
+   the combined dark .on rules above so it wins the source-order tie. */
+html[data-theme="dark"] .seg-btns {
+  background: #1b1f24;
+  border-color: #333941;
+}
+html[data-theme="dark"] .seg-btns label {
+  color: #c8cdd4;
+}
+html[data-theme="dark"] .seg-btns label:hover {
+  color: var(--tp-accent);
+}
+html[data-theme="dark"] .seg-btns label + label {
+  border-left-color: #333941;
+}
+html[data-theme="dark"] .seg-btns label.on {
+  background: #2a2f36;
+  box-shadow: none;
+  color: var(--tp-accent);
+}
+/* Tab-style tabs stay text-only in dark mode too; these must come after (and
+   out-specify) the generic dark .chip rules above. */
+html[data-theme="dark"] .tabs {
+  border-bottom-color: #333941;
+}
+html[data-theme="dark"] .tabs .chip {
+  background: transparent;
+  border-color: transparent;
+  color: #8c959f;
+}
+html[data-theme="dark"] .tabs .chip.on {
+  background: transparent;
+  border-bottom: 2px solid var(--tp-accent);
+  color: var(--tp-accent);
 }
 html[data-theme="dark"] .row input[type="range"] {
   accent-color: var(--tp-accent);

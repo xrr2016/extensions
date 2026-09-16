@@ -10,7 +10,6 @@ const props = defineProps<{ lang: Language }>();
 
 const SPONSORS = [
   { id: "afdian", url: "https://ifdian.net/a/coldstoneboy" },
-  { id: "patreon", url: "https://patreon.com/coldstoneboy" },
 ] as const;
 
 const t = (key: string) => translate(props.lang, key);

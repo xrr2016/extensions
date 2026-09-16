@@ -124,13 +124,6 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") flushSave();
 });
 
-function toggleEngine(id: string) {
-  const list = new Set(settings.value.searchEngines);
-  if (list.has(id)) list.delete(id);
-  else list.add(id);
-  settings.value.searchEngines = [...list];
-}
-
 async function disableCurrentSite() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.url) return;
@@ -203,7 +196,7 @@ function resetAll() {
           <h2>{{ t("panel.section.trigger") }}</h2>
           <div class="seg-btns">
             <label
-              v-for="m in ['hover', 'altHover', 'altClick', 'click', 'longPress', 'drag'] as const"
+              v-for="m in ['hover', 'altHover', 'longPress', 'drag'] as const"
               :key="m"
               :class="{ on: settings.triggerMode === m }"
             >
@@ -221,7 +214,7 @@ function resetAll() {
               min="0.1"
               max="2"
               step="0.1"
-              :disabled="['click', 'altClick', 'longPress', 'drag'].includes(settings.triggerMode)"
+              :disabled="['longPress', 'drag'].includes(settings.triggerMode)"
             />
           </label>
           <label v-if="settings.triggerMode === 'longPress'" class="row">
@@ -403,16 +396,20 @@ function resetAll() {
             <input v-model="settings.selectionSearch" type="checkbox" />
           </label>
           <div class="row-label">{{ t("selection.engines") }}</div>
-          <div class="chips">
-            <button
+          <div class="seg-btns">
+            <label
               v-for="e in SEARCH_ENGINES"
               :key="e.id"
-              class="chip"
-              :class="{ on: settings.searchEngines.includes(e.id) }"
-              @click="toggleEngine(e.id)"
+              :class="{ on: settings.searchEngine === e.id }"
             >
+              <input
+                v-model="settings.searchEngine"
+                type="radio"
+                name="searchEngine"
+                :value="e.id"
+              />
               {{ e.label }}
-            </button>
+            </label>
           </div>
           <label class="row">
             <span>{{ t("selection.aiEngine") }}</span>

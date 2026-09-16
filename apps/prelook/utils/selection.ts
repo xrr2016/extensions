@@ -1,12 +1,12 @@
+import type { I18n } from "@/utils/i18n";
 import {
   AI_ENGINES,
   SEARCH_ENGINES,
   clampSettings,
   isSiteDisabled,
   type PrelookSettings,
-} from '@/utils/storage';
-import type { I18n } from '@/utils/i18n';
-import type { ContentScriptContext } from 'wxt/utils/content-script-context';
+} from "@/utils/storage";
+import type { ContentScriptContext } from "wxt/utils/content-script-context";
 
 export const SELECTION_STYLE = `
 .tp-sel {
@@ -29,13 +29,6 @@ export const SELECTION_STYLE = `
 :host([data-tp-theme='dark']) .tp-sel button.tp-ai { color: #fff; }
 `;
 
-const SHORT_LABELS: Record<string, string> = {
-  google: 'Google',
-  bing: 'Bing',
-  baidu: '百度',
-  duckduckgo: 'DDG',
-};
-
 export interface SelectionDeps {
   getSettings: () => PrelookSettings;
   i18n: I18n;
@@ -52,32 +45,32 @@ export function createSelectionSystem(
   deps: SelectionDeps,
   shadow: ShadowRoot,
 ): SelectionSystem {
-  const bar = document.createElement('div');
-  bar.className = 'tp-sel';
+  const bar = document.createElement("div");
+  bar.className = "tp-sel";
   shadow.appendChild(bar);
   let visible = false;
 
   function render() {
     const s = clampSettings(deps.getSettings());
-    bar.innerHTML = '';
-    for (const id of s.searchEngines) {
-      const engine = SEARCH_ENGINES.find((e) => e.id === id);
-      if (!engine) continue;
-      const btn = document.createElement('button');
-      btn.textContent = SHORT_LABELS[id] ?? engine.label;
+    bar.innerHTML = "";
+    // One Web-search button: which engine it opens is a panel setting now.
+    const engine = SEARCH_ENGINES.find((e) => e.id === s.searchEngine);
+    if (engine) {
+      const btn = document.createElement("button");
+      btn.textContent = deps.i18n.t("selection.engines");
       btn.title = engine.label;
-      btn.addEventListener('click', () => open(engine.url));
+      btn.addEventListener("click", () => open(engine.url));
       bar.appendChild(btn);
     }
     const ai = AI_ENGINES.find((e) => e.id === s.aiEngine);
     if (ai) {
-      const btn = document.createElement('button');
-      btn.className = 'tp-ai';
-      btn.textContent = `✨ ${deps.i18n.t('selection.ai')}`;
-      btn.title = ai.url.includes('%s')
-        ? `${deps.i18n.t('selection.ai')} · ${ai.label}`
-        : `${deps.i18n.t('selection.ai')} · ${ai.label} ${deps.i18n.t('selection.aiCopyHint')}`;
-      btn.addEventListener('click', () => open(ai.url));
+      const btn = document.createElement("button");
+      btn.className = "tp-ai";
+      btn.textContent = `✨ ${deps.i18n.t("selection.ai")}`;
+      btn.title = ai.url.includes("%s")
+        ? `${deps.i18n.t("selection.ai")} · ${ai.label}`
+        : `${deps.i18n.t("selection.ai")} · ${ai.label} ${deps.i18n.t("selection.aiCopyHint")}`;
+      btn.addEventListener("click", () => open(ai.url));
       bar.appendChild(btn);
     }
   }
@@ -93,14 +86,14 @@ export function createSelectionSystem(
   }
 
   function legacyCopy(text: string) {
-    const area = document.createElement('textarea');
+    const area = document.createElement("textarea");
     area.value = text;
-    area.setAttribute('readonly', '');
-    area.style.cssText = 'position:fixed;top:-1000px;left:-1000px;opacity:0';
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed;top:-1000px;left:-1000px;opacity:0";
     document.body.appendChild(area);
     area.select();
     try {
-      document.execCommand('copy');
+      document.execCommand("copy");
     } catch {
       /* clipboard unavailable; the tab still opens */
     }
@@ -115,11 +108,11 @@ export function createSelectionSystem(
     sel?.removeAllRanges();
     // No `%s` means the site can't take the prompt in the URL, so hand the text
     // over through the clipboard and just start a fresh conversation.
-    const takestext = template.includes('%s');
+    const takestext = template.includes("%s");
     if (!takestext) copyText(text);
-    const url = takestext ? template.replace('%s', encodeURIComponent(text)) : template;
+    const url = takestext ? template.replace("%s", encodeURIComponent(text)) : template;
     void browser.runtime.sendMessage({
-      type: 'prelook:openTab',
+      type: "prelook:openTab",
       url,
       background: clampSettings(deps.getSettings()).openInBackground,
     });
@@ -128,8 +121,8 @@ export function createSelectionSystem(
   function show(rect: DOMRect) {
     render();
     const s = clampSettings(deps.getSettings());
-    bar.style.setProperty('--tp-accent', s.themeColor);
-    bar.classList.add('tp-show');
+    bar.style.setProperty("--tp-accent", s.themeColor);
+    bar.classList.add("tp-show");
     visible = true;
     const bw = bar.offsetWidth || 200;
     let x = rect.left + rect.width / 2 - bw / 2;
@@ -141,7 +134,7 @@ export function createSelectionSystem(
   }
 
   function hide() {
-    bar.classList.remove('tp-show');
+    bar.classList.remove("tp-show");
     visible = false;
   }
 
@@ -157,7 +150,7 @@ export function createSelectionSystem(
       return;
     }
     const sel = document.getSelection();
-    const text = sel?.toString().trim() ?? '';
+    const text = sel?.toString().trim() ?? "";
     if (!sel || sel.isCollapsed || text.length < s.minSelectionChars || sel.rangeCount === 0) {
       hide();
       return;
@@ -174,14 +167,14 @@ export function createSelectionSystem(
     show(rect);
   }
 
-  ctx.addEventListener(document, 'mouseup', (e: MouseEvent) => {
+  ctx.addEventListener(document, "mouseup", (e: MouseEvent) => {
     const path = e.composedPath();
     if (path.includes(bar)) return; // interacting with the toolbar itself
     setTimeout(check, 10);
   });
   ctx.addEventListener(
     document,
-    'mousedown',
+    "mousedown",
     (e: MouseEvent) => {
       if (!visible) return;
       const path = e.composedPath();
@@ -192,24 +185,24 @@ export function createSelectionSystem(
   );
   ctx.addEventListener(
     window,
-    'scroll',
+    "scroll",
     () => {
       if (visible) hide();
     },
     { capture: true, passive: true },
   );
-  ctx.addEventListener(document, 'keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && visible) hide();
+  ctx.addEventListener(document, "keydown", (e: KeyboardEvent) => {
+    if (e.key === "Escape" && visible) hide();
   });
 
-  bar.addEventListener('mouseover', (e) => e.stopPropagation());
+  bar.addEventListener("mouseover", (e) => e.stopPropagation());
 
   return {
     isVisible: () => visible,
     hide,
     applySettings: () => {
       if (visible) render();
-      bar.style.setProperty('--tp-accent', clampSettings(deps.getSettings()).themeColor);
+      bar.style.setProperty("--tp-accent", clampSettings(deps.getSettings()).themeColor);
     },
   };
 }

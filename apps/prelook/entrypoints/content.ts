@@ -384,34 +384,11 @@ export default defineContentScript({
       document,
       "click",
       (e) => {
-        const event = e as MouseEvent;
         if (suppressClickUrl) {
           suppressClickUrl = null;
           e.preventDefault();
           e.stopPropagation();
-          return;
         }
-        const mode = settings.triggerMode;
-        if (!settings.enabled || (mode !== "click" && mode !== "altClick")) return;
-        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
-        // `click` is the plain click, `altClick` the Alt-modified one. Taking
-        // Alt+click over also cancels the browser's save-link default, which is
-        // exactly what makes this a usable trigger.
-        if (mode === "click" ? event.altKey : !event.altKey) return;
-        const hit = anchorHref(event);
-        if (!hit) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const info = toAnchorInfo(
-          hit.anchor,
-          hit.url,
-          event,
-          clampSettings(settings).warnDangerous,
-        );
-        void ensureUi().then(() => {
-          selection?.hide();
-          preview?.open(info);
-        });
       },
       true,
     );
@@ -456,7 +433,7 @@ export default defineContentScript({
     });
 
     settingsItem.getValue().then((stored: PrelookSettings | undefined) => {
-      settings = { ...DEFAULT_SETTINGS, ...stored };
+      settings = clampSettings({ ...DEFAULT_SETTINGS, ...stored });
       // Pre-create the UI host so the selection toolbar works even if no
       // preview has been opened yet (cheap: an empty zero-size shadow host).
       if (settings.enabled) void ensureUi();
@@ -469,7 +446,7 @@ export default defineContentScript({
 
     void settingsItem.watch((newVal: PrelookSettings | undefined) => {
       if (!newVal) return;
-      settings = { ...DEFAULT_SETTINGS, ...newVal };
+      settings = clampSettings({ ...DEFAULT_SETTINGS, ...newVal });
       // Re-resolve the theme: switching between light/dark/system (and back to
       // "system" following the OS) has to be picked up live.
       themeDispose?.();

@@ -1,4 +1,4 @@
-export type TriggerMode = "hover" | "altHover" | "click" | "altClick" | "longPress" | "drag";
+export type TriggerMode = "hover" | "altHover" | "longPress" | "drag";
 export type PreviewPosition =
   | "link"
   | "mouse"
@@ -65,12 +65,12 @@ export const SEARCH_ENGINES: SearchEngine[] = [
 /**
  * AI engines for the selection toolbar. A template containing `%s` receives the
  * selected text in the URL; a template without it means the site cannot take a
- * prompt that way (DeepSeek reads no such query param), so the caller copies the
- * selection to the clipboard and opens the plain URL instead.
+ * prompt that way (Kimi/豆包/DeepSeek read no such query param), so the caller
+ * copies the selection to the clipboard and opens the plain URL instead.
  */
 export const AI_ENGINES: SearchEngine[] = [
-  { id: "kimi", label: "Kimi", url: "https://kimi.moonshot.cn/?q=%s" },
-  { id: "doubao", label: "豆包", url: "https://www.doubao.com/chat/?q=%s" },
+  { id: "kimi", label: "Kimi", url: "https://kimi.moonshot.cn/" },
+  { id: "doubao", label: "豆包", url: "https://www.doubao.com/chat/" },
   { id: "perplexity", label: "Perplexity", url: "https://www.perplexity.ai/search?q=%s" },
   { id: "deepseek", label: "DeepSeek", url: "https://chat.deepseek.com/" },
 ];
@@ -79,6 +79,9 @@ export const MAX_WINDOWS_LIMIT = 6;
 
 /** Power-saving levels, in the order the settings panel lists them. */
 export const POWER_MODES: PowerMode[] = ["auto", "on", "max", "off"];
+
+/** Trigger modes, for validating stored settings (values can be removed over time). */
+export const TRIGGER_MODES: TriggerMode[] = ["hover", "altHover", "longPress", "drag"];
 
 /** Window width/height bounds, in percent of the viewport. */
 export const WINDOW_PCT_MIN = 20;
@@ -118,7 +121,8 @@ export interface PrelookSettings {
   /** Backdrop blur strength, 0-100 (shown on the preview window's hover) */
   blurStrength: number;
   selectionSearch: boolean;
-  searchEngines: string[];
+  /** Web search engine the selection toolbar opens (single choice) */
+  searchEngine: string;
   aiEngine: string;
   openInBackground: boolean;
   minSelectionChars: number;
@@ -163,7 +167,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   sidebarSide: "right",
   blurStrength: 5,
   selectionSearch: true,
-  searchEngines: ["google", "bing", "baidu"],
+  searchEngine: "google",
   aiEngine: "kimi",
   openInBackground: false,
   minSelectionChars: 2,
@@ -220,7 +224,14 @@ export function isSiteDisabled(disabledSites: string[], hostname: string): boole
 }
 
 export function clampSettings(s: PrelookSettings): PrelookSettings {
-  const { blurPx: legacyBlurPx, ...rest } = s as PrelookSettings & { blurPx?: number };
+  const {
+    blurPx: legacyBlurPx,
+    searchEngines: legacySearchEngines,
+    ...rest
+  } = s as PrelookSettings & {
+    blurPx?: number;
+    searchEngines?: string[];
+  };
   const windowTheme: WindowTheme = WINDOW_THEMES.some((w) => w.id === s.windowTheme)
     ? s.windowTheme
     : DEFAULT_SETTINGS.windowTheme;
@@ -235,12 +246,23 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
     // An engine id can disappear between versions; falling back beats
     // rendering a toolbar with no AI button at all.
     aiEngine: AI_ENGINES.some((e) => e.id === s.aiEngine) ? s.aiEngine : DEFAULT_SETTINGS.aiEngine,
+    // `searchEngine` used to be the multi-select `searchEngines` array; an
+    // unlisted id (or a legacy array) falls back to its first valid entry.
+    searchEngine: SEARCH_ENGINES.some((e) => e.id === s.searchEngine)
+      ? s.searchEngine
+      : (legacySearchEngines?.find((id) => SEARCH_ENGINES.some((e) => e.id === id)) ??
+        DEFAULT_SETTINGS.searchEngine),
     theme: (["system", "light", "dark"] as const).includes(s.theme)
       ? s.theme
       : DEFAULT_SETTINGS.theme,
     // Unlike an engine id, a bogus power level cannot fall back to "do nothing":
     // every comparison against it would silently drop features.
     powerSaver: POWER_MODES.includes(s.powerSaver) ? s.powerSaver : DEFAULT_SETTINGS.powerSaver,
+    // A removed trigger mode (e.g. the click variants) would leave every
+    // comparison missing and the extension silently inert — fall back instead.
+    triggerMode: TRIGGER_MODES.includes(s.triggerMode)
+      ? s.triggerMode
+      : DEFAULT_SETTINGS.triggerMode,
     windowTheme,
     // Two independent colours: the window theme only ever colours preview
     // windows (a preset's own accent, or `windowColor` for "custom"), while
