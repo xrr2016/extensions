@@ -39,9 +39,9 @@ export interface WindowThemePreset {
 }
 
 export const WINDOW_THEMES: WindowThemePreset[] = [
+  { id: "silver", accent: "#8c959f", kind: "tint" },
   { id: "blue", accent: "#4f6bf6", kind: "tint" },
   { id: "gray", accent: "#6b7280", kind: "tint" },
-  { id: "silver", accent: "#8c959f", kind: "tint" },
   { id: "green", accent: "#10b981", kind: "tint" },
   { id: "purple", accent: "#8b5cf6", kind: "tint" },
   { id: "pink", accent: "#ec4899", kind: "tint" },
@@ -158,7 +158,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   width: 40,
   height: 55,
   themeColor: "#4f6bf6",
-  windowColor: "#4f6bf6",
+  windowColor: "#8c959f",
   position: "link",
   sidebarSide: "right",
   blurStrength: 5,
@@ -175,7 +175,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   highlightLinks: false,
   autoPin: false,
   theme: "system",
-  windowTheme: "blue",
+  windowTheme: "silver",
   stripTracking: true,
   warnDangerous: true,
   closeOnOutsideClick: true,
