@@ -43,7 +43,7 @@ jobs:
         run: pnpm compile
 
       # The zip filename and the manifest `version` both come from
-      # apps/tabpeek/package.json, so a mismatched tag means the released artifact
+      # apps/prelook/package.json, so a mismatched tag means the released artifact
       # would not identify itself as this release (`v0.1.0` and `0.1.0` both pass).
       - name: Check the release tag matches the extension version
         env:
@@ -54,11 +54,11 @@ jobs:
             echo "No release tag (workflow_dispatch run) — skipping the version guard."
             exit 0
           fi
-          version=$(node -p "require('./apps/tabpeek/package.json').version")
+          version=$(node -p "require('./apps/prelook/package.json').version")
           tag="${TAG#v}"
-          echo "tag=$TAG  apps/tabpeek/package.json=$version"
+          echo "tag=$TAG  apps/prelook/package.json=$version"
           if [ "$tag" != "$version" ]; then
-            echo "::error::Release tag '$TAG' does not match apps/tabpeek/package.json ($version). Bump the version and retag, or the built zip would carry a different version than this release."
+            echo "::error::Release tag '$TAG' does not match apps/prelook/package.json ($version). Bump the version and retag, or the built zip would carry a different version than this release."
             exit 1
           fi
 
@@ -66,14 +66,14 @@ jobs:
       # sources zip for Firefox only, which AMO review asks for).
       - name: Build zips
         run: |
-          pnpm zip:tabpeek
-          pnpm zip:tabpeek:firefox
+          pnpm zip:prelook
+          pnpm zip:prelook:firefox
 
       - name: Upload the zips as run artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tabpeek-zips
-          path: apps/tabpeek/.output/*.zip
+          name: prelook-zips
+          path: apps/prelook/.output/*.zip
           if-no-files-found: error
 
       - name: Attach the zips to the release
@@ -81,4 +81,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$TAG" apps/tabpeek/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
+        run: gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"

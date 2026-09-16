@@ -139,7 +139,7 @@ export function renderReaderInto(
     if (!a) return;
     e.preventDefault();
     e.stopPropagation();
-    void browser.runtime.sendMessage({ type: 'tabpeek:openTab', url: a.href });
+    void browser.runtime.sendMessage({ type: 'prelook:openTab', url: a.href });
   });
   void i18n; // reserved for future reader-mode UI strings
   return container;

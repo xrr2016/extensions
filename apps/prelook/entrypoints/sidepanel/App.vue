@@ -12,7 +12,7 @@ import {
   WINDOW_THEMES,
   clampSettings,
   settingsItem,
-  type TabPeekSettings,
+  type PrelookSettings,
 } from "@/utils/storage";
 import { watchTheme } from "@/utils/theme";
 import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
@@ -23,7 +23,7 @@ type TabId = (typeof TABS)[number];
 const activeTab = ref<TabId>("preview");
 
 const loaded = ref(false);
-const settings = ref<TabPeekSettings>({ ...DEFAULT_SETTINGS });
+const settings = ref<PrelookSettings>({ ...DEFAULT_SETTINGS });
 const newSite = ref("");
 
 const t = (key: string, params?: Record<string, string | number>) =>
@@ -93,7 +93,7 @@ async function load() {
   } catch (err) {
     // Without this the UI silently shows defaults and never persists, which is
     // how a missing "storage" permission presents itself.
-    console.error("[TabPeek] failed to load settings:", err);
+    console.error("[Prelook] failed to load settings:", err);
   }
 }
 onMounted(load);

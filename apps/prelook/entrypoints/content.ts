@@ -14,7 +14,7 @@ import {
   DEFAULT_SETTINGS,
   isSiteDisabled,
   settingsItem,
-  type TabPeekSettings,
+  type PrelookSettings,
 } from "@/utils/storage";
 import { watchTheme } from "@/utils/theme";
 import { stripTracking } from "@/utils/tracking";
@@ -50,7 +50,7 @@ export default defineContentScript({
   matches: ["<all_urls>"],
   runAt: "document_idle",
   main(ctx) {
-    let settings: TabPeekSettings = { ...DEFAULT_SETTINGS };
+    let settings: PrelookSettings = { ...DEFAULT_SETTINGS };
     let power: PowerState = IDLE_POWER_STATE;
     let preview: PreviewSystem | null = null;
     let selection: SelectionSystem | null = null;
@@ -64,9 +64,9 @@ export default defineContentScript({
     /**
      * The settings the warm-up may work with: power saving can only take the
      * Speculation Rules away, never add them. Any level below "off" drops them
-     * entirely — a prerender is the single most expensive thing TabPeek does.
+     * entirely — a prerender is the single most expensive thing Prelook does.
      */
-    function warmupSettings(): TabPeekSettings {
+    function warmupSettings(): PrelookSettings {
       if (power.level === "off") return settings;
       return { ...settings, speculationMode: "off" };
     }
@@ -95,7 +95,7 @@ export default defineContentScript({
       if (uiReady) return uiReady;
       uiReady = (async () => {
         const ui = await createShadowRootUi(ctx, {
-          name: "tabpeek-ui",
+          name: "prelook-ui",
           position: "inline",
           append: "last",
           css: PREVIEW_STYLE + "\n" + SELECTION_STYLE,
@@ -134,7 +134,7 @@ export default defineContentScript({
     function anchorHref(e: Event): { anchor: HTMLAnchorElement; url: string } | null {
       const target = e.target as Element | null;
       if (!target?.closest) return null;
-      const uiHost = document.querySelector("tabpeek-ui");
+      const uiHost = document.querySelector("prelook-ui");
       if (uiHost && uiHost.contains(target)) return null;
       const anchor = target.closest<HTMLAnchorElement>("a[href]");
       if (!anchor || anchor.download) return null;
@@ -223,7 +223,7 @@ export default defineContentScript({
       } else {
         clearHoverTimer();
         const overUi = (event.composedPath() as Node[]).some(
-          (n) => n instanceof HTMLElement && n.tagName === "TABPEEK-UI",
+          (n) => n instanceof HTMLElement && n.tagName === "PRELOOK-UI",
         );
         if (!overUi) preview?.releaseExcept(null);
       }
@@ -256,7 +256,7 @@ export default defineContentScript({
         const event = e as PointerEvent;
         if (!settings.enabled || !clampSettings(settings).closeOnOutsideClick) return;
         const path = event.composedPath() as Node[];
-        if (path.some((n) => n instanceof HTMLElement && n.tagName === "TABPEEK-UI")) return;
+        if (path.some((n) => n instanceof HTMLElement && n.tagName === "PRELOOK-UI")) return;
         preview?.dismissUnpinned();
       },
       true,
@@ -440,7 +440,7 @@ export default defineContentScript({
     browser.runtime.onMessage.addListener((message: unknown) => {
       if (typeof message !== "object" || message === null) return undefined;
       const msg = message as Record<string, unknown>;
-      if (msg.type !== "tabpeek:preview") return undefined;
+      if (msg.type !== "prelook:preview") return undefined;
       const url = String(msg.url ?? "");
       if (!/^https?:/i.test(url)) return undefined;
       const info = anchorInfoFor(url);
@@ -451,7 +451,7 @@ export default defineContentScript({
       return undefined;
     });
 
-    settingsItem.getValue().then((stored: TabPeekSettings | undefined) => {
+    settingsItem.getValue().then((stored: PrelookSettings | undefined) => {
       settings = { ...DEFAULT_SETTINGS, ...stored };
       // Pre-create the UI host so the selection toolbar works even if no
       // preview has been opened yet (cheap: an empty zero-size shadow host).
@@ -463,7 +463,7 @@ export default defineContentScript({
       preview?.destroy();
     });
 
-    void settingsItem.watch((newVal: TabPeekSettings | undefined) => {
+    void settingsItem.watch((newVal: PrelookSettings | undefined) => {
       if (!newVal) return;
       settings = { ...DEFAULT_SETTINGS, ...newVal };
       // Re-resolve the theme: switching between light/dark/system (and back to

@@ -1,4 +1,4 @@
-/* TabPeek landing — i18n、主题切换、滚动高亮、入场动画、按钮涟漪 */
+/* Prelook landing — i18n、主题切换、滚动高亮、入场动画、按钮涟漪 */
 (function () {
   'use strict';
 
@@ -12,10 +12,10 @@
       'nav.theme': '切换深浅色主题',
       'nav.lang': '切换语言',
 
-      'hero.title1': '极速预览，',
-      'hero.title2': '告别标签海',
+      'hero.title1': '悬停即预览，',
+      'hero.title2': '不必点开',
       'hero.desc': '鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。',
-      'hero.videoAria': 'TabPeek 使用演示：指针停在链接上，预览窗浮出并渲染这个页面',
+      'hero.videoAria': 'Prelook 使用演示：指针停在链接上，预览窗浮出并渲染这个页面',
       'hero.videoPlay': '播放演示',
       'hero.videoPause': '暂停演示',
 
@@ -29,7 +29,7 @@
       'cta.title': '现在就用起来',
       'cta.sub': '装完即用，不用注册，也不用登录。',
 
-      'features.title': '沉浸式浏览，告别标签海',
+      'features.title': '沉浸式浏览，不必来回切换',
       'features.subtitle': '十二项能力，全部本地运行，不上传任何数据',
 
       'f.preview.tag': '核心',
@@ -94,7 +94,7 @@
       'speed.s3d': '开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。',
       'speed.compare': '加载耗时对比',
       'speed.cold': '冷启动加载',
-      'speed.warm': 'TabPeek 预热后',
+      'speed.warm': 'Prelook 预热后',
       'speed.note': '示意对比：预热后的预览窗直接呈现本地已有内容。',
 
       // 占位评价：上线前必须换成可核实的真实评价原文与昵称，
@@ -118,22 +118,22 @@
       'faq.subtitle': '还有疑问？先看这几条。',
       'faq.q1': '预览窗口是空白的怎么办？',
       'faq.a1':
-        '部分网站禁止被内嵌，TabPeek 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。',
+        '部分网站禁止被内嵌，Prelook 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。',
       'faq.q2': '我的数据会被上传吗？',
       'faq.a2':
-        '不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。',
-      'faq.q3': 'TabPeek 收费吗？',
+        '不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。',
+      'faq.q3': 'Prelook 收费吗？',
       'faq.a3':
         '完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。',
       'faq.q4': '预览为什么这么快？',
       'faq.a4':
-        'TabPeek 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。',
+        'Prelook 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。',
       'faq.q5': '会不会拖慢浏览器？',
       'faq.a5':
         '不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。',
 
-      'footer.about': 'TabPeek 极速预览，告别标签海。',
-      'footer.slogan': '一点即预览，告别标签海。',
+      'footer.about': 'Prelook 悬停即预览，不必再点开。',
+      'footer.slogan': '悬停即预览，不必再点开。',
       'footer.links': '快速链接',
       'footer.contact': '联系我们',
       'footer.rights': '保留所有权利',
@@ -149,12 +149,12 @@
       'nav.theme': 'Toggle color theme',
       'nav.lang': 'Switch language',
 
-      'hero.title1': 'Instant previews, ',
-      'hero.title2': 'goodbye tab clutter',
+      'hero.title1': 'Hover to preview, ',
+      'hero.title2': 'no wasted clicks',
       'hero.desc':
         'The instant your cursor lands on a link, its page is already loading — preview first, decide after.',
       'hero.videoAria':
-        'TabPeek in action: the pointer rests on a link and a preview window opens with that page',
+        'Prelook in action: the pointer rests on a link and a preview window opens with that page',
       'hero.videoPlay': 'Play the demo',
       'hero.videoPause': 'Pause the demo',
 
@@ -168,7 +168,7 @@
       'cta.title': 'Get it running today',
       'cta.sub': 'Install and go — no sign-up, no login.',
 
-      'features.title': 'Immersive browsing, goodbye tab clutter',
+      'features.title': 'Immersive browsing, without the back-and-forth',
       'features.subtitle': 'Twelve features, all local — nothing is uploaded',
 
       'f.preview.tag': 'Core',
@@ -237,7 +237,7 @@
         'With prerendering on, the page is already painted in the background — clicking navigates instantly.',
       'speed.compare': 'Load time comparison',
       'speed.cold': 'Cold load',
-      'speed.warm': 'After TabPeek warm-up',
+      'speed.warm': 'After Prelook warm-up',
       'speed.note': 'Illustrative: a warmed preview window shows what is already on your machine.',
 
       // Placeholder reviews: replace every entry with a verifiable real review
@@ -261,22 +261,22 @@
       'faq.subtitle': 'Still curious? Start here.',
       'faq.q1': 'The preview window is blank — what now?',
       'faq.a1':
-        'Some sites forbid embedding; TabPeek switches to reader mode automatically. If both fail, the window offers an open-in-new-tab button.',
+        'Some sites forbid embedding; Prelook switches to reader mode automatically. If both fail, the window offers an open-in-new-tab button.',
       'faq.q2': 'Is my data uploaded?',
       'faq.a2':
         'No. Previews and settings live entirely in your browser — no accounts, no servers.',
-      'faq.q3': 'Does TabPeek cost anything?',
+      'faq.q3': 'Does Prelook cost anything?',
       'faq.a3':
         'It is completely free: no Pro tier, no in-app purchases, no locked features — multi-window previews included. The project runs on sponsorships, which are purely optional.',
       'faq.q4': 'Why are the previews so fast?',
       'faq.a4':
-        'TabPeek uses the browser-native Speculation Rules API: the moment you hover a link, prefetching (or prerendering) begins, so the preview window shows content that has already arrived locally. The browser does all the scheduling — the extension runs no servers.',
+        'Prelook uses the browser-native Speculation Rules API: the moment you hover a link, prefetching (or prerendering) begins, so the preview window shows content that has already arrived locally. The browser does all the scheduling — the extension runs no servers.',
       'faq.q5': 'Will it slow my browser down?',
       'faq.a5':
         'There is no constant overhead. Warm-up fires only while the pointer rests on a link and is cancelled when it leaves; a built-in power-saver mode can drop warm-up and backdrop blur automatically on battery.',
 
-      'footer.about': 'TabPeek is a free extension by 冷石Boy that puts previews right in the browser.',
-      'footer.slogan': 'Peek first, tab less.',
+      'footer.about': 'Prelook is a free extension by 冷石Boy that puts previews right in the browser.',
+      'footer.slogan': 'Peek first, click later.',
       'footer.links': 'Links',
       'footer.contact': 'Contact',
       'footer.rights': 'All rights reserved',
@@ -285,12 +285,12 @@
   };
 
   var TITLES = {
-    'zh-CN': 'TabPeek — 极速悬停预览，告别标签海',
-    en: 'TabPeek — Blazing-fast hover previews, goodbye tab clutter',
+    'zh-CN': 'Prelook — 悬停链接即预览，不必再点开',
+    en: 'Prelook — Preview any link without leaving the page',
   };
 
-  var LANG_KEY = 'tabpeek-landing-lang';
-  var THEME_KEY = 'tabpeek-landing-theme';
+  var LANG_KEY = 'prelook-landing-lang';
+  var THEME_KEY = 'prelook-landing-theme';
   var LANGS = ['zh-CN', 'en'];
 
   function readStore(key) {

@@ -1,11 +1,11 @@
 # 演示视频录制台
 
-落地页 hero 右侧那段视频（`apps/tabpeek-landing/assets/demo.mp4`）从这里录出来。
+落地页 hero 右侧那段视频（`apps/prelook-landing/assets/demo.mp4`）从这里录出来。
 
 录它**不需要把扩展装进浏览器**。`index.html` 是一个真实感的博客文章页，自己带一份
 `mock.js` 顶掉 background，然后原样加载 `.output/chrome-mv3/content-scripts/content.js`
 ——所以画面里的倒计时进度条、预览窗、开窗动效、阅读模式兜底全是线上那份代码，
-只有 `tabpeek:fetch` 的响应来自 `mock.js` 里的表。这样录制是离线且可重复的，也不受
+只有 `prelook:fetch` 的响应来自 `mock.js` 里的表。这样录制是离线且可重复的，也不受
 被预览站点 `X-Frame-Options` 的影响。
 
 ## 文件
@@ -13,7 +13,7 @@
 | 文件                             | 用途                                                                    |
 | -------------------------------- | ----------------------------------------------------------------------- |
 | `index.html`                     | 被录的宿主页（「比特手记」那篇文章），内嵌 `mock.js` + 真实 content.js   |
-| `mock.js`                        | chrome API 替身；同时预置 `tabpeek_settings` 与 `tabpeek:fetch` 的应答表 |
+| `mock.js`                        | chrome API 替身；同时预置 `prelook_settings` 与 `prelook:fetch` 的应答表 |
 | `demo.css`                       | 宿主页样式                                                              |
 | `article-1.html` / `article.css` | 预览窗 iframe 里真正渲染的那篇文章                                      |
 | `favicon-*.svg`                  | 预览窗标题栏里的小图标                                                  |
@@ -25,17 +25,17 @@
   走阅读模式，标题栏会出现「阅读模式」徽章）
 
 `#link-internal` 的 href 由一段内联脚本按当前端口算出来，并且把 `127.0.0.1` 换成
-`localhost`：IP 字面量主机正是 TabPeek 自己的风险提示会点亮的那一条，那样录出来标题栏会
+`localhost`：IP 字面量主机正是 Prelook 自己的风险提示会点亮的那一条，那样录出来标题栏会
 挂一个 ⚠ 徽章，那是录制环境的产物而不是链接本身的问题。
 
 ## 重录
 
 ```bash
-pnpm build:tabpeek                                   # 先出最新产物，录的是 .output 里的 content.js
+pnpm build:prelook                                   # 先出最新产物，录的是 .output 里的 content.js
 cd <仓库根> && python -m http.server 4180 --bind 127.0.0.1
 ```
 
-在内置浏览器里打开 `http://127.0.0.1:4180/apps/tabpeek/test/demo/index.html`，视口 1200×800，
+在内置浏览器里打开 `http://127.0.0.1:4180/apps/prelook/test/demo/index.html`，视口 1200×800，
 然后按下面的动作表录（`showCursor: true`，`fps: 25`，`settleMs: 900`）：
 
 ```js
@@ -63,20 +63,22 @@ cd <仓库根> && python -m http.server 4180 --bind 127.0.0.1
 
 ## 转码与裁剪
 
+以下命令都在**仓库根**执行（输入路径 `recordings/…` 就是仓库根相对）。
+
 ```bash
 # 全画幅交付件（保留为原始证据）
-ffmpeg -y -i recordings/tabpeek-demo.webm \
+ffmpeg -y -i recordings/prelook-demo.webm \
   -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -r 25 -movflags +faststart -an \
-  recordings/tabpeek-demo.mp4
+  recordings/prelook-demo.mp4
 
 # 落地页那一版：裁掉顶部导航，让预览窗在 hero 里占得更大
-ffmpeg -y -i recordings/tabpeek-demo.webm -vf "crop=928:700:80:76" \
+ffmpeg -y -i recordings/prelook-demo.webm -vf "crop=928:700:80:76" \
   -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -r 25 -movflags +faststart -an \
-  ../../tabpeek-landing/assets/demo.mp4
+  apps/prelook-landing/assets/demo.mp4
 
 # poster 取"窗口已经开着"的那一帧
-ffmpeg -y -ss 5.2 -i recordings/tabpeek-demo.webm -vf "crop=928:700:80:76" -frames:v 1 \
-  -c:v libwebp -quality 82 ../../tabpeek-landing/assets/demo-poster.webp
+ffmpeg -y -ss 5.2 -i recordings/prelook-demo.webm -vf "crop=928:700:80:76" -frames:v 1 \
+  -c:v libwebp -quality 82 apps/prelook-landing/assets/demo-poster.webp
 ```
 
 裁剪框来自窗口的实际落位：内部链接那窗在 x 102–702、外部链接那窗在 x 387–987，y 上取标题

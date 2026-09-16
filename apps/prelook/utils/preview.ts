@@ -5,7 +5,7 @@ import type { RiskReason } from "@/utils/safety";
 import {
   WINDOW_THEMES,
   clampSettings,
-  type TabPeekSettings,
+  type PrelookSettings,
   type WindowThemePreset,
 } from "@/utils/storage";
 
@@ -78,7 +78,7 @@ export interface PreviewSystem {
   highlightLink(anchor: Element | null): void;
   /** Close every unpinned window at once (outside click / scroll triggers) */
   dismissUnpinned(): void;
-  applySettings(s: TabPeekSettings): void;
+  applySettings(s: PrelookSettings): void;
   /** Re-apply the effects the power state gates (backdrop blur, highlight) */
   applyPower(): void;
   destroy(): void;
@@ -292,7 +292,7 @@ const STYLE = `
 export { STYLE as PREVIEW_STYLE };
 
 export interface PreviewDeps {
-  getSettings: () => TabPeekSettings;
+  getSettings: () => PrelookSettings;
   getMaxWindows: () => number;
   /** Resolved power state; it may only take work away, never add it */
   getPower: () => PowerState;
@@ -326,7 +326,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   let nextId = 1;
   let zIndex = 2147483641;
 
-  function settings(): TabPeekSettings {
+  function settings(): PrelookSettings {
     return clampSettings(deps.getSettings());
   }
 
@@ -364,7 +364,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   }
 
   /** A window's effective position: its sidebar override wins over settings. */
-  function positionOf(win: WindowInstance): TabPeekSettings["position"] {
+  function positionOf(win: WindowInstance): PrelookSettings["position"] {
     const configured = settings().position;
     if (win.sidebar === true) return "sidebar";
     if (win.sidebar === false && configured === "sidebar") return "center";
@@ -372,7 +372,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   }
 
   /** The selected preset, falling back to the first one if the id is unknown. */
-  function windowPreset(s: TabPeekSettings): WindowThemePreset {
+  function windowPreset(s: PrelookSettings): WindowThemePreset {
     return WINDOW_THEMES.find((w) => w.id === s.windowTheme) ?? WINDOW_THEMES[0]!;
   }
 
@@ -380,7 +380,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
    *  mode still works); "dark" presets bring their own surface and ink. The
    *  accent itself always comes from here too: a window is coloured by its own
    *  theme (the preset's accent, or `windowColor` for "custom"), never by the
-   *  plugin accent (`themeColor`) that paints the rest of TabPeek's UI. */
+   *  plugin accent (`themeColor`) that paints the rest of Prelook's UI. */
   function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset, customColor: string) {
     root.style.setProperty("--tp-accent", preset.id === "custom" ? customColor : preset.accent);
     if (preset.kind === "dark") {
@@ -640,7 +640,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     const btn = document.createElement("button");
     btn.textContent = deps.i18n.t("preview.openTab");
     btn.addEventListener("click", () => {
-      void browser.runtime.sendMessage({ type: "tabpeek:openTab", url: win.url });
+      void browser.runtime.sendMessage({ type: "prelook:openTab", url: win.url });
       closeWindow(win);
     });
     box.append(span, btn);
@@ -658,7 +658,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     let reply: FetchReply | undefined;
     try {
       reply = (await browser.runtime.sendMessage({
-        type: "tabpeek:fetch",
+        type: "prelook:fetch",
         url: win.url,
       })) as FetchReply | undefined;
     } catch {
@@ -821,7 +821,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         setBodyContent(win, skeletonEl());
         void loadFlow(win);
       } else if (btn.dataset.act === "open") {
-        void browser.runtime.sendMessage({ type: "tabpeek:openTab", url: win.url });
+        void browser.runtime.sendMessage({ type: "prelook:openTab", url: win.url });
       }
     });
 
@@ -906,7 +906,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     void loadFlow(win);
   }
 
-  function applySettings(s: TabPeekSettings) {
+  function applySettings(s: PrelookSettings) {
     applyVisualVars();
     syncOverlay();
     if (!s.highlightLinks) highlightLink(null);

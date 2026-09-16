@@ -3,7 +3,7 @@ import {
   SEARCH_ENGINES,
   clampSettings,
   isSiteDisabled,
-  type TabPeekSettings,
+  type PrelookSettings,
 } from '@/utils/storage';
 import type { I18n } from '@/utils/i18n';
 import type { ContentScriptContext } from 'wxt/utils/content-script-context';
@@ -37,14 +37,14 @@ const SHORT_LABELS: Record<string, string> = {
 };
 
 export interface SelectionDeps {
-  getSettings: () => TabPeekSettings;
+  getSettings: () => PrelookSettings;
   i18n: I18n;
 }
 
 export interface SelectionSystem {
   isVisible(): boolean;
   hide(): void;
-  applySettings(s: TabPeekSettings): void;
+  applySettings(s: PrelookSettings): void;
 }
 
 export function createSelectionSystem(
@@ -119,7 +119,7 @@ export function createSelectionSystem(
     if (!takestext) copyText(text);
     const url = takestext ? template.replace('%s', encodeURIComponent(text)) : template;
     void browser.runtime.sendMessage({
-      type: 'tabpeek:openTab',
+      type: 'prelook:openTab',
       url,
       background: clampSettings(deps.getSettings()).openInBackground,
     });

@@ -4,8 +4,8 @@
 
 **多浏览器插件 monorepo**（pnpm workspace，根包名 `extensions`）。`apps/` 下按"每个产品两个目录"扁平排列：插件本体 + 落地页。当前产品：
 
-- **TabPeek** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置面板（侧边栏）、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在侧边栏设置面板与 landing 放了爱发电 + Patreon 赞助入口。
-- **tabpeek-landing** — 纯静态产品官网（零构建，直接部署），版式参考 `yuumi.coldstoneboy.cn`：**令牌驱动的设计系统**（`css/style.css` 顶部的 `--primary/--bg-*/--text-*/--shadow-*/--spacing-*/--radius-*`，与参考站同一套命名）、固定模糊导航栏 + 下划线 scroll-spy、`install(hero) → features → speed → reviews → sponsor → faq → cta-band → footer` 的区块顺序（锚点只有六个：`#features`/`#speed`/`#reviews`/`#sponsor`/`#faq`/`#get`，**hero 故意不带 id**——它就是首屏，给它锚点等于让导航"跳到你已经在的地方"；**没有独立的安装区块**，安装按钮在 hero 左栏与页尾色带各一份，导航与页脚那一条「安装」一律指向页尾色带的 `#get`；`.cta-band` 是整段饱和色块，**不在深浅交替的序列里**，所以它前后的 faq / footer 仍按原样式交替），**区块底色严格深浅交替**（`--bg-secondary` 与 `--bg-primary` 逐段切换，卡片永远取与所在区块相反的那一档），所以**插入新段落要把后面几段的底色整体翻一遍**，否则会出现两段同色连成一片、看不出分段。`#reviews` 是三栏评价墙（`.reviews-grid` 用 CSS `columns` 而不是 grid——卡片高矮不一时才能排成参考图那种错落感），**里面六条全是标注了"（占位）"的占位文案，不是真实评价**：TabPeek 尚未上架、没有任何真实评价，所以刻意不编造昵称与五星好评；上线前必须逐条换成可核实的原文（`reviews.rN.name` / `reviews.rN.text` 两个语言都要改，并替换头像右下角的浏览器图标），**不要为了版式好看而杜撰或改写原话**。**深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.tabpeek-landing-theme`。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份）。安装入口是**四颗等权按钮**（`.install-btn`：Chrome / Edge / Firefox / 手动安装，`href="#"` 占位，词条 `install.chrome|edge|firefox|manual`），出现两次——hero 左栏的 `.hero-actions` 和页尾色带的 `.cta-actions`，两处都是两列网格、同一套样式；**刻意不给 Chrome 任何强调样式**——那会暗示"只该装 Chrome"；前三颗挂 `assets/browser-chrome.svg` / `browser-edge.svg` / `browser-firefox.svg`（Wikimedia Commons 的官方多色 logo，**必须用 `<img>` 引文件而不是内联**：Chrome 与 Edge 的 SVG 都定义了 `id="a"/"b"/"c"` 的渐变，内联进同一个文档会互相覆盖），第四颗是内联的"外链"线性图标。用**两列网格而不是一行四颗**——hero 文字栏只有 ~557px，一行塞不下四颗带图标的按钮；`.install-btn` 本身按两列来定尺寸（字号 15px、`white-space: nowrap`——否则最长的"Firefox 安装"会折成两行把按钮顶高），`≤380px` 才退回一行一颗（再宽一点两列都放得下：390px 的手机上两列各 159px 仍然不挤）。**页尾色带**（`.cta-band`）构图参照 maxfoc.us：左边是胶囊徽章 + 大标题 + 一行副文案 + 这四颗按钮，右边是一段**纯 CSS 插画**（`.cta-art`：两个歪着的窗口，后面那个是深色浏览器框、前面那个是浅色预览窗，正好是产品自己的剪影）。插画用「前一层负 margin 压住后一层」而不是绝对定位——窗口高度由骨架线内容决定，绝对定位要按内容高度算偏移，加一行线就得重算。色带在浅色/深色各有一版渐变（`.cta-band` + `[data-theme="dark"] .cta-band`），带上的按钮固定白底深字（取 `--bg-primary` 会在深色主题里变成四块近黑色补丁）；`≤820px` 色带才立成一列、文案居中（断点压这么低是因为 768–960 还放得下左右两栏，提前立起来只会让色带上下空出一大片），`≤600px` 直接隐藏插画——留着它这一段会占掉整整一屏，而这一段的意义就是那四颗按钮。**页脚**是「logo + 字标 + 一句话」加四栏（快速链接 / 赞助 / 联系 / 条款，栏用的是等宽网格而不是靠 gap 撑开的 flex；**「快速链接」那一栏与页头导航是同一份清单、同一个顺序**——功能 / 极速 / 评价 / 赞助 / FAQ / 安装，两处一起改，别只动一边），最下面一行左边版权、右边 `.footer-meta`（备案号 + 回到顶部）。**备案号 `粤ICP备2026134562号` 是硬编码的法定标识**：不进词典（中英两种语言都原样显示），而且**必须链到 `https://beian.miit.gov.cn/`**——这是备案要求，不是"顺手给个出处"，别把它翻译掉或改成别的链接。`footer.slogan` 是词典里一条没人引用的历史遗留，留着没删。**hero 右侧是一段真实录屏**（`assets/demo.mp4`，裁剪到 928×700；poster `assets/demo-poster.webp`），不是 CSS 画的示意图——它是把 `.output/chrome-mv3/content-scripts/content.js` 原样加载进一个 mock 掉 background 的演示页录下来的，重录步骤在 `apps/tabpeek/test/demo/README.md`。视频默认静音自动播 + 循环，右下角一枚播放/暂停按钮（`#demoToggle`，词条 `hero.videoPlay`/`hero.videoPause`，`applyLang` 里会按当前播放状态重算文案），`prefers-reduced-motion: reduce` 时不自动播、停在 poster 上；**录屏内容永远是浅色页面，所以视频和那枚按钮都不跟深浅主题走**（按钮故意写死浅色，取主题令牌会在深色下糊在白色录屏上）。旧的纯 CSS 假预览窗（`.preview-window` / `.mock-*` / `@keyframes float|shimmer|loadbar`）与三张浮动卡片（`.floating-cards` / `.float-card`）连同 `hero.float1t…float3v` 六条词条已整体删除；`@media (max-width: 768px)` 原本把 `.hero-visual` 整个 `display: none`，现在改成 `order: 2`——演示视频在手机上照样出现，只是挪到标题与四颗安装按钮之后。滚动入场用 IntersectionObserver + 每帧几何兜底（`sweepReveals`：IO 是采样而非穿越检测，快速滚动会漏，兜底保证没有区块停在 `opacity:0`）。导航高亮的"滚到底点亮最后一项"那条兜底（`isAtBottom`）**必须先确认页面真的能滚**（`scrollHeight > innerHeight + 4`）：加载途中文档还没被撑高时 `0 + 视口高 >= 文档高` 会成立，于是最后一项会在首屏被误点亮，而且得等下一次成功的滚动更新才纠正。不引外部字体（Google Fonts 在国内不可达），用系统字体栈。
+- **Prelook** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。**产品曾用名 TabPeek，2026-09-16 整体改名**——改名撞车是因为 Chrome Web Store 上已有一款同名扩展（`hcheung-code`，做的是悬停预览标签组，站 site tabpeek.com），所以任何带 `Tab` 前缀的名字都会被当成那款产品。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置面板（侧边栏）、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在侧边栏设置面板与 landing 放了爱发电 + Patreon 赞助入口。
+- **prelook-landing** — 纯静态产品官网（零构建，直接部署），版式参考 `yuumi.coldstoneboy.cn`：**令牌驱动的设计系统**（`css/style.css` 顶部的 `--primary/--bg-*/--text-*/--shadow-*/--spacing-*/--radius-*`，与参考站同一套命名）、固定模糊导航栏 + 下划线 scroll-spy、`install(hero) → features → speed → reviews → sponsor → faq → cta-band → footer` 的区块顺序（锚点只有六个：`#features`/`#speed`/`#reviews`/`#sponsor`/`#faq`/`#get`，**hero 故意不带 id**——它就是首屏，给它锚点等于让导航"跳到你已经在的地方"；**没有独立的安装区块**，安装按钮在 hero 左栏与页尾色带各一份，导航与页脚那一条「安装」一律指向页尾色带的 `#get`；`.cta-band` 是整段饱和色块，**不在深浅交替的序列里**，所以它前后的 faq / footer 仍按原样式交替），**区块底色严格深浅交替**（`--bg-secondary` 与 `--bg-primary` 逐段切换，卡片永远取与所在区块相反的那一档），所以**插入新段落要把后面几段的底色整体翻一遍**，否则会出现两段同色连成一片、看不出分段。`#reviews` 是三栏评价墙（`.reviews-grid` 用 CSS `columns` 而不是 grid——卡片高矮不一时才能排成参考图那种错落感），**里面六条全是标注了"（占位）"的占位文案，不是真实评价**：Prelook 尚未上架、没有任何真实评价，所以刻意不编造昵称与五星好评；上线前必须逐条换成可核实的原文（`reviews.rN.name` / `reviews.rN.text` 两个语言都要改，并替换头像右下角的浏览器图标），**不要为了版式好看而杜撰或改写原话**。**深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.prelook-landing-theme`。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份）。安装入口是**四颗等权按钮**（`.install-btn`：Chrome / Edge / Firefox / 手动安装，`href="#"` 占位，词条 `install.chrome|edge|firefox|manual`），出现两次——hero 左栏的 `.hero-actions` 和页尾色带的 `.cta-actions`，两处都是两列网格、同一套样式；**刻意不给 Chrome 任何强调样式**——那会暗示"只该装 Chrome"；前三颗挂 `assets/browser-chrome.svg` / `browser-edge.svg` / `browser-firefox.svg`（Wikimedia Commons 的官方多色 logo，**必须用 `<img>` 引文件而不是内联**：Chrome 与 Edge 的 SVG 都定义了 `id="a"/"b"/"c"` 的渐变，内联进同一个文档会互相覆盖），第四颗是内联的"外链"线性图标。用**两列网格而不是一行四颗**——hero 文字栏只有 ~557px，一行塞不下四颗带图标的按钮；`.install-btn` 本身按两列来定尺寸（字号 15px、`white-space: nowrap`——否则最长的"Firefox 安装"会折成两行把按钮顶高），`≤380px` 才退回一行一颗（再宽一点两列都放得下：390px 的手机上两列各 159px 仍然不挤）。**页尾色带**（`.cta-band`）构图参照 maxfoc.us：左边是胶囊徽章 + 大标题 + 一行副文案 + 这四颗按钮，右边是一段**纯 CSS 插画**（`.cta-art`：两个歪着的窗口，后面那个是深色浏览器框、前面那个是浅色预览窗，正好是产品自己的剪影）。插画用「前一层负 margin 压住后一层」而不是绝对定位——窗口高度由骨架线内容决定，绝对定位要按内容高度算偏移，加一行线就得重算。色带在浅色/深色各有一版渐变（`.cta-band` + `[data-theme="dark"] .cta-band`），带上的按钮固定白底深字（取 `--bg-primary` 会在深色主题里变成四块近黑色补丁）；`≤820px` 色带才立成一列、文案居中（断点压这么低是因为 768–960 还放得下左右两栏，提前立起来只会让色带上下空出一大片），`≤600px` 直接隐藏插画——留着它这一段会占掉整整一屏，而这一段的意义就是那四颗按钮。**页脚**是「logo + 字标 + 一句话」加四栏（快速链接 / 赞助 / 联系 / 条款，栏用的是等宽网格而不是靠 gap 撑开的 flex；**「快速链接」那一栏与页头导航是同一份清单、同一个顺序**——功能 / 极速 / 评价 / 赞助 / FAQ / 安装，两处一起改，别只动一边），最下面一行左边版权、右边 `.footer-meta`（备案号 + 回到顶部）。**备案号 `粤ICP备2026134562号` 是硬编码的法定标识**：不进词典（中英两种语言都原样显示），而且**必须链到 `https://beian.miit.gov.cn/`**——这是备案要求，不是"顺手给个出处"，别把它翻译掉或改成别的链接。`footer.slogan` 是词典里一条没人引用的历史遗留，留着没删。**hero 右侧是一段真实录屏**（`assets/demo.mp4`，裁剪到 928×700；poster `assets/demo-poster.webp`），不是 CSS 画的示意图——它是把 `.output/chrome-mv3/content-scripts/content.js` 原样加载进一个 mock 掉 background 的演示页录下来的，重录步骤在 `apps/prelook/test/demo/README.md`。视频默认静音自动播 + 循环，右下角一枚播放/暂停按钮（`#demoToggle`，词条 `hero.videoPlay`/`hero.videoPause`，`applyLang` 里会按当前播放状态重算文案），`prefers-reduced-motion: reduce` 时不自动播、停在 poster 上；**录屏内容永远是浅色页面，所以视频和那枚按钮都不跟深浅主题走**（按钮故意写死浅色，取主题令牌会在深色下糊在白色录屏上）。旧的纯 CSS 假预览窗（`.preview-window` / `.mock-*` / `@keyframes float|shimmer|loadbar`）与三张浮动卡片（`.floating-cards` / `.float-card`）连同 `hero.float1t…float3v` 六条词条已整体删除；`@media (max-width: 768px)` 原本把 `.hero-visual` 整个 `display: none`，现在改成 `order: 2`——演示视频在手机上照样出现，只是挪到标题与四颗安装按钮之后。滚动入场用 IntersectionObserver + 每帧几何兜底（`sweepReveals`：IO 是采样而非穿越检测，快速滚动会漏，兜底保证没有区块停在 `opacity:0`）。导航高亮的"滚到底点亮最后一项"那条兜底（`isAtBottom`）**必须先确认页面真的能滚**（`scrollHeight > innerHeight + 4`）：加载途中文档还没被撑高时 `0 + 视口高 >= 文档高` 会成立，于是最后一项会在首屏被误点亮，而且得等下一次成功的滚动更新才纠正。不引外部字体（Google Fonts 在国内不可达），用系统字体栈。
 
 ## 常用命令
 
@@ -14,24 +14,24 @@
 | 命令                                                | 作用                                                                                     |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `pnpm install`                                      | 安装并链接 workspace（首次克隆/目录改名后必跑，见下）                                    |
-| `pnpm dev:tabpeek` / `pnpm dev:tabpeek:firefox`     | 开发模式，产物在 `apps/tabpeek/.output/chrome-mv3-dev/`（firefox 为 `firefox-mv2-dev/`） |
-| `pnpm dev:tabpeek:doubao`                           | 开发模式，改用本机豆包浏览器（Chromium 147），产物在 `.output/doubao-mv3-dev/`           |
-| `pnpm dev:tabpeek:zen`                              | 开发模式，改用本机 Zen Browser（Firefox 内核，与 `dev:tabpeek:firefox` 同一条命令），产物在 `.output/firefox-mv2-dev/` |
-| `pnpm build:tabpeek` / `pnpm build:tabpeek:firefox` | 生产构建，产物在 `apps/tabpeek/.output/chrome-mv3/`（firefox 为 `firefox-mv2/`）         |
-| `pnpm zip:tabpeek` / `pnpm zip:tabpeek:firefox`     | 打包上架 zip                                                                             |
-| `pnpm compile:tabpeek`                              | 单产品类型检查（`vue-tsc --noEmit`）                                                     |
+| `pnpm dev:prelook` / `pnpm dev:prelook:firefox`     | 开发模式，产物在 `apps/prelook/.output/chrome-mv3-dev/`（firefox 为 `firefox-mv2-dev/`） |
+| `pnpm dev:prelook:doubao`                           | 开发模式，改用本机豆包浏览器（Chromium 147），产物在 `.output/doubao-mv3-dev/`           |
+| `pnpm dev:prelook:zen`                              | 开发模式，改用本机 Zen Browser（Firefox 内核，与 `dev:prelook:firefox` 同一条命令），产物在 `.output/firefox-mv2-dev/` |
+| `pnpm build:prelook` / `pnpm build:prelook:firefox` | 生产构建，产物在 `apps/prelook/.output/chrome-mv3/`（firefox 为 `firefox-mv2/`）         |
+| `pnpm zip:prelook` / `pnpm zip:prelook:firefox`     | 打包上架 zip                                                                             |
+| `pnpm compile:prelook`                              | 单产品类型检查（`vue-tsc --noEmit`）                                                     |
 | `pnpm compile` / `pnpm build`                       | 聚合：对全部子包 `--if-present` 执行                                                     |
-| `pnpm landing:tabpeek`                              | 官网本地预览（http://127.0.0.1:4173 ，**根目录是 `apps/tabpeek-landing`**）。⚠️ 目前不可用：它转发的 `apps/tabpeek-landing` `dev` 脚本（连同 `scripts/serve.mjs`）已被删除，跑之前先补回来或改用别的静态服务器 |
+| `pnpm landing:prelook`                              | 官网本地预览（http://127.0.0.1:4173 ，**根目录是 `apps/prelook-landing`**）。⚠️ 目前不可用：它转发的 `apps/prelook-landing` `dev` 脚本（连同 `scripts/serve.mjs`）已被删除，跑之前先补回来或改用别的静态服务器 |
 
 包管理器固定 **pnpm**（workspace 根有 `pnpm-lock.yaml`）。workspace 子包自身的 `postinstall`（`wxt prepare`）会正常执行，并生成 `apps/<name>/.wxt/tsconfig.json`——`tsconfig.json` 正是 `extends` 它，所以**没跑过 install 就编译会失败**。
 
-> **pnpm 12 的 `allowBuilds` 陷阱**：pnpm 12 默认拦下依赖的构建脚本，并且只要 `pnpm-workspace.yaml` 里有**任何一条非布尔的 `allowBuilds`**，它就直接让整个 install 失败（`ERR_PNPM_IGNORED_BUILDS`）——本仓库曾躺着一条 `'@wxt-dev/analytics': set this to true or false` 的占位串，等于**任何人在任何机器上 `pnpm install` 都是红的**。现在写死为 `false`（保持不执行：那个 postinstall 只是给 analytics 自己跑 `wxt prepare`，TabPeek 需要的 `.wxt` 产物由 `apps/tabpeek` 自己的 postinstall 生成）。新增被拦下的依赖时照此补一条布尔值，别让占位串进仓库。
+> **pnpm 12 的 `allowBuilds` 陷阱**：pnpm 12 默认拦下依赖的构建脚本，并且只要 `pnpm-workspace.yaml` 里有**任何一条非布尔的 `allowBuilds`**，它就直接让整个 install 失败（`ERR_PNPM_IGNORED_BUILDS`）——本仓库曾躺着一条 `'@wxt-dev/analytics': set this to true or false` 的占位串，等于**任何人在任何机器上 `pnpm install` 都是红的**。现在写死为 `false`（保持不执行：那个 postinstall 只是给 analytics 自己跑 `wxt prepare`，Prelook 需要的 `.wxt` 产物由 `apps/prelook` 自己的 postinstall 生成）。新增被拦下的依赖时照此补一条布尔值，别让占位串进仓库。
 
-`apps/tabpeek/node_modules/` 里是指向 pnpm store 的**符号链接，写死绝对路径**：把仓库目录改名或移动（例如 `tabpeek/` → `extensions/`）后它们会集体失效，表现为"模块找不到"。跑一次 `pnpm install` 即可重建链接。
+`apps/prelook/node_modules/` 里是指向 pnpm store 的**符号链接，写死绝对路径**：把仓库目录改名或移动（例如 `prelook/` → `extensions/`）后它们会集体失效，表现为"模块找不到"。跑一次 `pnpm install` 即可重建链接。
 
-**多浏览器启动**：`wxt.config.ts` 的 `webExt.binaries` 是**按 `-b` 传入的浏览器名取值**的映射（内部即 `binaries[browser]` → `chromiumBinary`），所以自定义浏览器必须让**映射键与 `-b` 参数同名**。当前 `doubao` 键指向本机豆包浏览器主程序，只有 `pnpm dev:tabpeek:doubao`（`wxt -b doubao`）会命中，直接 `wxt` 仍启动 Chrome。新增浏览器照此加一条键 + 一个 `dev:<name>` 脚本即可；浏览器名不是 firefox/safari 时一律按 MV3 构建，产物目录随之变成 `.output/<name>-mv3[-dev]/`。
+**多浏览器启动**：`wxt.config.ts` 的 `webExt.binaries` 是**按 `-b` 传入的浏览器名取值**的映射（内部即 `binaries[browser]` → `chromiumBinary`），所以自定义浏览器必须让**映射键与 `-b` 参数同名**。当前 `doubao` 键指向本机豆包浏览器主程序，只有 `pnpm dev:prelook:doubao`（`wxt -b doubao`）会命中，直接 `wxt` 仍启动 Chrome。新增浏览器照此加一条键 + 一个 `dev:<name>` 脚本即可；浏览器名不是 firefox/safari 时一律按 MV3 构建，产物目录随之变成 `.output/<name>-mv3[-dev]/`。
 
-**Zen Browser 是这条规则唯一的例外**，因为它和 doubao 不同、是 **Firefox 内核**：WXT 只在 `browser === 'firefox'` 时读 `binaries.firefox` 并把 web-ext 的 `target` 设成 `firefox-desktop`，其余名字一律当 Chromium（`binaries[browser]` → `chromiumBinary`，`target: 'chromium'`）。所以写一个 `zen` 键是**没有用的**：`wxt -b zen` 会产出 Chrome MV3 清单（`background.service_worker` + `side_panel` + `sidePanel` 权限），Zen 一条都加载不了。正确做法是让 **`binaries.firefox` 指向 Zen 主程序**（本机没装真正的 Firefox，所以这个槽位归 Zen），脚本用 `pnpm dev:tabpeek:zen`（内部就是 `wxt -b firefox`，与 `dev:tabpeek:firefox` 等价，多一个名字只为好找），产物走 `.output/firefox-mv2-dev/`。装了真 Firefox 之后想让两者并存就只能改这一行——WXT 没有"按名字给 firefox 目标指定 binary"的入口。
+**Zen Browser 是这条规则唯一的例外**，因为它和 doubao 不同、是 **Firefox 内核**：WXT 只在 `browser === 'firefox'` 时读 `binaries.firefox` 并把 web-ext 的 `target` 设成 `firefox-desktop`，其余名字一律当 Chromium（`binaries[browser]` → `chromiumBinary`，`target: 'chromium'`）。所以写一个 `zen` 键是**没有用的**：`wxt -b zen` 会产出 Chrome MV3 清单（`background.service_worker` + `side_panel` + `sidePanel` 权限），Zen 一条都加载不了。正确做法是让 **`binaries.firefox` 指向 Zen 主程序**（本机没装真正的 Firefox，所以这个槽位归 Zen），脚本用 `pnpm dev:prelook:zen`（内部就是 `wxt -b firefox`，与 `dev:prelook:firefox` 等价，多一个名字只为好找），产物走 `.output/firefox-mv2-dev/`。装了真 Firefox 之后想让两者并存就只能改这一行——WXT 没有"按名字给 firefox 目标指定 binary"的入口。
 
 同层的 `webExt.startUrls` 决定 dev 启动时打开的页面（当前是虎扑测试帖）：它**没有按浏览器区分的形式**（只有 `manifest` 支持 `UserManifestFn` 那种 `env.browser` 函数），配了就对所有 dev 目标生效。
 
@@ -63,26 +63,26 @@ apps/
     index.html  css/  js/  assets/
 ```
 
-**新插件接入清单**：建 `apps/<name>/`（可复制 tabpeek 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 把插件 `assets/icon.png` 复制一份到 landing `assets/`（插件的各尺寸由 auto-icons 从这一张生成，landing 直接用原图）。
+**新插件接入清单**：建 `apps/<name>/`（可复制 prelook 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 把插件 `assets/icon.png` 复制一份到 landing `assets/`（插件的各尺寸由 auto-icons 从这一张生成，landing 直接用原图）。
 
 ## 运行期架构
 
 ### 三个上下文与消息协议
 
-content script 拿不到部分能力（见"陷阱"），所有跨上下文调用都走 `browser.runtime.sendMessage`，**消息名统一 `tabpeek:` 前缀**，处理函数集中在 `entrypoints/background.ts`：
+content script 拿不到部分能力（见"陷阱"），所有跨上下文调用都走 `browser.runtime.sendMessage`，**消息名统一 `prelook:` 前缀**，处理函数集中在 `entrypoints/background.ts`：
 
 | 消息              | 方向                         | 载荷 / 回复                                                                                                                                                                                  |
 | ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tabpeek:fetch`   | content → background         | `{ url }` → `{ ok, canEmbed, finalUrl?, title?, description?, favicon?, html?, error? }`                                                                                                     |
-| `tabpeek:openTab` | content/preview → background | `{ url, background? }` → `{ ok: boolean }`（`background:true` 时非激活打开）                                                                                                                 |
-| `tabpeek:preview` | **background → content**     | `{ url, sidebar }` → 无回复。右键菜单点「在预览窗/侧边栏打开」时由 background 发给该标签页，content 自己按 url 找 `<a>` 的 rect（找不到就用视口中心），再 `preview.open({ …info, sidebar })` |
+| `prelook:fetch`   | content → background         | `{ url }` → `{ ok, canEmbed, finalUrl?, title?, description?, favicon?, html?, error? }`                                                                                                     |
+| `prelook:openTab` | content/preview → background | `{ url, background? }` → `{ ok: boolean }`（`background:true` 时非激活打开）                                                                                                                 |
+| `prelook:preview` | **background → content**     | `{ url, sidebar }` → 无回复。右键菜单点「在预览窗/侧边栏打开」时由 background 发给该标签页，content 自己按 url 找 `<a>` 的 rect（找不到就用视口中心），再 `preview.open({ …info, sidebar })` |
 
-`tabpeek:fetch` 的 `hostOrigin` 由 background 从 `sender.tab.url` 推导，用于 XFO / CSP `frame-ancestors` 判定；未知消息一律返回 `undefined`（表示不接管）。
+`prelook:fetch` 的 `hostOrigin` 由 background 从 `sender.tab.url` 推导，用于 XFO / CSP `frame-ancestors` 判定；未知消息一律返回 `undefined`（表示不接管）。
 
 ### 一次悬停预览的数据流
 
 1. content 判定命中链接 → `speculation.onIntent(url)` 预热 → 起延迟定时器（`hoverDelayMs`，`longPress` 模式改用 `longPressMs`）→ 延迟期间在光标处显示倒计时进度条（`preview.startProgress/cancelProgress`；hover/altHover/longPress 都有，`click` 是立即打开故无倒计时；条在光标上方，顶部空间不足时翻到下方）。
-2. 定时器到期 → `ensureUi()`（懒建 shadow host）→ `preview.open()` 插入骨架屏窗口 → 发 `tabpeek:fetch`。
+2. 定时器到期 → `ensureUi()`（懒建 shadow host）→ `preview.open()` 插入骨架屏窗口 → 发 `prelook:fetch`。
 3. background 抓取页面并判定 `canEmbed`（12s 超时、`credentials:'omit'`、`redirect:'follow'`、HTML 截断 2MB）。
 4. 可内嵌 → 渲染 iframe；**8s 未触发 load** 才转阅读模式兜底。
 5. 不可内嵌 → 有 HTML 走 `extract.ts` 阅读模式，否则错误页（带「在新标签页打开」）。
@@ -137,7 +137,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 - **全局参数表只收"自解释"的名字**（`utm_*` / `pk_` / `mtm_` / `hsa_` / `oly_` 前缀 + `gclid` / `fbclid` / `msclkid` / `mc_eid` / `mkt_tok` / `_hsenc` / `_gl` 之类）。`ref`、`source`、`si`、`s`、`t`、`spm`、`scm` 这类短名字**故意不收**——它们在很多站点是功能性参数，剥错就是打不开页面。想覆盖它们需要按域名的规则表，这是明确的下一步而不是疏漏。
 - **中转壳表的 `path` 是必须的**：`google.com/url?q=` 要还原，`google.com/search?q=` 绝不能碰（把搜索词当成目标地址解出来就出大事了）。测试里专门留了这条用例。
-- 应用点只有三处，都是"TabPeek 自己要发起访问"的地方：content 的 `anchorHref()`（**在这里洗一次，keep/find/open/fetch 后面比较的都是同一个值**，否则窗口会因为 URL 不一致而找不到）、右键菜单的 `anchorInfoFor()`、以及 background 的 `tabpeek:openTab`（兜底，按 `stripTracking` 设置决定，预览抓取因此也不会带上追踪参数）。开关关闭时三处都放行原地址。
+- 应用点只有三处，都是"Prelook 自己要发起访问"的地方：content 的 `anchorHref()`（**在这里洗一次，keep/find/open/fetch 后面比较的都是同一个值**，否则窗口会因为 URL 不一致而找不到）、右键菜单的 `anchorInfoFor()`、以及 background 的 `prelook:openTab`（兜底，按 `stripTracking` 设置决定，预览抓取因此也不会带上追踪参数）。开关关闭时三处都放行原地址。
 
 ### 链接风险提示（`utils/safety.ts`）
 
@@ -150,7 +150,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 三个独立开关（`closeOnOutsideClick` / `closeOnMouseLeave` / `closeOnScroll`，默认全开）决定预览窗什么时候自动关掉。实现分散在两处，且语义都是"**只关未固定的窗口**"：
 
 - `closeOnMouseLeave` 直接**关掉整条自动关闭路径**：`releaseExcept()` 开头就 `if (!settings().closeOnMouseLeave) return;`。这一条同时管住"指针移开链接"和"指针移出窗口"两种 mouse-leave 场景，因为两者都走 `releaseExcept`。关掉后窗口会一直留着，直到别的触发器或用户手动关闭。
-- `closeOnOutsideClick` 在 `content.ts` 用 capture 阶段的 `pointerdown` 实现：`composedPath()` 里出现 `TABPEEK-UI` 就当作点在自家 UI 上（包括预览窗内的 iframe），否则 `preview.dismissUnpinned()`。用 pointerdown 而不是 click，是为了按下即响应。
+- `closeOnOutsideClick` 在 `content.ts` 用 capture 阶段的 `pointerdown` 实现：`composedPath()` 里出现 `PRELOOK-UI` 就当作点在自家 UI 上（包括预览窗内的 iframe），否则 `preview.dismissUnpinned()`。用 pointerdown 而不是 click，是为了按下即响应。
 - `closeOnScroll` 挂在 `preview.ts` 已有的 scroll 监听里（那个监听同时负责让悬停高亮跟着链接走）。**注意无头 + `--virtual-time-budget` 下浏览器不派发 scroll 事件**，验证滚动相关行为必须用实时模式（CDP 不加虚拟时间），否则会误判成"滚动不关闭"。
 
 `dismissUnpinned()` 与 `releaseExcept()` 都会跳过 `pinned` 窗口——固定就是"别自动关"的意思，加新关闭路径时也要照此跳过。另外固定住所有窗口会顶到 `maxWindows` 上限，此时新预览不打开并弹 `preview.pinLimit` 提示，三件套是连在一起的。
@@ -176,10 +176,10 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 ### 节电模式与减少动画
 
-扩展改不了浏览器自己的节电/动画开关，这两项是**约束 TabPeek 自身开销**的档位，解析集中在 `utils/power.ts`：`resolvePowerState(mode, onBattery, reduceMotion)` + `watchPower(getSettings, onChange)`（照 `watchTheme` 的模样写，回调先立刻跑一次，返回 disposer）。降级后的 `PowerState { level, reduceMotion }` 只有三档 `off / on / max`，**它只会拿走功能，绝不会打开设置里关着的东西**。
+扩展改不了浏览器自己的节电/动画开关，这两项是**约束 Prelook 自身开销**的档位，解析集中在 `utils/power.ts`：`resolvePowerState(mode, onBattery, reduceMotion)` + `watchPower(getSettings, onChange)`（照 `watchTheme` 的模样写，回调先立刻跑一次，返回 disposer）。降级后的 `PowerState { level, reduceMotion }` 只有三档 `off / on / max`，**它只会拿走功能，绝不会打开设置里关着的东西**。
 
 - `powerSaver` = off / on / max / auto（`POWER_MODES`，设置面板下拉顺序即 `auto` 在前）。`auto` 只影响 `level` 的计算：`navigator.getBattery()` 报到 `charging === false` 时当作 `on`，其余（API 缺失、promise reject、市电）一律当作不降级——**报错猜成"在省电"会把功能悄悄关掉，猜成"市电"只是少省一点**。
-- 三档剥夺的东西：`on` = 关链接预热（`warmupSettings()` 直接返回 `speculationMode: "off"` 的副本，`speculation.ts` 因此完全不用改）+ 关背景模糊（`blurStrength()` 返回 0，设置值不动）+ 关预览窗头部毛玻璃（`frostDisabled()` → 窗口 root 加 `tp-nofrost`，`--tp-glass` 升到 100% 且去掉 `backdrop-filter`）；`max` = 在 `on` 基础上再关链接高亮（`highlightWanted()`）、跳过 `tabpeek:fetch` 预检直接 `renderIframe()`（没有标题/图标/阅读模式兜底，禁嵌站点只能失败），并且**隐含 `reduceMotion`**（见下）。两个效果类开关都同时覆盖「设置变更」与「电源变化」两条路径：`applyVisualVars()` 的窗口循环里就带着 `tp-nofrost`，`open()` 建窗时也要写一次，漏掉任一处都会出现"新开的窗口还带着毛玻璃"。
+- 三档剥夺的东西：`on` = 关链接预热（`warmupSettings()` 直接返回 `speculationMode: "off"` 的副本，`speculation.ts` 因此完全不用改）+ 关背景模糊（`blurStrength()` 返回 0，设置值不动）+ 关预览窗头部毛玻璃（`frostDisabled()` → 窗口 root 加 `tp-nofrost`，`--tp-glass` 升到 100% 且去掉 `backdrop-filter`）；`max` = 在 `on` 基础上再关链接高亮（`highlightWanted()`）、跳过 `prelook:fetch` 预检直接 `renderIframe()`（没有标题/图标/阅读模式兜底，禁嵌站点只能失败），并且**隐含 `reduceMotion`**（见下）。两个效果类开关都同时覆盖「设置变更」与「电源变化」两条路径：`applyVisualVars()` 的窗口循环里就带着 `tp-nofrost`，`open()` 建窗时也要写一次，漏掉任一处都会出现"新开的窗口还带着毛玻璃"。
 - `reduceMotion` 是三条来源的合流：`settings.reduceMotion`、系统 `prefers-reduced-motion: reduce`、以及 `level === "max"`（在 `resolvePowerState` 里合，调用方只读这个布尔值，不关心是谁要求的）。落地方式是 `content.ts` 把它写进 **host 的 `data-tp-motion`**（与 `data-tp-theme` 同一套机制），`preview.ts` 的 CSS 里 `:host([data-tp-motion])` 一刀切断 `.tp-overlay` / `.tp-win` / `.tp-hl` / `.tp-pin svg` / `.tp-resize` 的过渡与骨架屏动画；**JS 内联写的过渡 CSS 管不到**，所以倒计时进度条要在 `startProgress()` 里自己提前返回。窗口退出的 `exitMs()` 也随之归零（`FADE_SLACK_MS` 保留那一帧余量），`place()` 之类的布局数学不受影响。
 - 电池/系统偏好变化时只走 `preview.applyPower()`（重算模糊与高亮），**不重新 `place()` 窗口**——插拔电源不该把用户拖过位置的窗口挪走。同理设置变更时 `content.ts` 要 `powerDispose?.()` 后重新 `watchPower`（和 `themeDispose` 并列），`ctx.onInvalidated` 里释放。
 
@@ -214,12 +214,12 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 赞助卡片是**每个 tab 共用的底部块**：抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它存在的，已删除。组件自带 `<style scoped>`（`.sponsor-section` / `.sponsor` 与它们的深色覆盖都在组件里），但卡片外观（背景 / 内边距 / 圆角 / 边框）仍来自面板全局的 `section` 规则，所以它只有在设置面板里才完整。它是面板最末一块（「恢复默认设置」按钮在「设置」tab 里，见下），沉底靠三件套：`#app { display:flex; flex-direction:column; min-height:100vh }` + `main { flex:1 }` + `.sponsor-section { margin-top:auto }`——内容比面板矮时它贴住底边不留空白，内容更高时它就是滚动区的最后一块（内层 `.flex-1` 让面板区自己吃掉剩余高度，所以不会把内容拉长）。`*{box-sizing:border-box}` 保证 `#app` 的 `padding-bottom` 算在 100vh 内，否则面板会凭空多出一条滚动条。**「恢复默认设置」是「设置」tab 最后一个 section 里的一个盒状按钮**（`.btn-reset`，唯一的红色破坏性控件；它原先在底部的 `footer` 里——`footer` 规则已随之下线，那段共用的尾巴上只剩赞助卡）。
 
-样式仍是 `style.css` 里的全局 CSS（`App.vue` 没有样式块；赞助卡片自带 scoped 块，见上），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
+样式仍是 `style.css` 里的全局 CSS（`App.vue` 没有样式块；赞助卡片自带 scoped 块，见上），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `Prelook` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
 ### 设置与存储
 
-- `settingsItem` = `local:tabpeek_settings`，定义在 `utils/storage.ts`。
-- 新增设置项要同时改三处：`TabPeekSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 sidepanel `App.vue` 的对应 tab 里加控件、两个 locale 补词条。
+- `settingsItem` = `local:prelook_settings`，定义在 `utils/storage.ts`。
+- 新增设置项要同时改三处：`PrelookSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 sidepanel `App.vue` 的对应 tab 里加控件、两个 locale 补词条。
 - 两个颜色设置各有归属，别混：`themeColor` = 插件 UI 的强调色（「设置」tab 的「主题色」），`windowColor` = 弹窗主题选 `custom` 时的窗口强调色（那张铅笔卡里的取色器）。两者都用 `<input type="color">` 编辑（值恒为 `#rrggbb`），`clampSettings` 里只做 `|| DEFAULT_SETTINGS.x` 兜底、不做格式校验。**没有任何代码把其中一个写成另一个**——这是刻意的，改「弹窗主题」不该把整个插件换色。
 - `clampSettings` 的边界：`hoverDelayMs` 100–2000（默认 500）、`longPressMs` 200–2000（600）、`width` / `height` 20–100（视口百分比，默认 40 / 55）、`blurStrength` 0–100（百分比，默认 0 关闭）、`minSelectionChars` 1–20、`maxWindows` 1–6（默认 3）。**所有读取设置的地方都要过 `clampSettings`**，content 与 sidepanel 都这么做。
 - **单位约定**：延迟类设置**存储永远是毫秒**（`hoverDelayMs` / `longPressMs`，定时器直接用），只有设置面板的滑块与读数换成秒（`App.vue` 里两个 writable computed 做 `×1000 / ÷1000` 换算，`toFixed(2)` 去浮点噪声），这样不需要迁移老数据。宽高反过来，**存储就是视口百分比**，`clampSettings` 里 `clampWindowPercent()` 会把历史遗留的像素值（>100 只可能是 px）按固定参考视口 1440×900 折算一次——不能用 `innerWidth` 折算，因为设置面板的视口不是被浏览的页面，同一份数据在两处会算出不同百分比。
@@ -233,9 +233,10 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 ## 关键约定与陷阱
 
+- **`tp-` 是曾用名 TabPeek 的缩写，刻意保留**：预览窗的 CSS 变量（`--tp-accent/--tp-w/--tp-h/--tp-blur/--tp-base/--tp-ink…`）、类名（`.tp-win/.tp-in/.tp-out/.tp-overlay/.tp-hl…`）和 host 属性（`data-tp-theme/--tp-motion`）全都还叫 `tp-*`，一共 200 多处。2026-09-16 产品改名成 Prelook 时**没有跟着换成 `pl-`**：这些名字全在 shadow DOM 内部、用户看不见，而漏改一个选择器就会静默弄丢毛玻璃 / 悬停高亮 / 出入动效（没有类型检查会报错），收益为零、风险实打实。所以看到 `tp-` 别以为是另一个产品，也别"顺手改对"。真正跟着改名走的是这些**外部可见的标识符**：包名 `@extensions/prelook`、存储键 `local:prelook_settings`、消息前缀 `prelook:`、shadow host 标签 `prelook-ui`（`composedPath()` 里比对的是大写形式 `PRELOOK-UI`）、预检响应头 `x-prelook-origin`、右键菜单 id `prelook-*`、landing 的两个 localStorage 键。**因为还没上架、没有存量用户，存储键改名不需要写迁移**——这条时间窗只有一次，发版之后再改就得背着旧键或补一段迁移代码了。
 - **storage / browser 导入**：两者都是 WXT 自动导入的全局，直接裸用（`storage.defineItem`、`browser.runtime`）。`wxt/storage` 子路径不存在；确需显式导入时用 `wxt/utils/storage`。**manifest 必须有 `storage` 权限**，否则 `getValue/setValue` 静默 reject，表现为"设置永远不保存"（sidepanel 的 `load()` catch 里专门打了这条日志）。
 - **设置面板里 watch(ref(对象)) 默认不深度监听**：v-model 改嵌套属性不会触发保存，必须 `{ deep: true }`，并在 `visibilitychange→hidden` 时强制 flush（防抖未到期就被收起会丢最后一次变更）。
-- **Shadow UI**：`createShadowRootUi(ctx, { name:'tabpeek-ui', position:'inline', append:'last', css })`；窗口/工具条全在单个 shadow root 内定位（position:fixed），CSS 变量 `--tp-accent/--tp-w/--tp-h/--tp-blur` 驱动外观。content 里按标签名 `tabpeek-ui` 判断"指针是否悬停在我们自己的 UI 上"。z-index 从 2147483640 起分层（overlay < 窗口 < 划词条 < 触发倒计时条/上限提示）；倒计时条是 `pointer-events:none`，否则悬停倒计时期间它会吃掉 pointerover 把悬停自己的定时器取消掉。
+- **Shadow UI**：`createShadowRootUi(ctx, { name:'prelook-ui', position:'inline', append:'last', css })`；窗口/工具条全在单个 shadow root 内定位（position:fixed），CSS 变量 `--tp-accent/--tp-w/--tp-h/--tp-blur` 驱动外观。content 里按标签名 `prelook-ui` 判断"指针是否悬停在我们自己的 UI 上"。z-index 从 2147483640 起分层（overlay < 窗口 < 划词条 < 触发倒计时条/上限提示）；倒计时条是 `pointer-events:none`，否则悬停倒计时期间它会吃掉 pointerover 把悬停自己的定时器取消掉。
 - **链接预热只用 `document.speculationRules.addRules()`**，不要改成注入 `<script type="speculationrules">`——内联标签会受页面 CSP 限制；能力缺失（Firefox）时整条路径必须保持 no-op。规则分两层：一次性的 `source:'heuristics'` 规则（prerender 用 `conservative`，prefetch 用 `moderate`）+ 每个 URL 一条 `eagerness:'immediate'`（靠 `intentDone` 去重，避免重复注入）。
 - **iframe 能否内嵌必须由 background 预检响应头**（跨域 iframe 对 Chrome 错误页同样触发 load，无法事后检测）；`X-Frame-Options: SAMEORIGIN` 的重定向前后 origin 用 `res.url` 判断。加载超时（8s）才走阅读模式兜底。
 - **阅读模式的内容是 `innerHTML` 直接注入 shadow DOM 的**，所以 `extract.ts` 的 `sanitize()` 是安全边界而非美化步骤：只保留 `a[href]` / `img[src,alt]` 白名单属性，剥掉 `javascript:` 链接，并把相对 URL 用 `finalUrl` 补全。改提取逻辑时不要削弱这一步。
@@ -244,27 +245,27 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 - **新增界面文案**：`utils/i18n.ts` 是扁平 key（`t('preview.close')`），zh-CN 与 en 必须同时补齐；sidepanel `App.vue` 模板里的动态 key 是 `panel.tab.${tab}` / `trigger.${mode}` / `position.${p}` / `sidebarSide.${side}` / `speculation.${m}` 模式，另有 `t(`sponsor.${s.id}`)` 这种模板拼 key 的写法。
 - **content script 匹配** `<all_urls>` 且仅 main frame（WXT 默认不写 `all_frames`）；`entrypoints/content.ts` 中 `runAt`（camelCase），WXT 0.21 不认 `run_at`。 manifest 权限是 `tabs` / `storage` / `contextMenus`（右键菜单），**加权限后必须重载扩展**。**改 manifest 权限后必须重载扩展并刷新目标网页**，旧页面里的 content script 已失效。
 - Manifest 改动（权限/名称）只改各 app 的 `wxt.config.ts`；`.output/`、`.wxt/` 是生成物，不要编辑。
-- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），图标是**同一张图的拷贝**：landing 的 `assets/icon.png` 就是插件 `assets/icon.png`（auto-icons 的源图）**原样复制**过来的，`index.html` 里三处引用同一份文件——`<link rel="icon">`（站点图标）、导航栏 logo（36px）、页脚 logo（40px）。原样用是刻意的：省掉一套需要手工重新导出的派生尺寸（历史上 landing 放的是 128/32 两张独立导出图，结果和插件图标完全不是同一个设计——绿色拼图 vs 现在的紫罗兰"页面+放大镜"——谁也没发现），代价是 favicon 也要下整张 190KB 的源图。**插件图标一改就要重新 `cp apps/tabpeek/assets/icon.png apps/tabpeek-landing/assets/icon.png`**；landing 是独立部署的静态站，不能写 `../tabpeek/assets/icon.png` 这种跨目录路径。
-- hero 视频的**源材料不进仓库**：`recordings/`（`tabpeek-demo.webm` 原始录制 + 全画幅 mp4）已 gitignore，跟着仓库走的只有 `apps/tabpeek-landing/assets/demo.mp4` 与 `demo-poster.webp` 两个成品。重录时有两个坑必须踩对——**指针"进入"链接的那一点**决定窗口落位（`pointerover` 记的坐标，之后就固定了：要从链接正上方竖直落进去，横着滑会在链接边缘就记下坐标、窗口整体偏掉 200–300px），以及**录制期间 `requestAnimationFrame` 必须真的在跑**（`open()` 里那两帧 rAF 没跑就加不上 `.tp-in`，窗口停在 `opacity: 0`，录出来空无一物）。完整步骤和 ffmpeg 裁剪框的算法见 `apps/tabpeek/test/demo/README.md`。
+- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），图标是**同一张图的拷贝**：landing 的 `assets/icon.png` 就是插件 `assets/icon.png`（auto-icons 的源图）**原样复制**过来的，`index.html` 里三处引用同一份文件——`<link rel="icon">`（站点图标）、导航栏 logo（36px）、页脚 logo（40px）。原样用是刻意的：省掉一套需要手工重新导出的派生尺寸（历史上 landing 放的是 128/32 两张独立导出图，结果和插件图标完全不是同一个设计——绿色拼图 vs 现在的紫罗兰"页面+放大镜"——谁也没发现），代价是 favicon 也要下整张 190KB 的源图。**插件图标一改就要重新 `cp apps/prelook/assets/icon.png apps/prelook-landing/assets/icon.png`**；landing 是独立部署的静态站，不能写 `../prelook/assets/icon.png` 这种跨目录路径。
+- hero 视频的**源材料不进仓库**：`recordings/`（`prelook-demo.webm` 原始录制 + 全画幅 mp4）已 gitignore，跟着仓库走的只有 `apps/prelook-landing/assets/demo.mp4` 与 `demo-poster.webp` 两个成品。重录时有两个坑必须踩对——**指针"进入"链接的那一点**决定窗口落位（`pointerover` 记的坐标，之后就固定了：要从链接正上方竖直落进去，横着滑会在链接边缘就记下坐标、窗口整体偏掉 200–300px），以及**录制期间 `requestAnimationFrame` 必须真的在跑**（`open()` 里那两帧 rAF 没跑就加不上 `.tp-in`，窗口停在 `opacity: 0`，录出来空无一物）。完整步骤和 ffmpeg 裁剪框的算法见 `apps/prelook/test/demo/README.md`。
 
 ## 回归自检
 
 项目**没有自动化测试框架**（根 `package.json` 无 test/lint 脚本），回归靠类型检查 + 手动复现页：
 
 ```bash
-pnpm install && pnpm compile:tabpeek && pnpm build:tabpeek   # 类型 + 构建
-node -e "const a=Object.keys(require('./apps/tabpeek/assets/locales/zh-CN.json')).sort(),b=Object.keys(require('./apps/tabpeek/assets/locales/en.json')).sort();console.log('zh-only',a.filter(k=>!b.includes(k)),'en-only',b.filter(k=>!a.includes(k)))"
+pnpm install && pnpm compile:prelook && pnpm build:prelook   # 类型 + 构建
+node -e "const a=Object.keys(require('./apps/prelook/assets/locales/zh-CN.json')).sort(),b=Object.keys(require('./apps/prelook/assets/locales/en.json')).sort();console.log('zh-only',a.filter(k=>!b.includes(k)),'en-only',b.filter(k=>!a.includes(k)))"
 ```
 
 这套检查已经固化在 CI 里（`.github/workflows/ci.yml`，push 到 main 与 PR 时跑）：`pnpm install --frozen-lockfile` → `pnpm compile` → 词条对齐 → Chrome/Edge 与 Firefox 两个目标各构建一次 → **构建产物 manifest 冒烟检查**。最后一步是因为"构建成功"并不等于"插件能用"：它断言 `chrome-mv3` 有 `action` / `side_panel.default_path` / `background.service_worker` / `storage`+`sidePanel` 权限，`firefox-mv2` 有 `browser_action` / `sidebar_action.default_panel` / `background.scripts`。这些键任何一个掉了（`action` 就是典型：它全靠 `wxt.config.ts` 手写，见上）构建照样绿，但装进浏览器就用不了——所以宁可让 CI 红。**改动这些检查时注意每一步都要能在干净克隆上跑通**，别依赖本地生成物。
 
-`.github/workflows/release.yml` 在 release published 时构建上架用的 zip：先校验 tag 与 `apps/tabpeek/package.json` 的 `version` 一致（`v` 前缀可有可无，不一致直接红——zip 文件名和 manifest 的 version 都来自 package.json，对不上就等于发布了一个版本错位的产物），再 `pnpm zip:tabpeek` + `pnpm zip:tabpeek:firefox`，产物同时传成 run artifact 并用 `gh release upload` 挂到该 release 上（`workflow_dispatch` 可手动跑，只出 artifact 不动 release）。注意 WXT 生成的 zip 名是 `<根包名><子包名>-<版本>-<浏览器>.zip`，即 `extensionstabpeek-0.1.0-chrome.zip`；嫌难看在 `wxt.config.ts` 里配 `zip.name` 可以改（改之前先确认不会打乱既有上传流程）。
+`.github/workflows/release.yml` 在 release published 时构建上架用的 zip：先校验 tag 与 `apps/prelook/package.json` 的 `version` 一致（`v` 前缀可有可无，不一致直接红——zip 文件名和 manifest 的 version 都来自 package.json，对不上就等于发布了一个版本错位的产物），再 `pnpm zip:prelook` + `pnpm zip:prelook:firefox`，产物同时传成 run artifact 并用 `gh release upload` 挂到该 release 上（`workflow_dispatch` 可手动跑，只出 artifact 不动 release）。注意 WXT 生成的 zip 名是 `<根包名><子包名>-<版本>-<浏览器>.zip`，即 `extensionsprelook-0.1.0-chrome.zip`；嫌难看在 `wxt.config.ts` 里配 `zip.name` 可以改（改之前先确认不会打乱既有上传流程）。
 
-悬停链路回归：改 `entrypoints/content.ts` / `utils/preview.ts` 后，先 `pnpm build:tabpeek`，再从**仓库根目录**起静态服务器打开 `apps/tabpeek/test/repro-hover.html`（页面里的 chrome mock 必须提供 `runtime.connect` 与 `storage.<area>.onChanged`：前者是 `@wxt-dev/analytics` 在入口启动时调用的，缺了会让整个 content script 在挂监听前就抛错，日志表现为 `host present: false`；后者是 `@wxt-dev/storage` 监听设置变化用的，注意是**按区域**的 `chrome.storage.local.onChanged`，不是 `chrome.storage.onChanged`）（mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
+悬停链路回归：改 `entrypoints/content.ts` / `utils/preview.ts` 后，先 `pnpm build:prelook`，再从**仓库根目录**起静态服务器打开 `apps/prelook/test/repro-hover.html`（页面里的 chrome mock 必须提供 `runtime.connect` 与 `storage.<area>.onChanged`：前者是 `@wxt-dev/analytics` 在入口启动时调用的，缺了会让整个 content script 在挂监听前就抛错，日志表现为 `host present: false`；后者是 `@wxt-dev/storage` 监听设置变化用的，注意是**按区域**的 `chrome.storage.local.onChanged`，不是 `chrome.storage.onChanged`）（mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
 
-> 注意：`pnpm landing:tabpeek` 的服务根是 `apps/tabpeek-landing`，用它访问复现页会 404。复现页必须从仓库根起服务（`npx serve .` 或任意等价方式），这样页面里的 `../.output/...` 相对路径才解析得到。`apps/tabpeek/test/demo/` 同理（它是落地页 hero 那段视频的录制台，见那里的 README）。
+> 注意：`pnpm landing:prelook` 的服务根是 `apps/prelook-landing`，用它访问复现页会 404。复现页必须从仓库根起服务（`npx serve .` 或任意等价方式），这样页面里的 `../.output/...` 相对路径才解析得到。`apps/prelook/test/demo/` 同理（它是落地页 hero 那段视频的录制台，见那里的 README）。
 
-hero 那段视频**要求服务端支持 Range 请求**：没有 Range，浏览器拖不动进度条，Safari 更会直接拒绝播放一个服务端不声明 `accept-ranges` 的媒体文件。这一条很容易漏——`python -m http.server` 就没有（用它验证时会看到"能播但拖不动刻度"）。**服务端资源本来在 `apps/tabpeek-landing/scripts/serve.mjs`，连同 `apps/<name>-landing` 的 `dev` 脚本一起已被删除**，所以 `pnpm landing:tabpeek`（根脚本仍指向那个 `dev`）目前跑不起来；要恢复本地预览，就让新的静态服务器满足 Range + 认识 `video/mp4`，或者把那两样补回来。
+hero 那段视频**要求服务端支持 Range 请求**：没有 Range，浏览器拖不动进度条，Safari 更会直接拒绝播放一个服务端不声明 `accept-ranges` 的媒体文件。这一条很容易漏——`python -m http.server` 就没有（用它验证时会看到"能播但拖不动刻度"）。**服务端资源本来在 `apps/prelook-landing/scripts/serve.mjs`，连同 `apps/<name>-landing` 的 `dev` 脚本一起已被删除**，所以 `pnpm landing:prelook`（根脚本仍指向那个 `dev`）目前跑不起来；要恢复本地预览，就让新的静态服务器满足 Range + 认识 `video/mp4`，或者把那两样补回来。
 
 ## 附加模块（analytics / auto-icons）
 
@@ -274,14 +275,14 @@ hero 那段视频**要求服务端支持 Range 请求**：没有 Range，浏览�
 
 ## 右键菜单
 
-`background.ts` 里建三层菜单：`tabpeek-root`（`contexts: ['link']`，标题 `menu.root`）下挂 `tabpeek-open-popup` 与 `tabpeek-open-sidebar`。Chrome 不会本地化菜单标题，所以标题由 `settingsItem` 里存的 `language` 经 `translate()` 生成，并在 `onInstalled` 与语言变化时重建（`removeAll()` 后再 `create()`，避免 id 重复报错）。
+`background.ts` 里建三层菜单：`prelook-root`（`contexts: ['link']`，标题 `menu.root`）下挂 `prelook-open-popup` 与 `prelook-open-sidebar`。Chrome 不会本地化菜单标题，所以标题由 `settingsItem` 里存的 `language` 经 `translate()` 生成，并在 `onInstalled` 与语言变化时重建（`removeAll()` 后再 `create()`，避免 id 重复报错）。
 
-点击后 background 只发 `tabpeek:preview` 给该 tab，预览窗本体仍由 content 脚本创建（UI 在 shadow root 里，background 碰不到）。两个刻意的决定：**菜单命令无视 `enabled` 与禁用站点**——用户是从浏览器 UI 明确点的，静默不做事比不尊重设置更糟；**「在预览窗打开」是强制浮动窗**，即使用户的 `position` 设成了侧边栏（`AnchorInfo.sidebar` 因此是**三态**：`true` 强制侧边栏、`false` 强制浮动且当配置位置就是 sidebar 时退回 `center`、`undefined` 跟随设置）。对同一个 url 再下一次命令会改掉已开窗口的停靠方式（`existing.sidebar = info.sidebar` 后 `place()`），所以「先浮动打开、再改成侧边栏」是生效的。
+点击后 background 只发 `prelook:preview` 给该 tab，预览窗本体仍由 content 脚本创建（UI 在 shadow root 里，background 碰不到）。两个刻意的决定：**菜单命令无视 `enabled` 与禁用站点**——用户是从浏览器 UI 明确点的，静默不做事比不尊重设置更糟；**「在预览窗打开」是强制浮动窗**，即使用户的 `position` 设成了侧边栏（`AnchorInfo.sidebar` 因此是**三态**：`true` 强制侧边栏、`false` 强制浮动且当配置位置就是 sidebar 时退回 `center`、`undefined` 跟随设置）。对同一个 url 再下一次命令会改掉已开窗口的停靠方式（`existing.sidebar = info.sidebar` 后 `place()`），所以「先浮动打开、再改成侧边栏」是生效的。
 
 注意侧边栏的 `height` 只能由 `.tp-sidebar` 类提供，**不要在 `place()` 里写内联 `height: 100vh`**：浮动与侧边栏互相切换时内联样式不会自己消失，窗口会一直保持满高。同理，切到侧边栏时 `place()` 会清掉 `manualSize` 与内联 width/height，否则拖拽改过尺寸的窗口会带着浮动尺寸被停靠。多窗堆叠偏移是 `order * 窗口宽`，窗口很宽时靠后的那几个会排到视口外（历史行为，非 bug 但值得知道）。
 
 ## 收费现状
 
-没有付费版本：Pro / 授权码 / Ed25519 验签体系已整体移除（`utils/license.ts`、`scripts/gen-license.mjs`、`tabpeek:pro` 消息、popup 授权区、发码脚本都删了），多窗口预览对所有人开放。收入来源只有赞助，入口有两处：设置面板「关于」tab 的「赞助支持」段（用 `browser.tabs.create` 打开——面板里 `target="_blank"` 不可靠）与 landing 的 `#sponsor` 段 + 页脚，链接固定为爱发电 `https://ifdian.net/a/coldstoneboy`、Patreon `https://patreon.com/coldstoneboy`。landing 的安装按钮仍是 `href="#"` 占位（四个浏览器入口都在 hero 里）。
+没有付费版本：Pro / 授权码 / Ed25519 验签体系已整体移除（`utils/license.ts`、`scripts/gen-license.mjs`、`prelook:pro` 消息、popup 授权区、发码脚本都删了），多窗口预览对所有人开放。收入来源只有赞助，入口有两处：设置面板「关于」tab 的「赞助支持」段（用 `browser.tabs.create` 打开——面板里 `target="_blank"` 不可靠）与 landing 的 `#sponsor` 段 + 页脚，链接固定为爱发电 `https://ifdian.net/a/coldstoneboy`、Patreon `https://patreon.com/coldstoneboy`。landing 的安装按钮仍是 `href="#"` 占位（四个浏览器入口都在 hero 里）。
 
-`apps/tabpeek/scripts/private-key.json`（已 gitignore）是旧体系的残留，已无任何代码引用，可自行删除。
+`apps/prelook/scripts/private-key.json`（已 gitignore）是旧体系的残留，已无任何代码引用，可自行删除。

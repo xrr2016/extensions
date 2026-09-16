@@ -1,6 +1,6 @@
 {
-  "name": "@extensions/tabpeek",
-  "description": "悬停即预览，告别标签海",
+  "name": "@extensions/prelook",
+  "description": "悬停链接即预览，不必再点开",
   "private": true,
   "version": "0.1.0",
   "type": "module",

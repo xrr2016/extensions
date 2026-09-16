@@ -1,6 +1,6 @@
-import { clampSettings, type PowerMode, type TabPeekSettings } from "@/utils/storage";
+import { clampSettings, type PowerMode, type PrelookSettings } from "@/utils/storage";
 
-/** How much of TabPeek's own work is given up to save power. */
+/** How much of Prelook's own work is given up to save power. */
 export type PowerLevel = "off" | "on" | "max";
 
 export interface PowerState {
@@ -51,7 +51,7 @@ function motionQuery(): MediaQueryList | null {
  * off, it only takes work away.
  */
 export function watchPower(
-  getSettings: () => TabPeekSettings,
+  getSettings: () => PrelookSettings,
   onChange: (state: PowerState) => void,
 ): () => void {
   const query = motionQuery();

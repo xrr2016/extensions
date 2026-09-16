@@ -1,4 +1,4 @@
-import type { SpeculationMode, TabPeekSettings } from '@/utils/storage';
+import type { SpeculationMode, PrelookSettings } from '@/utils/storage';
 
 /**
  * Speculation Rules warm-up. While the hover-delay timer counts down, we
@@ -25,7 +25,7 @@ export interface SpeculationSystem {
 }
 
 export function createSpeculationSystem(deps: {
-  getSettings: () => TabPeekSettings;
+  getSettings: () => PrelookSettings;
 }): SpeculationSystem {
   let api: { addRules(rules: object): void } | undefined;
   try {

@@ -67,10 +67,10 @@
     <script>
       // The previewed post lives on this same server, but is addressed through
       // `localhost` rather than the IP it is served on: an IP-literal host is
-      // exactly what TabPeek's own risk hint flags, and that badge would be an
+      // exactly what Prelook's own risk hint flags, and that badge would be an
       // artefact of the recording setup rather than anything about the link.
       document.getElementById("link-internal").href =
-        `${location.origin.replace("127.0.0.1", "localhost")}/apps/tabpeek/test/demo/article-1.html`;
+        `${location.origin.replace("127.0.0.1", "localhost")}/apps/prelook/test/demo/article-1.html`;
     </script>
     <script src="mock.js"></script>
     <script src="../../.output/chrome-mv3/content-scripts/content.js"></script>

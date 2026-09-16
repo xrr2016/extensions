@@ -9,11 +9,11 @@
  *
  * Two things are faked on purpose:
  *
- *   - `tabpeek:fetch` answers from the table below instead of fetching. A URL
+ *   - `prelook:fetch` answers from the table below instead of fetching. A URL
  *     marked `canEmbed: false` takes the same path a site that sends
  *     `X-Frame-Options: DENY` would, which is how the recording shows reading
  *     mode without needing a real site that refuses framing.
- *   - `tabpeek_settings` is pre-seeded, so every take runs the same
+ *   - `prelook_settings` is pre-seeded, so every take runs the same
  *     configuration rather than whatever a previous take left behind.
  *
  * The `title` in each reply is what the preview header shows. Without it the
@@ -88,7 +88,7 @@
     },
   ];
 
-  const store = { tabpeek_settings: SETTINGS };
+  const store = { prelook_settings: SETTINGS };
   const listeners = [];
   const area = {
     get: (keys, cb) => {
@@ -129,7 +129,7 @@
       }),
       onConnect: { addListener: () => {} },
       sendMessage: (msg) => {
-        if (msg?.type === "tabpeek:fetch") {
+        if (msg?.type === "prelook:fetch") {
           const site = SITES.find((s) => String(msg.url).includes(s.match));
           if (site) {
             return Promise.resolve({

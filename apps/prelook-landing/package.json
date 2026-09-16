@@ -1,6 +1,6 @@
 {
-  "name": "@extensions/tabpeek-landing",
-  "description": "TabPeek 产品官网",
+  "name": "@extensions/prelook-landing",
+  "description": "Prelook 产品官网",
   "private": true,
   "version": "0.1.0",
   "type": "module"

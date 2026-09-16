@@ -43,8 +43,8 @@ jobs:
           node -e '
           const { readFileSync } = require("node:fs");
           const keys = (p) => Object.keys(JSON.parse(readFileSync(p, "utf8")));
-          const zh = keys("apps/tabpeek/assets/locales/zh-CN.json");
-          const en = keys("apps/tabpeek/assets/locales/en.json");
+          const zh = keys("apps/prelook/assets/locales/zh-CN.json");
+          const en = keys("apps/prelook/assets/locales/en.json");
           const only = (a, b) => a.filter((k) => !b.includes(k));
           const zhOnly = only(zh, en);
           const enOnly = only(en, zh);
@@ -56,10 +56,10 @@ jobs:
           '
 
       - name: Build (Chrome/Edge, MV3)
-        run: pnpm build:tabpeek
+        run: pnpm build:prelook
 
       - name: Build (Firefox, MV2)
-        run: pnpm build:tabpeek:firefox
+        run: pnpm build:prelook:firefox
 
       # A build can succeed while the manifest silently loses a key the extension
       # cannot work without (the hand-written `action`, the side panel entry, the
@@ -72,7 +72,7 @@ jobs:
           const problems = [];
           const need = (ok, msg) => { if (!ok) problems.push(msg); };
 
-          const chrome = load("apps/tabpeek/.output/chrome-mv3/manifest.json");
+          const chrome = load("apps/prelook/.output/chrome-mv3/manifest.json");
           need(chrome.manifest_version === 3, "chrome: manifest_version must be 3");
           need(!!chrome.action, "chrome: `action` is missing (no toolbar icon to click)");
           need(!!chrome.side_panel?.default_path, "chrome: side_panel.default_path is missing (settings unreachable)");
@@ -82,7 +82,7 @@ jobs:
           need(!!chrome.host_permissions?.includes("<all_urls>"), "chrome: host_permissions no longer covers <all_urls>");
           need(chrome.content_scripts?.some((c) => c.matches?.includes("<all_urls>")), "chrome: no content script matching <all_urls>");
 
-          const firefox = load("apps/tabpeek/.output/firefox-mv2/manifest.json");
+          const firefox = load("apps/prelook/.output/firefox-mv2/manifest.json");
           need(firefox.manifest_version === 2, "firefox: manifest_version must be 2");
           need(!!firefox.browser_action, "firefox: browser_action is missing (MV2 form of `action`)");
           need(!!firefox.sidebar_action?.default_panel, "firefox: sidebar_action.default_panel is missing (settings unreachable)");

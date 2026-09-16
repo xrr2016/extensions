@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 .output
 # Raw screen recordings behind the landing hero video; only the encoded assets in
-# apps/tabpeek-landing/assets/ are meant to be committed.
+# apps/prelook-landing/assets/ are meant to be committed.
 recordings
 apps/*/scripts/private-key.json
 stats.html

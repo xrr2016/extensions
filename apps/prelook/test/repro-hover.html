@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-  <head><meta charset="UTF-8" /><title>TabPeek content-script repro</title></head>
+  <head><meta charset="UTF-8" /><title>Prelook content-script repro</title></head>
   <body>
     <p>Go to <a id="target" href="https://example.com/article">the example article</a> for details.</p>
     <pre id="log"></pre>
@@ -40,7 +40,7 @@
           onConnect: { addListener: () => {} },
           sendMessage: (msg) => {
             window.__log('sendMessage ' + JSON.stringify(msg).slice(0, 80));
-            if (msg.type === 'tabpeek:fetch') {
+            if (msg.type === 'prelook:fetch') {
               return Promise.resolve({
                 ok: true, canEmbed: true, finalUrl: msg.url,
                 title: 'Example Domain', html: '<html><body><article><p>hello</p></article></body></html>',
@@ -70,7 +70,7 @@
           bubbles: true, composed: true, clientX: 120, clientY: 60, pointerId: 1, isPrimary: true,
         }));
         setTimeout(() => {
-          const host = document.querySelector('tabpeek-ui');
+          const host = document.querySelector('prelook-ui');
           window.__log('host present: ' + !!host);
           if (host?.shadowRoot) {
             window.__log('windows in shadow: ' + host.shadowRoot.querySelectorAll('.tp-win').length);

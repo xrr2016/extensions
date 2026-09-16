@@ -2,10 +2,10 @@
 
 多浏览器插件 monorepo（pnpm workspace）。当前包含：
 
-- **[TabPeek](apps/tabpeek/)** — 悬停即预览，告别标签海（WXT + Vue 3，MV3，Chrome/Edge/Firefox）
-- **[TabPeek 官网](apps/tabpeek-landing/)** — 纯静态落地页（零构建，可直接部署）
+- **[Prelook](apps/prelook/)** — 悬停链接即预览，不必再点开（WXT + Vue 3，MV3，Chrome/Edge/Firefox）
+- **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页（零构建，可直接部署）
 
-## TabPeek 功能
+## Prelook 功能
 
 - **链接预览**：悬停链接浮出预览窗（iframe 优先，被禁嵌站点自动切阅读模式）
 - **划词搜索**：选中文字弹出工具条，普通搜索（Google/Bing/百度/DuckDuckGo）与 AI 搜索（DeepSeek/豆包/Kimi）
@@ -24,28 +24,28 @@
 
 ```bash
 pnpm install
-pnpm dev:tabpeek          # Chrome 开发模式，加载 apps/tabpeek/.output/chrome-mv3-dev/
-pnpm dev:tabpeek:firefox  # Firefox 开发模式
-pnpm dev:tabpeek:doubao   # 豆包浏览器开发模式（路径见 wxt.config.ts 的 webExt.binaries）
-pnpm build:tabpeek        # 生产构建（pnpm build 聚合全部子包）
-pnpm compile:tabpeek      # 类型检查（pnpm compile 聚合）
-pnpm zip:tabpeek          # 打包上架 zip
-pnpm landing:tabpeek      # 官网本地预览 http://127.0.0.1:4173
+pnpm dev:prelook          # Chrome 开发模式，加载 apps/prelook/.output/chrome-mv3-dev/
+pnpm dev:prelook:firefox  # Firefox 开发模式
+pnpm dev:prelook:doubao   # 豆包浏览器开发模式（路径见 wxt.config.ts 的 webExt.binaries）
+pnpm build:prelook        # 生产构建（pnpm build 聚合全部子包）
+pnpm compile:prelook      # 类型检查（pnpm compile 聚合）
+pnpm zip:prelook          # 打包上架 zip
+pnpm landing:prelook      # 官网本地预览 http://127.0.0.1:4173
 ```
 
 ## 赞助
 
-TabPeek 没有任何付费版本，也没有服务器成本之外的开销。如果想支持开发：
+Prelook 没有任何付费版本，也没有服务器成本之外的开销。如果想支持开发：
 
 - 爱发电 — https://ifdian.net/a/coldstoneboy
 - Patreon — https://patreon.com/coldstoneboy
 
 ## 目录
 
-- `apps/tabpeek/entrypoints/` — 扩展入口（background / content / popup 设置页）
-- `apps/tabpeek/utils/` — 预览窗、划词、阅读模式提取、i18n、存储
-- `apps/tabpeek/assets/locales/` — 界面词条（zh-CN / en）
-- `apps/tabpeek-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
+- `apps/prelook/entrypoints/` — 扩展入口（background / content / popup 设置页）
+- `apps/prelook/utils/` — 预览窗、划词、阅读模式提取、i18n、存储
+- `apps/prelook/assets/locales/` — 界面词条（zh-CN / en）
+- `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
 
 新增插件请参考 [AGENTS.md](AGENTS.md) 的接入清单。
 

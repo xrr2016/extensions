@@ -25,7 +25,7 @@ function embedAllowed(headers: Headers, hostOrigin: string): boolean {
   const xfo = headers.get('x-frame-options')?.toUpperCase();
   if (xfo) {
     if (xfo === 'DENY' || xfo === 'SAMEORIGIN') {
-      const targetOrigin = headers.get('x-tabpeek-origin');
+      const targetOrigin = headers.get('x-prelook-origin');
       if (!targetOrigin || targetOrigin !== hostOrigin) return false;
     } else if (xfo.startsWith('ALLOW-FROM')) {
       const from = xfo.slice('ALLOW-FROM'.length).trim();
@@ -95,7 +95,7 @@ async function fetchPreview(url: string, hostOrigin: string): Promise<FetchPrevi
     const headers = new Headers(res.headers);
     if (headers.get('x-frame-options')?.toUpperCase() === 'SAMEORIGIN') {
       try {
-        headers.set('x-tabpeek-origin', new URL(res.url).origin);
+        headers.set('x-prelook-origin', new URL(res.url).origin);
       } catch {
         /* ignore */
       }
@@ -125,9 +125,9 @@ async function fetchPreview(url: string, hostOrigin: string): Promise<FetchPrevi
   }
 }
 
-const MENU_ROOT = 'tabpeek-root';
-const MENU_POPUP = 'tabpeek-open-popup';
-const MENU_SIDEBAR = 'tabpeek-open-sidebar';
+const MENU_ROOT = 'prelook-root';
+const MENU_POPUP = 'prelook-open-popup';
+const MENU_SIDEBAR = 'prelook-open-sidebar';
 
 /** Context menus are not localised by the browser, so they are rebuilt from the
  *  stored UI language whenever that changes. */
@@ -198,7 +198,7 @@ export default defineBackground(() => {
     if (!url || tab?.id == null) return;
     // The content script owns the preview UI; it resolves the anchor itself.
     void browser.tabs
-      .sendMessage(tab.id, { type: 'tabpeek:preview', url, sidebar })
+      .sendMessage(tab.id, { type: 'prelook:preview', url, sidebar })
       .catch(() => undefined);
   });
 
@@ -208,12 +208,12 @@ export default defineBackground(() => {
     }
     const msg = message as Record<string, unknown>;
 
-    if (msg.type === 'tabpeek:fetch') {
+    if (msg.type === 'prelook:fetch') {
       const hostOrigin = sender.tab?.url ? new URL(sender.tab.url).origin : '';
       return fetchPreview(String(msg.url ?? ''), hostOrigin);
     }
 
-    if (msg.type === 'tabpeek:openTab') {
+    if (msg.type === 'prelook:openTab') {
       const raw = String(msg.url ?? '');
       if (!/^https?:/i.test(raw)) return Promise.resolve({ ok: false });
       // Safety net: the content script already cleans preview URLs, but every tab

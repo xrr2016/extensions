@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
-    <title>TabPeek — 极速悬停预览，告别标签海</title>
+    <title>Prelook — 悬停链接即预览，不必再点开</title>
     <!-- 主题初始化：必须在样式表之前执行，否则深色模式首帧会闪白 -->
     <script>
       (function () {
         try {
-          var theme = localStorage.getItem("tabpeek-landing-theme");
+          var theme = localStorage.getItem("prelook-landing-theme");
           if (theme !== "light" && theme !== "dark") {
             theme =
               window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -24,15 +24,15 @@
     </script>
     <meta
       name="description"
-      content="TabPeek：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。"
+      content="Prelook：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。"
     />
     <meta
       name="keywords"
-      content="TabPeek,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
+      content="Prelook,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
     />
     <link rel="icon" type="image/png" href="./assets/icon.png" />
     <link rel="stylesheet" href="./css/style.css" />
-    <meta property="og:title" content="TabPeek — 极速悬停预览，告别标签海" />
+    <meta property="og:title" content="Prelook — 悬停链接即预览，不必再点开" />
     <meta
       property="og:description"
       content="悬停链接即预览，禁嵌站点自动转阅读模式。全部本地运行，免费且无需账号。"
@@ -45,8 +45,8 @@
     <nav class="navbar" id="top">
       <div class="nav-container">
         <a href="#top" class="nav-brand">
-          <img src="./assets/icon.png" alt="TabPeek" width="36" height="36" class="logo" />
-          <span class="brand-name">TabPeek</span>
+          <img src="./assets/icon.png" alt="Prelook" width="36" height="36" class="logo" />
+          <span class="brand-name">Prelook</span>
         </a>
 
         <!-- 顺序严格跟着页面走：功能 → 极速 → 评价 → FAQ → 安装。
@@ -117,8 +117,8 @@
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            <span data-i18n="hero.title1">极速预览，</span
-            ><span class="gradient-text" data-i18n="hero.title2">告别标签海</span>
+            <span data-i18n="hero.title1">悬停即预览，</span
+            ><span class="gradient-text" data-i18n="hero.title2">不必点开</span>
           </h1>
 
           <p class="hero-description" data-i18n="hero.desc">
@@ -216,7 +216,7 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Features</span>
-          <h2 class="section-title" data-i18n="features.title">沉浸式浏览，告别标签海</h2>
+          <h2 class="section-title" data-i18n="features.title">沉浸式浏览，不必来回切换</h2>
           <p class="section-subtitle" data-i18n="features.subtitle">
             十二项能力，全部本地运行，不上传任何数据
           </p>
@@ -455,7 +455,7 @@
             <div class="cmp-bar cold"><i></i></div>
           </div>
           <div class="cmp-row">
-            <span class="cmp-label" data-i18n="speed.warm">TabPeek 预热后</span>
+            <span class="cmp-label" data-i18n="speed.warm">Prelook 预热后</span>
             <div class="cmp-bar warm"><i>⚡</i></div>
           </div>
           <p class="compare-note" data-i18n="speed.note">
@@ -700,7 +700,7 @@
           <details open>
             <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
             <p data-i18n="faq.a1">
-              部分网站禁止被内嵌，TabPeek
+              部分网站禁止被内嵌，Prelook
               会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。
             </p>
           </details>
@@ -708,12 +708,12 @@
           <details>
             <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
             <p data-i18n="faq.a2">
-              不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。
+              不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。
             </p>
           </details>
 
           <details>
-            <summary data-i18n="faq.q3">TabPeek 收费吗？</summary>
+            <summary data-i18n="faq.q3">Prelook 收费吗？</summary>
             <p data-i18n="faq.a3">
               完全免费，没有 Pro
               版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。
@@ -723,7 +723,7 @@
           <details>
             <summary data-i18n="faq.q4">预览为什么这么快？</summary>
             <p data-i18n="faq.a4">
-              TabPeek 使用浏览器原生的 Speculation Rules
+              Prelook 使用浏览器原生的 Speculation Rules
               API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。
             </p>
           </details>
@@ -846,9 +846,9 @@
                 decoding="async"
                 class="footer-logo"
               />
-              <span class="footer-name">TabPeek</span>
+              <span class="footer-name">Prelook</span>
             </div>
-            <p data-i18n="footer.about">TabPeek 极速预览，告别标签海。</p>
+            <p data-i18n="footer.about">Prelook 悬停即预览，不必再点开。</p>
           </div>
 
           <div class="footer-links">

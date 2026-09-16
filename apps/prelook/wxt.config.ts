@@ -9,8 +9,8 @@ const ZEN_BINARY = "C:\\Program Files\\Zen Browser\\zen.exe";
 export default defineConfig({
   modules: ["@wxt-dev/module-vue", "@wxt-dev/auto-icons", "@wxt-dev/analytics/module"],
   manifest: {
-    name: "TabPeek",
-    description: "悬停即预览，告别标签海 — 链接悬浮预览、阅读模式、划词搜索",
+    name: "Prelook",
+    description: "悬停链接即预览，不必再点开 — 链接预热秒开、阅读模式、划词搜索、风险提示",
     permissions: ["tabs", "storage", "contextMenus"],
     host_permissions: ["<all_urls>"],
     // Written out by hand because WXT only emits `action` for a popup
@@ -20,7 +20,7 @@ export default defineConfig({
     action: {},
   },
   // `binaries` is keyed by the `-b` browser name, so a plain `wxt` run still
-  // launches Chrome and `pnpm dev:tabpeek:doubao` hits that entry.
+  // launches Chrome and `pnpm dev:prelook:doubao` hits that entry.
   // Zen is the one exception to "the key matches the flag": it is a Firefox
   // fork, so only `-b firefox` can drive it (WXT reads `binaries.firefox` for
   // that target and treats every other name as Chromium). A `zen` key would be

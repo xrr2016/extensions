@@ -98,7 +98,7 @@ function clampWindowPercent(value: number, legacyRef: number, fallback: number):
   return Math.min(WINDOW_PCT_MAX, Math.max(WINDOW_PCT_MIN, pct));
 }
 
-export interface TabPeekSettings {
+export interface PrelookSettings {
   enabled: boolean;
   triggerMode: TriggerMode;
   hoverDelayMs: number;
@@ -107,7 +107,7 @@ export interface TabPeekSettings {
   /** Preview window size as a percentage of the viewport */
   width: number;
   height: number;
-  /** Accent of TabPeek's own UI: the settings panel, the link frame, the hover
+  /** Accent of Prelook's own UI: the settings panel, the link frame, the hover
    *  countdown and the selection toolbar. Never touched by the window theme. */
   themeColor: string;
   /** Accent the preview window uses while `windowTheme` is "custom" */
@@ -130,7 +130,7 @@ export interface TabPeekSettings {
   theme: ThemeMode;
   /** Preview window look: a preset tint, or "custom" driven by `windowColor` */
   windowTheme: WindowTheme;
-  /** Strip marketing/analytics parameters from links TabPeek opens */
+  /** Strip marketing/analytics parameters from links Prelook opens */
   stripTracking: boolean;
   /** Show a read-only risk hint in the preview header for suspect links */
   warnDangerous: boolean;
@@ -142,14 +142,14 @@ export interface TabPeekSettings {
   maxWindows: number;
   /** Speculation Rules: warm the hovered link before the preview opens */
   speculationMode: SpeculationMode;
-  /** How much of TabPeek's own work is given up to save power */
+  /** How much of Prelook's own work is given up to save power */
   powerSaver: PowerMode;
   /** Skip preview fades and the hover countdown bar's transition */
   reduceMotion: boolean;
   disabledSites: string[];
 }
 
-export const DEFAULT_SETTINGS: TabPeekSettings = {
+export const DEFAULT_SETTINGS: PrelookSettings = {
   enabled: true,
   triggerMode: "hover",
   hoverDelayMs: 500,
@@ -183,7 +183,7 @@ export const DEFAULT_SETTINGS: TabPeekSettings = {
   disabledSites: [],
 };
 
-export const settingsItem = storage.defineItem<TabPeekSettings>("local:tabpeek_settings", {
+export const settingsItem = storage.defineItem<PrelookSettings>("local:prelook_settings", {
   defaultValue: DEFAULT_SETTINGS,
 });
 
@@ -218,8 +218,8 @@ export function isSiteDisabled(disabledSites: string[], hostname: string): boole
   });
 }
 
-export function clampSettings(s: TabPeekSettings): TabPeekSettings {
-  const { blurPx: legacyBlurPx, ...rest } = s as TabPeekSettings & { blurPx?: number };
+export function clampSettings(s: PrelookSettings): PrelookSettings {
+  const { blurPx: legacyBlurPx, ...rest } = s as PrelookSettings & { blurPx?: number };
   const windowTheme: WindowTheme = WINDOW_THEMES.some((w) => w.id === s.windowTheme)
     ? s.windowTheme
     : DEFAULT_SETTINGS.windowTheme;
@@ -243,7 +243,7 @@ export function clampSettings(s: TabPeekSettings): TabPeekSettings {
     windowTheme,
     // Two independent colours: the window theme only ever colours preview
     // windows (a preset's own accent, or `windowColor` for "custom"), while
-    // `themeColor` belongs to TabPeek's own UI and is edited in the panel's
+    // `themeColor` belongs to Prelook's own UI and is edited in the panel's
     // appearance tab. Nothing writes one from the other.
     themeColor: s.themeColor || DEFAULT_SETTINGS.themeColor,
     windowColor: s.windowColor || DEFAULT_SETTINGS.windowColor,
