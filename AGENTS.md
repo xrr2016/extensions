@@ -49,13 +49,13 @@ apps/
       speculation.ts         # Speculation Rules 预热
       i18n.ts                # 扁平 key 查表
     assets/locales/          # 界面词条 zh-CN.json / en.json（与 WXT 的 locales/ 无关）
-    public/icon/             # 16/32/48/96/128 图标，WXT 自动写入 manifest
+    assets/icon.png          # 唯一图标源图（@wxt-dev/auto-icons 用它生成各尺寸）
     test/repro-hover.html    # mock chrome API 的悬停链路回归页（引用 .output 真实产物）
   <name>-landing/            # 落地页，包名 @extensions/<name>-landing，零依赖
     index.html  css/  js/  assets/  scripts/serve.mjs
 ```
 
-**新增插件接入清单**：建 `apps/<name>/`（可复制 tabpeek 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 图标从 `public/icon/` 拷到 landing `assets/`。
+**新插件接入清单**：建 `apps/<name>/`（可复制 tabpeek 骨架）→ 改 `wxt.config.ts` manifest 与 package.json 名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 把图标放进 landing `assets/`（插件的尺寸由 `assets/icon.png` 经 auto-icons 生成，两边各管各的）。
 
 ## 运行期架构
 
@@ -200,7 +200,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 赞助卡片是**每个 tab 共用的底部块**：抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它存在的，已删除。组件本身**没有样式块**，`.sponsor-section` / `.sponsor` 仍写在 `entrypoints/sidepanel/style.css` 里（面板是独立文档，那份全局 CSS 对它生效）；组件被别处复用时得自己带上样式。它是面板最末一块（「恢复默认设置」按钮在「设置」tab 里，见下），沉底靠三件套：`#app { display:flex; flex-direction:column; min-height:100vh }` + `main { flex:1 }` + `.sponsor-section { margin-top:auto }`——内容比面板矮时它贴住底边不留空白，内容更高时它就是滚动区的最后一块（内层 `.flex-1` 让面板区自己吃掉剩余高度，所以不会把内容拉长）。`*{box-sizing:border-box}` 保证 `#app` 的 `padding-bottom` 算在 100vh 内，否则面板会凭空多出一条滚动条。**「恢复默认设置」是「设置」tab 最后一个 section 里的一个盒状按钮**（`.btn-reset`，唯一的红色破坏性控件；它原先在底部的 `footer` 里——`footer` 规则已随之下线，那段共用的尾巴上只剩赞助卡）。
 
-样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**，`public/icon/` 那套图标也再没有任何引用（真要用它得先在模板里重新引一次）。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
+样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
 ### 设置与存储
 
@@ -230,7 +230,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 - **新增界面文案**：`utils/i18n.ts` 是扁平 key（`t('preview.close')`），zh-CN 与 en 必须同时补齐；sidepanel `App.vue` 模板里的动态 key 是 `panel.tab.${tab}` / `trigger.${mode}` / `position.${p}` / `sidebarSide.${side}` / `speculation.${m}` 模式，另有 `t(`sponsor.${s.id}`)` 这种模板拼 key 的写法。
 - **content script 匹配** `<all_urls>` 且仅 main frame（WXT 默认不写 `all_frames`）；`entrypoints/content.ts` 中 `runAt`（camelCase），WXT 0.21 不认 `run_at`。 manifest 权限是 `tabs` / `storage` / `contextMenus`（右键菜单），**加权限后必须重载扩展**。**改 manifest 权限后必须重载扩展并刷新目标网页**，旧页面里的 content script 已失效。
 - Manifest 改动（权限/名称）只改各 app 的 `wxt.config.ts`；`.output/`、`.wxt/` 是生成物，不要编辑。
-- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），仅 `assets/` 图标是从 `public/icon/` 拷贝的副本——`assets/icon-128.png` ← `icon/128.png`、`assets/favicon-32.png` ← `icon/32.png`，改图标记得两边同步。
+- `apps/<name>-landing/` 与插件零依赖共享（词典在 landing `js/main.js` 内独立维护），图标也是**各管各的**：landing 的 `assets/icon-128.png`、`assets/favicon-32.png` 是页面自己在用的文件（`index.html` 里引），插件侧的图标源图是 `assets/icon.png`（auto-icons）。两张图内容相近但不是同一份文件，改其中一边时想让另一边跟上得手动导出一次。
 
 ## 回归自检
 
@@ -247,7 +247,7 @@ node -e "const a=Object.keys(require('./apps/tabpeek/assets/locales/zh-CN.json')
 
 ## 附加模块（analytics / auto-icons）
 
-- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。`public/icon/` 里那套是历史遗留的第二份拷贝，设置面板头部 `<img src="/icon/32.png">` 还指着它。
+- 图标走 `@wxt-dev/auto-icons`：源图 `assets/icon.png`，产物写 `.output/<browser>/icons/<size>.png` 并覆盖 manifest 的 `icons`（默认尺寸 128/48/32/16，**没有 96**，要保留就显式配 `sizes`）。这是插件图标的**唯一来源**——历史上还有一份 `public/icon/`（16/32/48/128 四个 png，原给设置面板头部的 `<img src="/icon/32.png">` 用），那个引用随面板头部一起删掉后已无人引用，整目录已删除；landing 的 `assets/` 里是它自己的拷贝，不要再从插件目录同步。
 - `app.config.ts` 是运行时应用配置（`defineAppConfig` 由 WXT 自动导入，不用手写 import）。**文件存在就必须有 default export**，空文件会让构建直接失败：`[MISSING_EXPORT] "default" is not exported by "app.config.ts"`。
 - `@wxt-dev/analytics` 会把客户端代码注入各入口（content script、sidepanel **和 background SW** 都验证过），在**模块求值阶段**就调用 `runtime.connect`。也就是说这个调用一旦抛错，整个入口在挂任何监听之前就挂掉——排查“什么都不响应”时先看这里。GA4 需要 `WXT_GA_API_SECRET` 与真实 `measurementId`。
 

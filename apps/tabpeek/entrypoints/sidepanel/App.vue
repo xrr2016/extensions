@@ -18,7 +18,7 @@ import { watchTheme } from "@/utils/theme";
 import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
 
 // Sections live in tabs so the panel never turns into one endless scroll.
-const TABS = ["preview", "settings", "performance", "protect"] as const;
+const TABS = ["preview", "performance", "protect", "settings"] as const;
 type TabId = (typeof TABS)[number];
 const activeTab = ref<TabId>("preview");
 
