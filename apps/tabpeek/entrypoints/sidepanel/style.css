@@ -1,6 +1,6 @@
-/* The settings panel renders a single component, so every rule lives here as
-   plain global CSS rather than in App.vue's scoped block: there is no second
-   component for them to leak into. */
+/* Rules for the settings panel itself, kept as plain global CSS rather than in
+   App.vue's scoped block (that component has none). SponsorSection.vue carries
+   its own scoped styles. */
 
 :root {
   color-scheme: light;
@@ -26,8 +26,9 @@ body {
 }
 
 /* A column as tall as the panel, so `main` can absorb the leftover height and
-   let the sponsor block sink to the bottom edge instead of leaving a gap in the
-   middle of a short tab. `border-box` keeps the bottom padding inside 100vh. */
+   let the sponsor block (its own `margin-top: auto`) sink to the bottom edge
+   instead of leaving a gap in the middle of a short tab. `border-box` keeps the
+   bottom padding inside 100vh. */
 #app {
   display: flex;
   flex-direction: column;
@@ -68,6 +69,9 @@ body {
   padding: 4px 12px;
 }
 
+.tabs-content {
+  margin-bottom: 12px;
+}
 main {
   display: flex;
   flex: 1;
@@ -317,29 +321,6 @@ h2 {
   color: #8c959f;
 }
 
-.sponsor-section {
-  margin-top: auto;
-  border-color: color-mix(in srgb, var(--tp-accent) 35%, #fff);
-}
-.sponsor {
-  display: flex;
-  gap: 8px;
-  margin-top: 9px;
-}
-.sponsor button {
-  flex: 1;
-  padding: 7px 10px;
-  border-radius: 8px;
-  font-size: 12.5px;
-  cursor: pointer;
-  border: 1px solid color-mix(in srgb, var(--tp-accent) 45%, #fff);
-  background: color-mix(in srgb, var(--tp-accent) 8%, #fff);
-  color: var(--tp-accent);
-}
-.sponsor button:hover {
-  background: color-mix(in srgb, var(--tp-accent) 16%, #fff);
-}
-
 .sites {
   display: flex;
   flex-wrap: wrap;
@@ -468,8 +449,7 @@ html[data-theme="dark"] section {
 html[data-theme="dark"] .theme-cards label,
 html[data-theme="dark"] .seg-btns label,
 html[data-theme="dark"] .chip,
-html[data-theme="dark"] .row-inline button,
-html[data-theme="dark"] .sponsor button {
+html[data-theme="dark"] .row-inline button {
   background: #22262b;
   border-color: #333941;
   color: #c8cdd4;

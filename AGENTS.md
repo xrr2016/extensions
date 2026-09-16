@@ -5,7 +5,7 @@
 **多浏览器插件 monorepo**（pnpm workspace，根包名 `extensions`）。`apps/` 下按"每个产品两个目录"扁平排列：插件本体 + 落地页。当前产品：
 
 - **TabPeek** — 悬停链接预览扩展（MV3，Chrome/Edge/Firefox），WXT 0.21 + Vue 3。核心能力：悬停/Alt+悬停/点击/长按触发页面内悬浮预览窗（iframe 优先、禁嵌站点自动切阅读模式）、链接预热、划词搜索（普通 + AI）、全量设置面板（侧边栏）、多窗口预览（最多 6 窗）。**全部功能免费**，没有 Pro/授权码/付费体系，只在侧边栏设置面板与 landing 放了爱发电 + Patreon 赞助入口。
-- **tabpeek-landing** — 纯静态产品官网（零构建，直接部署）。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份），下载按钮仍是 `href="#"` 占位。
+- **tabpeek-landing** — 纯静态产品官网（零构建，直接部署），版式参考 `yuumi.coldstoneboy.cn`：**令牌驱动的设计系统**（`css/style.css` 顶部的 `--primary/--bg-*/--text-*/--shadow-*/--spacing-*/--radius-*`，与参考站同一套命名）、固定模糊导航栏 + 下划线 scroll-spy、`features → speed → download → sponsor → faq → footer` 的区块顺序（锚点 `#features`/`#speed`/`#download`/`#sponsor`/`#faq`）。**深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.tabpeek-landing-theme`。词典以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）；赞助卡片是真实外链（`#sponsor` 段落 + 页脚各一份），下载按钮仍是 `href="#"` 占位。滚动入场用 IntersectionObserver + 每帧几何兜底（`sweepReveals`：IO 是采样而非穿越检测，快速滚动会漏，兜底保证没有区块停在 `opacity:0`）。不引外部字体（Google Fonts 在国内不可达），用系统字体栈。
 
 ## 常用命令
 
@@ -16,6 +16,7 @@
 | `pnpm install`                                      | 安装并链接 workspace（首次克隆/目录改名后必跑，见下）                                    |
 | `pnpm dev:tabpeek` / `pnpm dev:tabpeek:firefox`     | 开发模式，产物在 `apps/tabpeek/.output/chrome-mv3-dev/`（firefox 为 `firefox-mv2-dev/`） |
 | `pnpm dev:tabpeek:doubao`                           | 开发模式，改用本机豆包浏览器（Chromium 147），产物在 `.output/doubao-mv3-dev/`           |
+| `pnpm dev:tabpeek:zen`                              | 开发模式，改用本机 Zen Browser（Firefox 内核，与 `dev:tabpeek:firefox` 同一条命令），产物在 `.output/firefox-mv2-dev/` |
 | `pnpm build:tabpeek` / `pnpm build:tabpeek:firefox` | 生产构建，产物在 `apps/tabpeek/.output/chrome-mv3/`（firefox 为 `firefox-mv2/`）         |
 | `pnpm zip:tabpeek` / `pnpm zip:tabpeek:firefox`     | 打包上架 zip                                                                             |
 | `pnpm compile:tabpeek`                              | 单产品类型检查（`vue-tsc --noEmit`）                                                     |
@@ -26,7 +27,11 @@
 
 `apps/tabpeek/node_modules/` 里是指向 pnpm store 的**符号链接，写死绝对路径**：把仓库目录改名或移动（例如 `tabpeek/` → `extensions/`）后它们会集体失效，表现为"模块找不到"。跑一次 `pnpm install` 即可重建链接。
 
-**多浏览器启动**：`wxt.config.ts` 的 `webExt.binaries` 是**按 `-b` 传入的浏览器名取值**的映射（内部即 `binaries[browser]` → `chromiumBinary`），所以自定义浏览器必须让**映射键与 `-b` 参数同名**。当前 `doubao` 键指向本机豆包浏览器主程序，只有 `pnpm dev:tabpeek:doubao`（`wxt -b doubao`）会命中，直接 `wxt` 仍启动 Chrome。新增浏览器照此加一条键 + 一个 `dev:<name>` 脚本即可；浏览器名不是 firefox/safari 时一律按 MV3 构建，产物目录随之变成 `.output/<name>-mv3[-dev]/`。同层的 `webExt.startUrls` 决定 dev 启动时打开的页面（当前是虎扑测试帖）：它**没有按浏览器区分的形式**（只有 `manifest` 支持 `UserManifestFn` 那种 `env.browser` 函数），配了就对所有 dev 目标生效。
+**多浏览器启动**：`wxt.config.ts` 的 `webExt.binaries` 是**按 `-b` 传入的浏览器名取值**的映射（内部即 `binaries[browser]` → `chromiumBinary`），所以自定义浏览器必须让**映射键与 `-b` 参数同名**。当前 `doubao` 键指向本机豆包浏览器主程序，只有 `pnpm dev:tabpeek:doubao`（`wxt -b doubao`）会命中，直接 `wxt` 仍启动 Chrome。新增浏览器照此加一条键 + 一个 `dev:<name>` 脚本即可；浏览器名不是 firefox/safari 时一律按 MV3 构建，产物目录随之变成 `.output/<name>-mv3[-dev]/`。
+
+**Zen Browser 是这条规则唯一的例外**，因为它和 doubao 不同、是 **Firefox 内核**：WXT 只在 `browser === 'firefox'` 时读 `binaries.firefox` 并把 web-ext 的 `target` 设成 `firefox-desktop`，其余名字一律当 Chromium（`binaries[browser]` → `chromiumBinary`，`target: 'chromium'`）。所以写一个 `zen` 键是**没有用的**：`wxt -b zen` 会产出 Chrome MV3 清单（`background.service_worker` + `side_panel` + `sidePanel` 权限），Zen 一条都加载不了。正确做法是让 **`binaries.firefox` 指向 Zen 主程序**（本机没装真正的 Firefox，所以这个槽位归 Zen），脚本用 `pnpm dev:tabpeek:zen`（内部就是 `wxt -b firefox`，与 `dev:tabpeek:firefox` 等价，多一个名字只为好找），产物走 `.output/firefox-mv2-dev/`。装了真 Firefox 之后想让两者并存就只能改这一行——WXT 没有"按名字给 firefox 目标指定 binary"的入口。
+
+同层的 `webExt.startUrls` 决定 dev 启动时打开的页面（当前是虎扑测试帖）：它**没有按浏览器区分的形式**（只有 `manifest` 支持 `UserManifestFn` 那种 `env.browser` 函数），配了就对所有 dev 目标生效。
 
 ## 目录结构
 
@@ -148,6 +153,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 - **令牌驱动**：预览窗的表面色/文字色不再写死，而是 `:host` 上的 `--tp-base / --tp-ink / --tp-surface / --tp-line / --tp-soft`（`--tp-line`、`--tp-soft` 由 `--tp-ink` 与 `--tp-surface` 用 `color-mix` 推导）。深色主题只改 `--tp-base`、`--tp-ink` 两个默认值，窗口规则全读令牌。`applyWindowTheme(root, preset, customColor)` 把预设写进**每个窗口 root 的内联变量**（内联优先，所以能压过主题默认值）：`kind: 'tint'` 的预设写 `--tp-surface: color-mix(in srgb, var(--tp-accent) 7%, var(--tp-base))`——**混到底色而不是写死白色**，这样深色主题下选浅色预设会得到"深底 + 淡淡的主色"，而不是一块刺眼的白色；`kind: 'dark'` 的预设直接给 `surface` / `ink`，无视应用主题（"深色"那张卡就是这个）。
 - **窗口配色只属于窗口**：`themeColor` 是**插件自己 UI 的强调色**（设置面板、链接高亮框、倒计时条、划词条——由 `selection.ts` / `applyVisualVars()` 里的 `overlay`、`highlight`、`progressBar` 分别写到各自元素上），只在「设置」tab 的「主题色」取色器里改；`windowTheme` 绝不写回它。窗口的强调色由 `applyWindowTheme()` 统一写：预设用自己的 `accent`，`custom` 用另一个独立设置项 `windowColor`（弹窗主题卡片里那张铅笔卡的取色器改的就是它）。因此 `applyVisualVars()` 和 `open()` **都不再给窗口 root 写 `--tp-accent`**，新增窗口上色的地方也别绕开 `applyWindowTheme` 自己写，否则同一个窗口会一半按预设、一半按插件主题色。历史包袱：旧数据里 `themeColor` 曾被预设强制改写（`clampSettings` 里那行已删），解耦后老用户的窗口配色保持原样，插件的强调色则停在最后一次被预设改写的值上——想改回默认色在「设置」tab 里点一下即可。
+- **头部毛玻璃**：`.tp-head` 是半透明填充（`--tp-glass`，默认 78%，叠一层 14% 主色渐隐）+ `backdrop-filter: blur(14px) saturate(1.5)`。**前提是 `.tp-win` 自己不再画背景**：根节点只要是不透明表面，模糊采样到的就是那块表面而不是它后面的页面，毛玻璃会变成看不见的空转——所以不透明表面搬到了 `.tp-body` 上（阅读模式、骨架屏、错误页都在它里面），圆角仍靠根节点的 `overflow: hidden` 裁切。头部的四个按钮共用一套细描边图标（`ICON_ATTRS`：24 网格、`stroke-width: 1.9`、`fill: none`），**别再加 `-webkit-` 前缀**（本插件不发行 Safari，全项目也没有前缀）；图标按钮的 hover 与固定态是「混向 transparent」而不是混向 `--tp-surface`，混向 surface 会在玻璃条上压出一块不透明色块。没装 `backdrop-filter` 或省电模式关掉模糊时（见「节电模式」），`--tp-glass` 升到 100% + `backdrop-filter: none`，条子退回不透明，而不是让用户隔着一层没模糊的玻璃看页面。
 
 设置面板「预览窗」tab 里的卡片是 4 列网格的窗口缩略图（`.win-themes` + `.mini*`），每张卡用自己的 `--card-accent` 上色（`custom` 那张取 `windowColor`，所以拖色时会实时跟着变），`custom` 那张是铅笔图标 + 内嵌 `<input type="color">`；选中项用 `color-mix(accent 30%, transparent)` 做外圈高亮。工具提示的名字来自 `windowTheme.<id>` 词条，新增预设要同步补两处 locale。
 
@@ -155,7 +161,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 `theme` = system / light / dark，默认 **system**（跟随系统）。解析逻辑集中在 `utils/theme.ts`：`resolveTheme(mode)` + `watchTheme(getMode, onChange)`（回调先立刻跑一次，之后仅在 `getMode()` 仍返回 `system` 时响应 `prefers-color-scheme` 变化，返回 disposer）。两处落地方式不同：
 
-- **设置面板**（侧边栏，独立文档）：解析结果写到 `document.documentElement.dataset.theme`，深色样式是 **`style.css` 末尾的 `html[data-theme='dark'] …` 覆盖块**（含 `html[data-theme='dark'] body` 的底色）。面板只渲染一个组件，所以它的样式**全部写在 `style.css` 里、不用 `<style scoped>`**（`App.vue` 没有样式块）——scoped 会往每个选择器塞一遍 `[data-v-…]`，白白撑大产物，而且够不到 `body`，反而要额外写 `:global()`。切换设置时要 `themeDispose?.()` 再重新 `watchTheme`，`onUnmounted` 也要释放。
+- **设置面板**（侧边栏，独立文档）：解析结果写到 `document.documentElement.dataset.theme`，深色样式是 **`style.css` 末尾的 `html[data-theme='dark'] …` 覆盖块**（含 `html[data-theme='dark'] body` 的底色）。面板的样式基本都在 `style.css` 里当全局 CSS 写（`App.vue` 没有样式块）——`body` / `#app` 这类选择器在组件 scoped 块里够不到，硬写只会多出一堆 `:global()`。**唯一例外是 `SponsorSection.vue`**（自带 `<style scoped>`，把赞助卡片样式收在组件里）；代价是 scoped 会给每个选择器加一层 `[data-v-…]`、**特异性整体抬高**，所以它的深色覆盖也必须写在组件内（那份深色取值正是按这个特异性重复的），否则会被面板级的 `html[data-theme='dark'] section` 抢回去。切换设置时要 `themeDispose?.()` 再重新 `watchTheme`，`onUnmounted` 也要释放。
 - **页面内 shadow UI**（预览窗、阅读模式、划词条、提示）：`content.ts` 在 `onMount` 里拿到 `shadow.host`，把解析结果写成 **host 上的 `data-tp-theme`**（两份 UI 共用一个 shadow root，所以一个属性就够）。**预览窗内部不再用 `data-tp-theme` 直接写规则，而是走上面那组令牌**（`:host` 定义 `--tp-base/--tp-ink` 默认值，深色主题只改这两个默认值）；只有划词条、提示条这类窗口之外的 UI 还用 `:host([data-tp-theme='dark'])` 覆盖。设置变更时同样要重订阅，`ctx.onInvalidated` 里释放。
 
 **改深色样式时的坑**：为了压过浅色规则，覆盖选择器要带 `html[data-theme='dark']` / `:host([data-tp-theme='dark'])`，于是特异性变成 (0,1,1) 这一档，会和 `.seg-btns label.on` / `.theme-cards label.on` 这类 (0,2,1) 的选中态**打平**——平手时靠源码顺序，深色块在后面，深色下选中项就会丢掉主题色填充。所以必须同时为 `.on` 写一条更高特异性的深色规则（现有代码里那三组就是这么来的），新增可选中控件时别忘了照做。
@@ -165,7 +171,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 扩展改不了浏览器自己的节电/动画开关，这两项是**约束 TabPeek 自身开销**的档位，解析集中在 `utils/power.ts`：`resolvePowerState(mode, onBattery, reduceMotion)` + `watchPower(getSettings, onChange)`（照 `watchTheme` 的模样写，回调先立刻跑一次，返回 disposer）。降级后的 `PowerState { level, reduceMotion }` 只有三档 `off / on / max`，**它只会拿走功能，绝不会打开设置里关着的东西**。
 
 - `powerSaver` = off / on / max / auto（`POWER_MODES`，设置面板下拉顺序即 `auto` 在前）。`auto` 只影响 `level` 的计算：`navigator.getBattery()` 报到 `charging === false` 时当作 `on`，其余（API 缺失、promise reject、市电）一律当作不降级——**报错猜成"在省电"会把功能悄悄关掉，猜成"市电"只是少省一点**。
-- 三档剥夺的东西：`on` = 关链接预热（`warmupSettings()` 直接返回 `speculationMode: "off"` 的副本，`speculation.ts` 因此完全不用改）+ 关背景模糊（`blurStrength()` 返回 0，设置值不动）；`max` = 在 `on` 基础上再关链接高亮（`highlightWanted()`）、跳过 `tabpeek:fetch` 预检直接 `renderIframe()`（没有标题/图标/阅读模式兜底，禁嵌站点只能失败），并且**隐含 `reduceMotion`**（见下）。
+- 三档剥夺的东西：`on` = 关链接预热（`warmupSettings()` 直接返回 `speculationMode: "off"` 的副本，`speculation.ts` 因此完全不用改）+ 关背景模糊（`blurStrength()` 返回 0，设置值不动）+ 关预览窗头部毛玻璃（`frostDisabled()` → 窗口 root 加 `tp-nofrost`，`--tp-glass` 升到 100% 且去掉 `backdrop-filter`）；`max` = 在 `on` 基础上再关链接高亮（`highlightWanted()`）、跳过 `tabpeek:fetch` 预检直接 `renderIframe()`（没有标题/图标/阅读模式兜底，禁嵌站点只能失败），并且**隐含 `reduceMotion`**（见下）。两个效果类开关都同时覆盖「设置变更」与「电源变化」两条路径：`applyVisualVars()` 的窗口循环里就带着 `tp-nofrost`，`open()` 建窗时也要写一次，漏掉任一处都会出现"新开的窗口还带着毛玻璃"。
 - `reduceMotion` 是三条来源的合流：`settings.reduceMotion`、系统 `prefers-reduced-motion: reduce`、以及 `level === "max"`（在 `resolvePowerState` 里合，调用方只读这个布尔值，不关心是谁要求的）。落地方式是 `content.ts` 把它写进 **host 的 `data-tp-motion`**（与 `data-tp-theme` 同一套机制），`preview.ts` 的 CSS 里 `:host([data-tp-motion])` 一刀切断 `.tp-overlay` / `.tp-win` / `.tp-hl` / `.tp-pin svg` / `.tp-resize` 的过渡与骨架屏动画；**JS 内联写的过渡 CSS 管不到**，所以倒计时进度条要在 `startProgress()` 里自己提前返回。窗口淡出的 `fadeMs()` 也随之归零（`FADE_SLACK_MS` 保留那一帧余量），`place()` 之类的布局数学不受影响。
 - 电池/系统偏好变化时只走 `preview.applyPower()`（重算模糊与高亮），**不重新 `place()` 窗口**——插拔电源不该把用户拖过位置的窗口挪走。同理设置变更时 `content.ts` 要 `powerDispose?.()` 后重新 `watchPower`（和 `themeDispose` 并列），`ctx.onInvalidated` 里释放。
 
@@ -198,9 +204,9 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 `App.vue` 把设置分成 4 个 tab（`TABS` = preview / settings / performance / protect），标签是 `.tabs` 里的胶囊按钮（`role="tablist"` + 每个 `role="tab"`，面板 `v-if` 切换 + `role="tabpanel"`），标签文案来自 `panel.tab.<id>`。分组是**按功能**而不是原 popup 的顺序：「预览窗」（id 是 `preview`）装总开关、触发方式、关闭触发器、位置/尺寸/模糊/弹窗主题/多窗口——触发方式和窗口外观都是"预览窗怎么出现、长什么样"，拆成两个 tab 只会让人来回点；「设置」（id 是 `settings`）是划词搜索 + 应用主题（深浅）与**主题色**（插件强调色，`themeColor`）与插件语言这类"改完就生效、不涉及预览行为"的通用项，以及末尾的「恢复默认设置」按钮；预热与节电在「性能」；链接保护与禁用站点在「保护」。新增设置项时放进语义最接近的那个 tab。
 
-赞助卡片是**每个 tab 共用的底部块**：抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它存在的，已删除。组件本身**没有样式块**，`.sponsor-section` / `.sponsor` 仍写在 `entrypoints/sidepanel/style.css` 里（面板是独立文档，那份全局 CSS 对它生效）；组件被别处复用时得自己带上样式。它是面板最末一块（「恢复默认设置」按钮在「设置」tab 里，见下），沉底靠三件套：`#app { display:flex; flex-direction:column; min-height:100vh }` + `main { flex:1 }` + `.sponsor-section { margin-top:auto }`——内容比面板矮时它贴住底边不留空白，内容更高时它就是滚动区的最后一块（内层 `.flex-1` 让面板区自己吃掉剩余高度，所以不会把内容拉长）。`*{box-sizing:border-box}` 保证 `#app` 的 `padding-bottom` 算在 100vh 内，否则面板会凭空多出一条滚动条。**「恢复默认设置」是「设置」tab 最后一个 section 里的一个盒状按钮**（`.btn-reset`，唯一的红色破坏性控件；它原先在底部的 `footer` 里——`footer` 规则已随之下线，那段共用的尾巴上只剩赞助卡）。
+赞助卡片是**每个 tab 共用的底部块**：抽成了 `components/SponsorSection.vue`（收 `lang` prop，自己查词条，因此切语言会自动跟着变），只写一次，落在 `main` 里所有面板之后、不在任何 `role="tabpanel"` 内部——面板是 `v-if` 互斥的，所以这一个实例就总在当前 tab 的下方，不需要每个 tab 复制一份。它也因此不属于任何 tab 的内容（读屏把它当页脚内容，这是对的）——原来那个「关于」tab 就是为它存在的，已删除。组件自带 `<style scoped>`（`.sponsor-section` / `.sponsor` 与它们的深色覆盖都在组件里），但卡片外观（背景 / 内边距 / 圆角 / 边框）仍来自面板全局的 `section` 规则，所以它只有在设置面板里才完整。它是面板最末一块（「恢复默认设置」按钮在「设置」tab 里，见下），沉底靠三件套：`#app { display:flex; flex-direction:column; min-height:100vh }` + `main { flex:1 }` + `.sponsor-section { margin-top:auto }`——内容比面板矮时它贴住底边不留空白，内容更高时它就是滚动区的最后一块（内层 `.flex-1` 让面板区自己吃掉剩余高度，所以不会把内容拉长）。`*{box-sizing:border-box}` 保证 `#app` 的 `padding-bottom` 算在 100vh 内，否则面板会凭空多出一条滚动条。**「恢复默认设置」是「设置」tab 最后一个 section 里的一个盒状按钮**（`.btn-reset`，唯一的红色破坏性控件；它原先在底部的 `footer` 里——`footer` 规则已随之下线，那段共用的尾巴上只剩赞助卡）。
 
-样式仍**全部是 `style.css` 里的全局 CSS**（`App.vue` 没有样式块），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
+样式仍是 `style.css` 里的全局 CSS（`App.vue` 没有样式块；赞助卡片自带 scoped 块，见上），和原 popup 一致。为新布局做的改动：`body` 去掉固定宽度/`max-height`（面板宽度由浏览器决定，用户可拖）；**`.topbar` 里只剩 tab 条**——原来那行 `.hd`（logo + `TabPeek` 标题 + EN/中 快捷切换按钮）整行删掉了，`.hd` / `.hd img` / `.hd h1` / `.spacer` / `.link` 五条规则随之失去引用并被删（`.link` 是它的文字按钮样式，现在面板里唯一的按钮样式是盒状的 `.btn-reset`）。因此**切语言只剩「设置」tab 里的单选**。sticky 挂在 `.topbar` 上（tab 条是切换分区的唯一入口，必须一直可见），`.tabs` 横向滚动、`.tabs .chip` 加 `font-family: inherit`（否则按钮回落到 UA 默认字体，和页面其余部分不一致），且因为它是唯一一行，内边距是四周对称的 `10px 12px`。界面词条前缀是 **`panel.*`**（`panel.enabled` / `panel.section.*` / `panel.tab.*`），`menu.popup` 那条是另一回事（右键菜单里"在预览窗打开"），别顺手改名。
 
 ### 设置与存储
 

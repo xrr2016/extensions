@@ -3,86 +3,495 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>TabPeek — 极速悬停预览，告别标签海</title>
+    <!-- 主题初始化：必须在样式表之前执行，否则深色模式首帧会闪白 -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem('tabpeek-landing-theme');
+          if (theme !== 'light' && theme !== 'dark') {
+            theme =
+              window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          /* 存储不可用（隐私模式）时按系统偏好走 */
+        }
+      })();
+    </script>
     <meta
       name="description"
-      content="TabPeek：Speculation Rules 链接预热，悬停即开；阅读模式、划词搜索，全部本地运行"
+      content="TabPeek：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。"
+    />
+    <meta
+      name="keywords"
+      content="TabPeek,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
     />
     <link rel="icon" href="./assets/favicon-32.png" />
     <link rel="stylesheet" href="./css/style.css" />
+    <meta property="og:title" content="TabPeek — 极速悬停预览，告别标签海" />
+    <meta
+      property="og:description"
+      content="悬停链接即预览，禁嵌站点自动转阅读模式。全部本地运行，免费且无需账号。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/icon-128.png" />
   </head>
   <body>
-    <header class="nav" id="top">
-      <a class="brand" href="#top">
-        <img src="./assets/icon-128.png" alt="TabPeek logo" />
-        <span>TabPeek</span>
-      </a>
-      <nav class="nav-links">
-        <a href="#speed" data-i18n="nav.speed">极速预览</a>
-        <a href="#features" data-i18n="nav.features">功能</a>
-        <a href="#sponsor" data-i18n="nav.sponsor">赞助支持</a>
-        <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      </nav>
-      <button class="lang-btn" id="langBtn" type="button">EN</button>
-    </header>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="top">
+      <div class="nav-container">
+        <a href="#top" class="nav-brand">
+          <img src="./assets/icon-128.png" alt="TabPeek" width="36" height="36" class="logo" />
+          <span class="brand-name">TabPeek</span>
+        </a>
 
-    <main>
-      <!-- Hero -->
-      <section class="hero">
-        <span class="hero-chip">⚡ <span data-i18n="hero.chip">极速预览 · 悬停即开</span></span>
-        <h1 class="hero-title"><span class="grad" data-i18n="hero.title">极速预览，告别标签海</span></h1>
-        <p class="hero-sub" data-i18n="hero.subtitle">链接预热秒开 · 阅读模式 · 划词搜索</p>
-        <p class="hero-desc">🚀 <span data-i18n="hero.desc">鼠标停在链接上的瞬间，目标页已经开始加载。</span></p>
-        <div class="hero-cta">
-          <a class="btn primary" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
-          <a class="btn" href="#" data-i18n="dl.edge">Edge 扩展</a>
-          <a class="btn" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
-          <a class="btn ghost" href="#" data-i18n="dl.manual">手动安装</a>
+        <div class="nav-menu">
+          <a href="#features" class="nav-link" data-i18n="nav.features">功能</a>
+          <a href="#speed" class="nav-link" data-i18n="nav.speed">极速</a>
+          <a href="#download" class="nav-link" data-i18n="nav.download">安装</a>
+          <a href="#sponsor" class="nav-link" data-i18n="nav.sponsor">赞助</a>
+          <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
         </div>
-        <a class="hero-try" href="#features">↓ <span data-i18n="hero.try">试一试</span></a>
 
-        <div class="hero-mock" aria-hidden="true">
-          <div class="mock-page">
-            <div class="mock-head"><i></i><i></i><i></i></div>
-            <div class="mock-line w70"></div>
-            <div class="mock-link">
-              <span class="mock-underline"></span>
-              <div class="mock-tip">
-                <div class="mock-tip-head">
-                  <span class="mock-chip">⚡</span>
-                  <b></b><i></i>
+        <div class="nav-actions">
+          <button
+            type="button"
+            class="lang-toggle"
+            id="langToggle"
+            aria-label="切换语言"
+            data-i18n-aria="nav.lang"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="切换深浅色主题"
+            data-i18n-aria="nav.theme"
+          >
+            <svg
+              class="icon-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              ></path>
+            </svg>
+            <svg
+              class="icon-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="grid-pattern"></div>
+      </div>
+
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-badges">
+            <span class="badge badge-primary" data-i18n="hero.badge1">完全免费</span>
+            <span class="badge badge-outline" data-i18n="hero.badge2">本地运行</span>
+            <span class="badge badge-outline" data-i18n="hero.badge3">无需账号</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span data-i18n="hero.title1">极速预览，</span
+            ><span class="gradient-text" data-i18n="hero.title2">告别标签海</span>
+          </h1>
+
+          <p class="hero-description" data-i18n="hero.desc">
+            鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。
+          </p>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-value" data-i18n="hero.stat1v">6</span>
+              <span class="stat-label" data-i18n="hero.stat1l">种触发方式</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-value" data-i18n="hero.stat2v">6</span>
+              <span class="stat-label" data-i18n="hero.stat2l">窗并行预览</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-value" data-i18n="hero.stat3v">0</span>
+              <span class="stat-label" data-i18n="hero.stat3l">数据上传</span>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
+            <a class="btn btn-outline" href="#" data-i18n="dl.edge">Edge 扩展</a>
+            <a class="btn btn-outline" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="app-preview">
+            <div class="preview-window">
+              <div class="window-header">
+                <div class="window-controls">
+                  <span class="control close"></span>
+                  <span class="control minimize"></span>
+                  <span class="control maximize"></span>
                 </div>
-                <div class="mock-tip-body"><i></i><i></i><i></i></div>
+                <span class="window-title">TabPeek</span>
+              </div>
+
+              <div class="window-content">
+                <div class="mock-article">
+                  <div class="mock-heading"></div>
+                  <div class="mock-line"></div>
+                  <div class="mock-line short"></div>
+
+                  <div class="mock-link-row">
+                    <span class="mock-link"></span>
+                    <div class="mock-pop">
+                      <div class="mock-pop-head">
+                        <span class="mock-favicon">⚡</span>
+                        <span class="mock-pop-title"></span>
+                        <span class="mock-pop-close"></span>
+                      </div>
+                      <div class="mock-pop-body">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <div class="mock-progress"><i></i></div>
+                    </div>
+                  </div>
+
+                  <div class="mock-line"></div>
+                  <div class="mock-line short"></div>
+                </div>
               </div>
             </div>
-            <div class="mock-line w90"></div>
-            <div class="mock-line w60"></div>
-          </div>
-        </div>
-      </section>
 
-      <!-- Speed -->
-      <section class="speed" id="speed">
-        <h2 class="sec-title">⚡ <span class="grad" data-i18n="speed.title">极速预览，快在每一环</span></h2>
-        <p class="sec-sub" data-i18n="speed.subtitle">从悬停到呈现，三步把等待压缩到感知之外</p>
-        <div class="step-grid">
-          <div class="step">
-            <span class="no">01</span>
-            <h3 data-i18n="speed.s1t">悬停即预热</h3>
-            <p data-i18n="speed.s1d">鼠标停在链接上的刹那，浏览器原生 Speculation Rules 已把目标页加入下载队列——不经过任何第三方服务器。</p>
-          </div>
-          <div class="step">
-            <span class="no">02</span>
-            <h3 data-i18n="speed.s2t">预览窗秒开</h3>
-            <p data-i18n="speed.s2d">预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。</p>
-          </div>
-          <div class="step">
-            <span class="no">03</span>
-            <h3 data-i18n="speed.s3t">点击零等待</h3>
-            <p data-i18n="speed.s3d">开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。</p>
+            <div class="floating-cards" aria-hidden="true">
+              <div class="float-card card-hover">
+                <svg
+                  class="card-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M3 3l7.5 18 2.5-7 7-2.5z"></path>
+                </svg>
+                <div class="card-content">
+                  <span class="card-text" data-i18n="hero.float1t">悬停触发</span>
+                  <span class="card-value" data-i18n="hero.float1v">0.5 秒</span>
+                </div>
+              </div>
+
+              <div class="float-card card-warm">
+                <svg
+                  class="card-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <div class="card-content">
+                  <span class="card-text" data-i18n="hero.float2t">链接预热</span>
+                  <span class="card-value" data-i18n="hero.float2v">已就绪</span>
+                </div>
+              </div>
+
+              <div class="float-card card-reader">
+                <svg
+                  class="card-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                <div class="card-content">
+                  <span class="card-text" data-i18n="hero.float3t">禁嵌站点</span>
+                  <span class="card-value" data-i18n="hero.float3v">已转阅读</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Features</span>
+          <h2 class="section-title" data-i18n="features.title">沉浸式浏览，告别标签海</h2>
+          <p class="section-subtitle" data-i18n="features.subtitle">
+            十二项能力，全部本地运行，不上传任何数据
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card featured">
+            <div class="feature-badge" data-i18n="f.preview.tag">核心</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h3 data-i18n="f.preview.t">链接预览</h3>
+            <p data-i18n="f.preview.d">悬停链接即浮出内容预览，是否打开由你决定。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.preview.g1">悬停即预览</span>
+              <span class="tag" data-i18n="f.preview.g2">见后再开</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h3 data-i18n="f.warm.t">链接预热</h3>
+            <p data-i18n="f.warm.d">悬停瞬间即开始预取目标页，预览与打开更快。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.warm.g1">Speculation Rules</span>
+              <span class="tag" data-i18n="f.warm.g2">原生预取</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.reader.t">阅读模式</h3>
+            <p data-i18n="f.reader.d">无法内嵌的网站自动切换为无干扰阅读视图。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.reader.g1">禁嵌兜底</span>
+              <span class="tag" data-i18n="f.reader.g2">正文提取</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+            </div>
+            <h3 data-i18n="f.multi.t">多窗口预览</h3>
+            <p data-i18n="f.multi.d">最多同时打开 6 个预览窗，左右对比阅读。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.multi.g1">最多 6 窗</span>
+              <span class="tag" data-i18n="f.multi.g2">并排对比</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <line x1="15" y1="3" x2="15" y2="21"></line>
+              </svg>
+            </div>
+            <h3 data-i18n="f.sidebar.t">侧边栏模式</h3>
+            <p data-i18n="f.sidebar.d">预览窗通高贴边，侧栏堆叠不遮挡正文。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.sidebar.g1">通高停靠</span>
+              <span class="tag" data-i18n="f.sidebar.g2">左右任选</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <h3 data-i18n="f.search.t">划词搜索</h3>
+            <p data-i18n="f.search.d">选中文字，一键 Google / Bing / 百度 / DuckDuckGo。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.search.g1">4 大引擎</span>
+              <span class="tag" data-i18n="f.search.g2">选中即搜</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"></path>
+                <path d="M18 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.ai.t">AI 搜索</h3>
+            <p data-i18n="f.ai.d">DeepSeek / 豆包 / Kimi / Perplexity，选完即问。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.ai.g1">4 家引擎</span>
+              <span class="tag" data-i18n="f.ai.g2">选中即问</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 4h18l-7 8v7l-4 2v-9z"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.track.t">追踪参数清理</h3>
+            <p data-i18n="f.track.d">
+              自动剥掉 utm、fbclid 等追踪参数，还原中转壳里的真实地址。
+            </p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.track.g1">剥离 utm</span>
+              <span class="tag" data-i18n="f.track.g2">还原真实链接</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <line x1="12" y1="8" x2="12" y2="12.5"></line>
+                <line x1="12" y1="15.5" x2="12.01" y2="15.5"></line>
+              </svg>
+            </div>
+            <h3 data-i18n="f.safety.t">链接风险提示</h3>
+            <p data-i18n="f.safety.d">
+              仿冒域名、乱码域名、文字与目标不符时在标题栏给出提醒。
+            </p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.safety.g1">仿冒域名</span>
+              <span class="tag" data-i18n="f.safety.g2">文字不符</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3l7.5 18 2.5-7 7-2.5z"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.trigger.t">六种触发方式</h3>
+            <p data-i18n="f.trigger.d">
+              悬停、Alt+悬停、点击、Alt+点击、长按、拖动，按习惯任选。
+            </p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.trigger.g1">Alt 组合</span>
+              <span class="tag" data-i18n="f.trigger.g2">长按拖动</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <circle cx="12" cy="7.5" r="1"></circle>
+                <circle cx="16.2" cy="11" r="1"></circle>
+                <circle cx="14.5" cy="16" r="1"></circle>
+                <circle cx="8" cy="15" r="1"></circle>
+              </svg>
+            </div>
+            <h3 data-i18n="f.theme.t">主题与外观</h3>
+            <p data-i18n="f.theme.d">深浅色、主题色、窗口配色、位置尺寸与背景模糊随心调。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.theme.g1">深浅色</span>
+              <span class="tag" data-i18n="f.theme.g2">窗口配色</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="10" width="16" height="10" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.privacy.t">隐私本地化</h3>
+            <p data-i18n="f.privacy.d">无账号、无服务器，数据不出本机。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.privacy.g1">无账号</span>
+              <span class="tag" data-i18n="f.privacy.g2">无服务器</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 极速原理 -->
+    <section id="speed" class="speed">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Speed</span>
+          <h2 class="section-title" data-i18n="speed.title">极速预览，快在每一环</h2>
+          <p class="section-subtitle" data-i18n="speed.subtitle">
+            从悬停到呈现，三步把等待压缩到感知之外
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-num">01</span>
+            <h3 data-i18n="speed.s1t">悬停即预热</h3>
+            <p data-i18n="speed.s1d">
+              鼠标停在链接上的刹那，浏览器原生 Speculation Rules
+              已把目标页加入下载队列——不经过任何第三方服务器。
+            </p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-num">02</span>
+            <h3 data-i18n="speed.s2t">预览窗秒开</h3>
+            <p data-i18n="speed.s2d">
+              预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。
+            </p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-num">03</span>
+            <h3 data-i18n="speed.s3t">点击零等待</h3>
+            <p data-i18n="speed.s3d">
+              开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。
+            </p>
+          </div>
+        </div>
+
         <div class="compare">
+          <h4 class="compare-title" data-i18n="speed.compare">加载耗时对比</h4>
           <div class="cmp-row">
             <span class="cmp-label" data-i18n="speed.cold">冷启动加载</span>
             <div class="cmp-bar cold"><i></i></div>
@@ -91,94 +500,348 @@
             <span class="cmp-label" data-i18n="speed.warm">TabPeek 预热后</span>
             <div class="cmp-bar warm"><i>⚡</i></div>
           </div>
+          <p class="compare-note" data-i18n="speed.note">
+            示意对比：预热后的预览窗直接呈现本地已有内容。
+          </p>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Features -->
-      <section class="features" id="features">
-        <h2 class="sec-title"><span class="grad" data-i18n="features.title">沉浸式浏览，告别标签海</span></h2>
-        <p class="sec-sub" data-i18n="features.subtitle">九项能力，全部本地运行，不上传任何数据</p>
-        <div class="grid">
-          <div class="card hot"><span class="ico">⚡</span><h3 data-i18n="f.warm.t">链接预热</h3><p data-i18n="f.warm.d">悬停瞬间即开始预取目标页，预览与打开更快。</p><span class="hot-tag" data-i18n="f.warm.tag">极速核心</span></div>
-          <div class="card"><span class="ico">🔗</span><h3 data-i18n="f.preview.t">链接预览</h3><p data-i18n="f.preview.d">悬停链接即浮出内容预览，是否打开由你决定。</p></div>
-          <div class="card"><span class="ico">📖</span><h3 data-i18n="f.reader.t">阅读模式</h3><p data-i18n="f.reader.d">无法内嵌的网站自动切换为无干扰阅读视图。</p></div>
-          <div class="card"><span class="ico">🪟</span><h3 data-i18n="f.multi.t">多窗口预览</h3><p data-i18n="f.multi.d">最多同时打开 6 个预览窗，左右对比阅读。</p></div>
-          <div class="card"><span class="ico">📐</span><h3 data-i18n="f.sidebar.t">侧边栏模式</h3><p data-i18n="f.sidebar.d">预览窗通高贴边，侧栏堆叠不遮挡正文。</p></div>
-          <div class="card"><span class="ico">🔍</span><h3 data-i18n="f.search.t">划词搜索</h3><p data-i18n="f.search.d">选中文字，一键 Google / Bing / 百度 / DuckDuckGo。</p></div>
-          <div class="card"><span class="ico">✨</span><h3 data-i18n="f.ai.t">AI 搜索</h3><p data-i18n="f.ai.d">DeepSeek / 豆包 / Kimi，选完即问。</p></div>
-          <div class="card"><span class="ico">🎨</span><h3 data-i18n="f.theme.t">主题定制</h3><p data-i18n="f.theme.d">主题色、尺寸、位置、背景模糊随心调。</p></div>
-          <div class="card"><span class="ico">🔒</span><h3 data-i18n="f.privacy.t">隐私本地化</h3><p data-i18n="f.privacy.d">无账号、无服务器，数据不出本机。</p></div>
+    <!-- 安装 -->
+    <section id="download" class="download">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Download</span>
+          <h2 class="section-title" data-i18n="download.title">现在就用起来</h2>
+          <p class="section-subtitle" data-i18n="download.subtitle">
+            三个浏览器，同一份代码。装完即用，不用注册也不用登录。
+          </p>
         </div>
-      </section>
 
-      <!-- Sponsor -->
-      <section class="sponsor" id="sponsor">
-        <h2 class="sec-title">☕ <span class="grad" data-i18n="sponsor.title">完全免费，欢迎赞助</span></h2>
-        <p class="sec-sub" data-i18n="sponsor.subtitle">无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。</p>
-        <div class="sponsor-grid">
-          <a class="sponsor-card" href="https://ifdian.net/a/coldstoneboy" target="_blank" rel="noopener">
-            <span class="ico">🧋</span>
+        <div class="download-grid">
+          <div class="download-card featured">
+            <div class="download-badge" data-i18n="download.badge">推荐</div>
+            <div class="download-header">
+              <div class="download-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"></path>
+                </svg>
+              </div>
+              <div class="download-info">
+                <h3 data-i18n="download.chrome.t">Chrome 版</h3>
+                <span class="version">v0.1.0</span>
+              </div>
+            </div>
+
+            <div class="download-features">
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f1">十二项功能全部开放</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f2">商店自动更新</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f3">不用注册登录</span>
+              </div>
+            </div>
+
+            <a class="btn btn-download" href="#" data-i18n="dl.chrome">添加至 Chrome</a>
+            <div class="download-meta">
+              <span data-i18n="download.meta.mv3">MV3</span>
+              <span data-i18n="download.store.chrome">Chrome 网上应用店</span>
+            </div>
+          </div>
+
+          <div class="download-card">
+            <div class="download-header">
+              <div class="download-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+              <div class="download-info">
+                <h3 data-i18n="download.edge.t">Edge 版</h3>
+                <span class="version">v0.1.0</span>
+              </div>
+            </div>
+
+            <div class="download-features">
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f1">十二项功能全部开放</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f2">商店自动更新</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f3">不用注册登录</span>
+              </div>
+            </div>
+
+            <a class="btn btn-download" href="#" data-i18n="dl.edge">Edge 扩展</a>
+            <div class="download-meta">
+              <span data-i18n="download.meta.mv3">MV3</span>
+              <span data-i18n="download.store.edge">Edge 加载项</span>
+            </div>
+          </div>
+
+          <div class="download-card">
+            <div class="download-header">
+              <div class="download-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div class="download-info">
+                <h3 data-i18n="download.firefox.t">Firefox 版</h3>
+                <span class="version">v0.1.0</span>
+              </div>
+            </div>
+
+            <div class="download-features">
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f1">十二项功能全部开放</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f2ff">附加组件自动更新</span>
+              </div>
+              <div class="feature-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span data-i18n="download.f3">不用注册登录</span>
+              </div>
+            </div>
+
+            <a class="btn btn-download" href="#" data-i18n="dl.firefox">Firefox 附加组件</a>
+            <div class="download-meta">
+              <span data-i18n="download.meta.mv2">MV2</span>
+              <span data-i18n="download.store.firefox">Firefox 附加组件</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="requirements">
+          <h4 data-i18n="req.title">安装前你需要知道</h4>
+          <div class="requirements-grid">
+            <div class="req-item">
+              <span class="req-label" data-i18n="req.browser.l">支持浏览器</span>
+              <span class="req-value" data-i18n="req.browser.v">Chrome / Edge / Firefox</span>
+            </div>
+            <div class="req-item">
+              <span class="req-label" data-i18n="req.account.l">账号</span>
+              <span class="req-value" data-i18n="req.account.v">不需要，装完即用</span>
+            </div>
+            <div class="req-item">
+              <span class="req-label" data-i18n="req.perm.l">申请权限</span>
+              <span class="req-value" data-i18n="req.perm.v">标签页、存储、右键菜单</span>
+            </div>
+            <div class="req-item">
+              <span class="req-label" data-i18n="req.net.l">网络访问</span>
+              <span class="req-value" data-i18n="req.net.v">仅你预览的网站</span>
+            </div>
+          </div>
+          <p class="manual-install">
+            <span data-i18n="download.manual.hint">其他浏览器，或想离线安装？</span>
+            <a href="#" data-i18n="dl.manual">手动安装</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 赞助支持 -->
+    <section id="sponsor" class="sponsor">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Sponsor</span>
+          <h2 class="section-title" data-i18n="sponsor.title">完全免费，欢迎赞助</h2>
+          <p class="section-subtitle" data-i18n="sponsor.subtitle">
+            无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。
+          </p>
+        </div>
+
+        <div class="sponsor-content">
+          <div class="sponsor-card">
+            <div class="sponsor-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                ></path>
+              </svg>
+            </div>
             <h3 data-i18n="sponsor.afdian.t">爱发电</h3>
             <p data-i18n="sponsor.afdian.d">国内访问，微信 / 支付宝均可</p>
-          </a>
-          <a class="sponsor-card" href="https://patreon.com/coldstoneboy" target="_blank" rel="noopener">
-            <span class="ico">☕</span>
+            <a
+              class="btn btn-primary"
+              href="https://ifdian.net/a/coldstoneboy"
+              target="_blank"
+              rel="noopener"
+              data-i18n="sponsor.action"
+              >去发电</a
+            >
+          </div>
+
+          <div class="sponsor-card">
+            <div class="sponsor-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"></path>
+                <line x1="6" y1="1" x2="6" y2="4"></line>
+                <line x1="10" y1="1" x2="10" y2="4"></line>
+                <line x1="14" y1="1" x2="14" y2="4"></line>
+              </svg>
+            </div>
             <h3 data-i18n="sponsor.patreon.t">Patreon</h3>
             <p data-i18n="sponsor.patreon.d">海外访问，按月或一次性支持</p>
-          </a>
+            <a
+              class="btn btn-primary"
+              href="https://patreon.com/coldstoneboy"
+              target="_blank"
+              rel="noopener"
+              data-i18n="sponsor.action"
+              >去发电</a
+            >
+          </div>
         </div>
-        <p class="sponsor-note" data-i18n="sponsor.note">赞助完全自愿，不影响任何功能的可用性。</p>
-      </section>
 
-      <!-- FAQ -->
-      <section class="faq" id="faq">
-        <h2 class="sec-title"><span class="grad" data-i18n="faq.title">常见问题</span></h2>
-        <details open>
-          <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
-          <p data-i18n="faq.a1">部分网站禁止被内嵌，TabPeek 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。</p>
-        </details>
-        <details>
-          <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
-          <p data-i18n="faq.a2">不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。</p>
-        </details>
-        <details>
-          <summary data-i18n="faq.q3">TabPeek 收费吗？</summary>
-          <p data-i18n="faq.a3">完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。</p>
-        </details>
-        <details>
-          <summary data-i18n="faq.q4">预览为什么这么快？</summary>
-          <p data-i18n="faq.a4">TabPeek 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。</p>
-        </details>
-      </section>
-    </main>
+        <p class="sponsor-thanks" data-i18n="sponsor.note">
+          赞助完全自愿，不影响任何功能的可用性。
+        </p>
+      </div>
+    </section>
 
+    <!-- 常见问题 -->
+    <section id="faq" class="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">FAQ</span>
+          <h2 class="section-title" data-i18n="faq.title">常见问题</h2>
+          <p class="section-subtitle" data-i18n="faq.subtitle">还有疑问？先看这几条。</p>
+        </div>
+
+        <div class="faq-list">
+          <details open>
+            <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
+            <p data-i18n="faq.a1">
+              部分网站禁止被内嵌，TabPeek
+              会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。
+            </p>
+          </details>
+
+          <details>
+            <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
+            <p data-i18n="faq.a2">
+              不会。所有预览与设置都发生在本机浏览器内，TabPeek
+              没有账号体系，也不设任何服务器。
+            </p>
+          </details>
+
+          <details>
+            <summary data-i18n="faq.q3">TabPeek 收费吗？</summary>
+            <p data-i18n="faq.a3">
+              完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。
+            </p>
+          </details>
+
+          <details>
+            <summary data-i18n="faq.q4">预览为什么这么快？</summary>
+            <p data-i18n="faq.a4">
+              TabPeek 使用浏览器原生的 Speculation Rules
+              API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。
+            </p>
+          </details>
+
+          <details>
+            <summary data-i18n="faq.q5">会不会拖慢浏览器？</summary>
+            <p data-i18n="faq.a5">
+              不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
     <footer class="footer">
-      <div class="f-col">
-        <div class="brand"><img src="./assets/icon-128.png" alt="" /><span>TabPeek</span></div>
-        <p data-i18n="footer.slogan">一点即预览，告别标签海。</p>
-      </div>
-      <div class="f-col">
-        <h4 data-i18n="footer.links">快速链接</h4>
-        <a href="#features" data-i18n="nav.features">功能</a>
-        <a href="#sponsor" data-i18n="nav.sponsor">赞助支持</a>
-        <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      </div>
-      <div class="f-col">
-        <h4 data-i18n="footer.sponsor">赞助</h4>
-        <a href="https://ifdian.net/a/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.afdian.t">爱发电</a>
-        <a href="https://patreon.com/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.patreon.t">Patreon</a>
-      </div>
-      <div class="f-col">
-        <h4 data-i18n="footer.contact">联系我们</h4>
-        <a href="mailto:hello@tabpeek.app">hello@tabpeek.app</a>
-      </div>
-      <div class="f-col">
-        <h4 data-i18n="footer.legal">条款</h4>
-        <a href="#" data-i18n="footer.privacy">隐私政策</a>
-        <a href="#" data-i18n="footer.terms">服务条款</a>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img
+              src="./assets/icon-128.png"
+              alt="TabPeek"
+              width="40"
+              height="40"
+              loading="lazy"
+              decoding="async"
+              class="footer-logo"
+            />
+            <p data-i18n="footer.about">
+              TabPeek 由冷石Boy开发，一款把预览做进浏览器的免费扩展。
+            </p>
+            <p data-i18n="footer.slogan">一点即预览，告别标签海。</p>
+          </div>
+
+          <div class="footer-links">
+            <div class="footer-column">
+              <h4 data-i18n="footer.links">快速链接</h4>
+              <a href="#features" data-i18n="nav.features">功能</a>
+              <a href="#speed" data-i18n="nav.speed">极速</a>
+              <a href="#download" data-i18n="nav.download">安装</a>
+              <a href="#faq" data-i18n="nav.faq">FAQ</a>
+            </div>
+
+            <div class="footer-column">
+              <h4 data-i18n="footer.sponsor">赞助</h4>
+              <a href="https://ifdian.net/a/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.afdian.t">爱发电</a>
+              <a href="https://patreon.com/coldstoneboy" target="_blank" rel="noopener" data-i18n="sponsor.patreon.t">Patreon</a>
+            </div>
+
+            <div class="footer-column">
+              <h4 data-i18n="footer.contact">联系我们</h4>
+              <a href="mailto:hello@tabpeek.app">hello@tabpeek.app</a>
+            </div>
+
+            <div class="footer-column">
+              <h4 data-i18n="footer.legal">条款</h4>
+              <a href="#" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" data-i18n="footer.terms">服务条款</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 TabPeek · <span data-i18n="footer.rights">保留所有权利</span></p>
+          <a href="#top" class="to-top" data-i18n="footer.top">回到顶部</a>
+        </div>
       </div>
     </footer>
-    <div class="copyright">© 2026 TabPeek · <span data-i18n="footer.rights">保留所有权利</span></div>
 
     <script src="./js/main.js"></script>
   </body>

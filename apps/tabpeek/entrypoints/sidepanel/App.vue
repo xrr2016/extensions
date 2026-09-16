@@ -185,7 +185,7 @@ function resetAll() {
   </header>
 
   <main :style="accentStyle">
-    <div class="flex-1">
+    <div class="flex-1 tabs-content">
       <div
         v-if="activeTab === 'preview'"
         id="panel-preview"
@@ -574,10 +574,10 @@ function resetAll() {
         </section>
       </div>
     </div>
-
     <!-- Last block in the panel, on every tab: one instance rather than a copy
-         per panel (the panels are exclusive), sunk to the bottom edge by
-         `margin-top: auto` in style.css so a short tab has no empty gap. -->
+         per panel (the panels are exclusive), sunk to the bottom edge by its own
+         `margin-top: auto` (in the component's scoped styles) so a short tab has
+         no empty gap. -->
     <SponsorSection :lang="settings.language" />
   </main>
 </template>

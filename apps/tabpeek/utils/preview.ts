@@ -86,9 +86,16 @@ export interface PreviewSystem {
 
 const IFRAME_LOAD_TIMEOUT_MS = 8_000;
 const AUTO_CLOSE_GRACE_MS = 400;
-/** Pushpin for the window header; static markup, no user input involved. */
-const PIN_ICON =
-  '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>';
+/** The window header's four icons; static markup, no user input involved. One
+ *  thin-stroke set at a 24 grid, so pin / reload / open / close keep the same
+ *  weight and optical size. */
+const ICON_ATTRS =
+  'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+const PIN_ICON = `<svg ${ICON_ATTRS}><path d="M10 3h4v6l3 3v2H7v-2l3-3z"/><path d="M12 14v7"/></svg>`;
+const RELOAD_ICON = `<svg ${ICON_ATTRS}><polyline points="22 4 22 10 16 10"/><path d="M19.5 15a8 8 0 1 1-1.9-8.3L22 10"/></svg>`;
+/** Arrow up and out — the same meaning as the ↗ glyph this replaced. */
+const OPEN_ICON = `<svg ${ICON_ATTRS}><path d="M7 17 17 7"/><polyline points="8 7 17 7 17 16"/></svg>`;
+const CLOSE_ICON = `<svg ${ICON_ATTRS}><path d="M6 6l12 12M18 6 6 18"/></svg>`;
 
 /** Smallest size the corner grip can drag a window down to. */
 const MIN_RESIZE_W = 240;
@@ -122,6 +129,10 @@ const STYLE = `
   --tp-surface: #fff;
   --tp-line: color-mix(in srgb, var(--tp-ink) 12%, transparent);
   --tp-soft: color-mix(in srgb, var(--tp-ink) 7%, var(--tp-surface));
+  /* Opacity of the frosted header's fill. Below 100% the page behind the window
+     shows through it, which is what the blur has to sample; anything that
+     switches the blur off raises this to 100% instead. */
+  --tp-glass: 78%;
 }
 :host([data-tp-theme='dark']) {
   --tp-base: #1e2126;
@@ -139,7 +150,11 @@ const STYLE = `
 .tp-win {
   position: fixed; z-index: 2147483641; display: flex; flex-direction: column;
   width: var(--tp-w, 40%); height: var(--tp-h, 55%);
-  background: var(--tp-surface); color: var(--tp-ink); border-radius: 14px; overflow: hidden;
+  color: var(--tp-ink); border-radius: 14px; overflow: hidden;
+  /* Deliberately no background: an opaque root would sit between the header's
+     glass and the page, leaving the blur nothing to sample. The opaque surface
+     lives on .tp-body (and on the header's own fill), and overflow: hidden still
+     clips both to the rounded corners. */
   border: 1px solid var(--tp-line); box-shadow: 0 12px 40px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.12);
   /* Starts transparent; .tp-in fades it in, .tp-out fades it out before the
      element is dropped from the DOM (see closeWindow). */
@@ -148,7 +163,23 @@ const STYLE = `
 .tp-win.tp-in { opacity: 1; }
 .tp-win.tp-out { opacity: 0; pointer-events: none; }
 .tp-win.tp-sidebar { border-radius: 0; height: 100vh; }
-.tp-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, var(--tp-surface)), var(--tp-surface)); border-bottom: 1px solid var(--tp-line); flex: none; user-select: none; }
+.tp-head {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  /* Frosted bar: a translucent fill (accent tint fading into the surface) over a
+     blurred sample of whatever is behind the window. */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, transparent), transparent),
+    color-mix(in srgb, var(--tp-surface) var(--tp-glass), transparent);
+  backdrop-filter: blur(14px) saturate(1.5);
+  border-bottom: 1px solid var(--tp-line); flex: none; user-select: none;
+}
+/* Power saving switches the page blur off, so the bar must not keep looking
+   through to a page it can no longer blur — same for engines without
+   backdrop-filter support. Both cases fall back to the opaque surface fill. */
+.tp-win.tp-nofrost .tp-head { --tp-glass: 100%; backdrop-filter: none; }
+@supports not (backdrop-filter: blur(2px)) {
+  .tp-head { --tp-glass: 100%; backdrop-filter: none; }
+}
 .tp-favicon { width: 16px; height: 16px; flex: none; border-radius: 3px; }
 .tp-favicon.tp-hide { display: none; }
 .tp-title { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -159,10 +190,15 @@ const STYLE = `
   color: color-mix(in srgb, #b45309 78%, var(--tp-ink));
   cursor: help;
 }
-.tp-btn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: color-mix(in srgb, var(--tp-ink) 68%, transparent); font-size: 14px; line-height: 1; cursor: pointer; }
-.tp-btn:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, var(--tp-surface)); color: var(--tp-accent, #4f6bf6); }
-.tp-pin svg { width: 14px; height: 14px; display: block; transform: rotate(45deg); transition: transform .15s ease; }
-.tp-pin.tp-on { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 18%, #fff); color: var(--tp-accent, #4f6bf6); }
+.tp-btn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: color-mix(in srgb, var(--tp-ink) 68%, transparent); cursor: pointer; }
+/* Every header button is the same thin-stroke icon, so the bar reads as one set
+   (mixing SVG with font glyphs put two weights and two baselines side by side). */
+.tp-btn svg { width: 15px; height: 15px; display: block; }
+/* Hover and pinned fills mix toward transparent rather than the surface: they
+   sit on the frosted bar, where an opaque chip would break the glass. */
+.tp-btn:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent); color: var(--tp-accent, #4f6bf6); }
+.tp-pin svg { transform: rotate(45deg); transition: transform .15s ease; }
+.tp-pin.tp-on { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 26%, transparent); color: var(--tp-accent, #4f6bf6); }
 .tp-pin.tp-on svg { transform: rotate(0deg); }
 .tp-resize {
   position: absolute; right: 0; bottom: 0; width: 16px; height: 16px;
@@ -293,6 +329,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     return deps.getPower().level === "off" ? settings().blurStrength : 0;
   }
 
+  /** The header's glass is a backdrop blur too, so it rides the same switch: with
+   *  the blur away the bar goes opaque rather than showing a page it cannot blur. */
+  function frostDisabled(): boolean {
+    return deps.getPower().level !== "off";
+  }
+
   /** Configured percentages, resolved against the viewport for layout maths. */
   function windowSize(): { w: number; h: number } {
     const s = settings();
@@ -350,6 +392,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       applyWindowTheme(win.root, windowPreset(s), s.windowColor);
       win.root.style.setProperty("--tp-w", `${s.width}%`);
       win.root.style.setProperty("--tp-h", `${s.height}%`);
+      win.root.classList.toggle("tp-nofrost", frostDisabled());
     }
   }
 
@@ -653,6 +696,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     applyWindowTheme(root, windowPreset(s), s.windowColor);
     root.style.setProperty("--tp-w", `${s.width}%`);
     root.style.setProperty("--tp-h", `${s.height}%`);
+    root.classList.toggle("tp-nofrost", frostDisabled());
 
     const head = document.createElement("div");
     head.className = "tp-head";
@@ -675,17 +719,17 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     reloadBtn.className = "tp-btn";
     reloadBtn.dataset.act = "reload";
     reloadBtn.type = "button";
-    reloadBtn.textContent = "↻";
+    reloadBtn.innerHTML = RELOAD_ICON;
     const openBtn = document.createElement("button");
     openBtn.className = "tp-btn";
     openBtn.dataset.act = "open";
     openBtn.type = "button";
-    openBtn.textContent = "↗";
+    openBtn.innerHTML = OPEN_ICON;
     const closeBtn = document.createElement("button");
     closeBtn.className = "tp-btn";
     closeBtn.dataset.act = "close";
     closeBtn.type = "button";
-    closeBtn.textContent = "✕";
+    closeBtn.innerHTML = CLOSE_ICON;
     head.append(favicon, titleEl, riskBadge, readerBadge, pinBtn, reloadBtn, openBtn, closeBtn);
 
     const grip = document.createElement("div");

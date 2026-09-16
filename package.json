@@ -5,6 +5,7 @@
   "scripts": {
     "dev:tabpeek": "pnpm -F @extensions/tabpeek dev",
     "dev:tabpeek:firefox": "pnpm -F @extensions/tabpeek dev:firefox",
+    "dev:tabpeek:zen": "pnpm -F @extensions/tabpeek dev:zen",
     "dev:tabpeek:doubao": "pnpm -F @extensions/tabpeek dev:doubao",
     "build:tabpeek": "pnpm -F @extensions/tabpeek build",
     "build:tabpeek:firefox": "pnpm -F @extensions/tabpeek build:firefox",

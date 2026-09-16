@@ -1,228 +1,582 @@
-/* TabPeek landing — i18n, scroll reveal, nav highlight */
+/* TabPeek landing — i18n、主题切换、滚动高亮、入场动画、按钮涟漪 */
 (function () {
   'use strict';
 
   var I18N = {
     'zh-CN': {
-      'nav.speed': '极速预览',
       'nav.features': '功能',
-      'nav.sponsor': '赞助支持',
+      'nav.speed': '极速',
+      'nav.download': '安装',
+      'nav.sponsor': '赞助',
       'nav.faq': 'FAQ',
-      'hero.chip': '极速预览 · 悬停即开',
-      'hero.title': '极速预览，告别标签海',
-      'hero.subtitle': '链接预热秒开 · 阅读模式 · 划词搜索',
-      'hero.desc': '鼠标停在链接上的瞬间，目标页已经开始加载。',
-      'hero.try': '试一试',
+      'nav.theme': '切换深浅色主题',
+      'nav.lang': '切换语言',
+
+      'hero.badge1': '完全免费',
+      'hero.badge2': '本地运行',
+      'hero.badge3': '无需账号',
+      'hero.title1': '极速预览，',
+      'hero.title2': '告别标签海',
+      'hero.desc': '鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。',
+      'hero.stat1v': '6',
+      'hero.stat1l': '种触发方式',
+      'hero.stat2v': '6',
+      'hero.stat2l': '窗并行预览',
+      'hero.stat3v': '0',
+      'hero.stat3l': '数据上传',
+      'hero.float1t': '悬停触发',
+      'hero.float1v': '0.5 秒',
+      'hero.float2t': '链接预热',
+      'hero.float2v': '已就绪',
+      'hero.float3t': '禁嵌站点',
+      'hero.float3v': '已转阅读',
+
       'dl.chrome': '添加至 Chrome',
       'dl.edge': 'Edge 扩展',
       'dl.firefox': 'Firefox 附加组件',
       'dl.manual': '手动安装',
+
       'features.title': '沉浸式浏览，告别标签海',
-      'features.subtitle': '九项能力，全部本地运行，不上传任何数据',
+      'features.subtitle': '十二项能力，全部本地运行，不上传任何数据',
+
+      'f.preview.tag': '核心',
       'f.preview.t': '链接预览',
       'f.preview.d': '悬停链接即浮出内容预览，是否打开由你决定。',
-      'f.reader.t': '阅读模式',
-      'f.reader.d': '无法内嵌的网站自动切换为无干扰阅读视图。',
-      'f.multi.t': '多窗口预览',
-      'f.multi.d': '最多同时打开 6 个预览窗，左右对比阅读。',
-      'f.sidebar.t': '侧边栏模式',
-      'f.sidebar.d': '预览窗通高贴边，侧栏堆叠不遮挡正文。',
+      'f.preview.g1': '悬停即预览',
+      'f.preview.g2': '见后再开',
       'f.warm.t': '链接预热',
       'f.warm.d': '悬停瞬间即开始预取目标页，预览与打开更快。',
-      'f.warm.tag': '极速核心',
+      'f.warm.g1': 'Speculation Rules',
+      'f.warm.g2': '原生预取',
+      'f.reader.t': '阅读模式',
+      'f.reader.d': '无法内嵌的网站自动切换为无干扰阅读视图。',
+      'f.reader.g1': '禁嵌兜底',
+      'f.reader.g2': '正文提取',
+      'f.multi.t': '多窗口预览',
+      'f.multi.d': '最多同时打开 6 个预览窗，左右对比阅读。',
+      'f.multi.g1': '最多 6 窗',
+      'f.multi.g2': '并排对比',
+      'f.sidebar.t': '侧边栏模式',
+      'f.sidebar.d': '预览窗通高贴边，侧栏堆叠不遮挡正文。',
+      'f.sidebar.g1': '通高停靠',
+      'f.sidebar.g2': '左右任选',
+      'f.search.t': '划词搜索',
+      'f.search.d': '选中文字，一键 Google / Bing / 百度 / DuckDuckGo。',
+      'f.search.g1': '4 大引擎',
+      'f.search.g2': '选中即搜',
+      'f.ai.t': 'AI 搜索',
+      'f.ai.d': 'DeepSeek / 豆包 / Kimi / Perplexity，选完即问。',
+      'f.ai.g1': '4 家引擎',
+      'f.ai.g2': '选中即问',
+      'f.track.t': '追踪参数清理',
+      'f.track.d': '自动剥掉 utm、fbclid 等追踪参数，还原中转壳里的真实地址。',
+      'f.track.g1': '剥离 utm',
+      'f.track.g2': '还原真实链接',
+      'f.safety.t': '链接风险提示',
+      'f.safety.d': '仿冒域名、乱码域名、文字与目标不符时在标题栏给出提醒。',
+      'f.safety.g1': '仿冒域名',
+      'f.safety.g2': '文字不符',
+      'f.trigger.t': '六种触发方式',
+      'f.trigger.d': '悬停、Alt+悬停、点击、Alt+点击、长按、拖动，按习惯任选。',
+      'f.trigger.g1': 'Alt 组合',
+      'f.trigger.g2': '长按拖动',
+      'f.theme.t': '主题与外观',
+      'f.theme.d': '深浅色、主题色、窗口配色、位置尺寸与背景模糊随心调。',
+      'f.theme.g1': '深浅色',
+      'f.theme.g2': '窗口配色',
+      'f.privacy.t': '隐私本地化',
+      'f.privacy.d': '无账号、无服务器，数据不出本机。',
+      'f.privacy.g1': '无账号',
+      'f.privacy.g2': '无服务器',
+
       'speed.title': '极速预览，快在每一环',
       'speed.subtitle': '从悬停到呈现，三步把等待压缩到感知之外',
       'speed.s1t': '悬停即预热',
-      'speed.s1d': '鼠标停在链接上的刹那，浏览器原生 Speculation Rules 已把目标页加入下载队列——不经过任何第三方服务器。',
+      'speed.s1d':
+        '鼠标停在链接上的刹那，浏览器原生 Speculation Rules 已把目标页加入下载队列——不经过任何第三方服务器。',
       'speed.s2t': '预览窗秒开',
-      'speed.s2d': '预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。',
+      'speed.s2d':
+        '预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。',
       'speed.s3t': '点击零等待',
       'speed.s3d': '开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。',
+      'speed.compare': '加载耗时对比',
       'speed.cold': '冷启动加载',
       'speed.warm': 'TabPeek 预热后',
-      'f.search.t': '划词搜索',
-      'f.search.d': '选中文字，一键 Google / Bing / 百度 / DuckDuckGo。',
-      'f.ai.t': 'AI 搜索',
-      'f.ai.d': 'DeepSeek / 豆包 / Kimi，选完即问。',
-      'f.theme.t': '主题定制',
-      'f.theme.d': '主题色、尺寸、位置、背景模糊随心调。',
-      'f.privacy.t': '隐私本地化',
-      'f.privacy.d': '无账号、无服务器，数据不出本机。',
+      'speed.note': '示意对比：预热后的预览窗直接呈现本地已有内容。',
+
+      'download.title': '现在就用起来',
+      'download.subtitle': '三个浏览器，同一份代码。装完即用，不用注册也不用登录。',
+      'download.badge': '推荐',
+      'download.chrome.t': 'Chrome 版',
+      'download.edge.t': 'Edge 版',
+      'download.firefox.t': 'Firefox 版',
+      'download.f1': '十二项功能全部开放',
+      'download.f2': '商店自动更新',
+      'download.f2ff': '附加组件自动更新',
+      'download.f3': '不用注册登录',
+      'download.manual.hint': '其他浏览器，或想离线安装？',
+      'download.meta.mv3': 'MV3',
+      'download.meta.mv2': 'MV2',
+      'download.store.chrome': 'Chrome 网上应用店',
+      'download.store.edge': 'Edge 加载项',
+      'download.store.firefox': 'Firefox 附加组件',
+      'req.title': '安装前你需要知道',
+      'req.browser.l': '支持浏览器',
+      'req.browser.v': 'Chrome / Edge / Firefox',
+      'req.account.l': '账号',
+      'req.account.v': '不需要，装完即用',
+      'req.perm.l': '申请权限',
+      'req.perm.v': '标签页、存储、右键菜单',
+      'req.net.l': '网络访问',
+      'req.net.v': '仅你预览的网站',
+
       'sponsor.title': '完全免费，欢迎赞助',
-      'sponsor.subtitle': '无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。',
+      'sponsor.subtitle':
+        '无账号、无服务器、无付费版本——所有功能免费开放。如果它帮到了你，欢迎赞助支持后续开发。',
       'sponsor.afdian.t': '爱发电',
       'sponsor.afdian.d': '国内访问，微信 / 支付宝均可',
       'sponsor.patreon.t': 'Patreon',
       'sponsor.patreon.d': '海外访问，按月或一次性支持',
+      'sponsor.action': '去发电',
       'sponsor.note': '赞助完全自愿，不影响任何功能的可用性。',
+
       'faq.title': '常见问题',
+      'faq.subtitle': '还有疑问？先看这几条。',
       'faq.q1': '预览窗口是空白的怎么办？',
-      'faq.a1': '部分网站禁止被内嵌，TabPeek 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。',
+      'faq.a1':
+        '部分网站禁止被内嵌，TabPeek 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。',
       'faq.q2': '我的数据会被上传吗？',
-      'faq.a2': '不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。',
+      'faq.a2':
+        '不会。所有预览与设置都发生在本机浏览器内，TabPeek 没有账号体系，也不设任何服务器。',
       'faq.q3': 'TabPeek 收费吗？',
-      'faq.a3': '完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。',
+      'faq.a3':
+        '完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。',
       'faq.q4': '预览为什么这么快？',
-      'faq.a4': 'TabPeek 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。',
+      'faq.a4':
+        'TabPeek 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。',
+      'faq.q5': '会不会拖慢浏览器？',
+      'faq.a5':
+        '不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。',
+
+      'footer.about': 'TabPeek 由冷石Boy开发，一款把预览做进浏览器的免费扩展。',
       'footer.slogan': '一点即预览，告别标签海。',
       'footer.links': '快速链接',
-      'footer.contact': '联系我们',
       'footer.sponsor': '赞助',
+      'footer.contact': '联系我们',
       'footer.legal': '条款',
       'footer.privacy': '隐私政策',
       'footer.terms': '服务条款',
       'footer.rights': '保留所有权利',
+      'footer.top': '回到顶部',
     },
+
     en: {
-      'nav.speed': 'Speed',
       'nav.features': 'Features',
-      'nav.sponsor': 'Support',
+      'nav.speed': 'Speed',
+      'nav.download': 'Install',
+      'nav.sponsor': 'Sponsor',
       'nav.faq': 'FAQ',
-      'hero.chip': 'Instant preview · on hover',
-      'hero.title': 'Blazing-fast previews. Goodbye tab clutter',
-      'hero.subtitle': 'Pre-warmed instant previews · Reader mode · Selection search',
-      'hero.desc': 'The moment your cursor lands on a link, its page is already loading.',
-      'hero.try': 'Try it ↓',
+      'nav.theme': 'Toggle color theme',
+      'nav.lang': 'Switch language',
+
+      'hero.badge1': 'Free forever',
+      'hero.badge2': 'Runs locally',
+      'hero.badge3': 'No account',
+      'hero.title1': 'Instant previews, ',
+      'hero.title2': 'goodbye tab clutter',
+      'hero.desc':
+        'The instant your cursor lands on a link, its page is already loading — preview first, decide after.',
+      'hero.stat1v': '6',
+      'hero.stat1l': 'trigger modes',
+      'hero.stat2v': '6',
+      'hero.stat2l': 'previews at once',
+      'hero.stat3v': '0',
+      'hero.stat3l': 'data uploaded',
+      'hero.float1t': 'Hover trigger',
+      'hero.float1v': '0.5 s',
+      'hero.float2t': 'Link warm-up',
+      'hero.float2v': 'Ready',
+      'hero.float3t': 'Blocked site',
+      'hero.float3v': 'Reader mode',
+
       'dl.chrome': 'Add to Chrome',
       'dl.edge': 'Edge Add-on',
       'dl.firefox': 'Firefox Add-on',
       'dl.manual': 'Manual install',
+
       'features.title': 'Immersive browsing, goodbye tab clutter',
-      'features.subtitle': 'Nine features, all local — nothing is uploaded',
+      'features.subtitle': 'Twelve features, all local — nothing is uploaded',
+
+      'f.preview.tag': 'Core',
       'f.preview.t': 'Link preview',
       'f.preview.d': 'Hover any link to peek its content; you decide whether to open it.',
-      'f.reader.t': 'Reader mode',
-      'f.reader.d': 'Sites that block embedding are shown as clean article views.',
-      'f.multi.t': 'Multi-window preview',
-      'f.multi.d': 'Open up to 6 previews side by side for comparison reading.',
-      'f.sidebar.t': 'Sidebar mode',
-      'f.sidebar.d': 'Dock previews full-height to either edge, stacked.',
+      'f.preview.g1': 'Peek on hover',
+      'f.preview.g2': 'Decide after',
       'f.warm.t': 'Link warm-up',
       'f.warm.d': 'Hovered links are prefetched via Speculation Rules for instant previews.',
-      'f.warm.tag': 'Speed core',
+      'f.warm.g1': 'Speculation Rules',
+      'f.warm.g2': 'Native prefetch',
+      'f.reader.t': 'Reader mode',
+      'f.reader.d': 'Sites that block embedding are shown as clean article views.',
+      'f.reader.g1': 'Embed fallback',
+      'f.reader.g2': 'Article extraction',
+      'f.multi.t': 'Multi-window preview',
+      'f.multi.d': 'Open up to 6 previews side by side for comparison reading.',
+      'f.multi.g1': 'Up to 6 windows',
+      'f.multi.g2': 'Side by side',
+      'f.sidebar.t': 'Sidebar mode',
+      'f.sidebar.d': 'Dock previews full height to either edge, stacked.',
+      'f.sidebar.g1': 'Full-height dock',
+      'f.sidebar.g2': 'Left or right',
+      'f.search.t': 'Selection search',
+      'f.search.d': 'Select text — Google / Bing / Baidu / DuckDuckGo in one click.',
+      'f.search.g1': '4 engines',
+      'f.search.g2': 'Search on select',
+      'f.ai.t': 'AI search',
+      'f.ai.d': 'DeepSeek / Doubao / Kimi / Perplexity, ask right away.',
+      'f.ai.g1': '4 engines',
+      'f.ai.g2': 'Ask on select',
+      'f.track.t': 'Tracking cleanup',
+      'f.track.d':
+        'Strips utm, fbclid and friends, and unwraps redirect shells back to the real address.',
+      'f.track.g1': 'Strips utm',
+      'f.track.g2': 'Unwraps redirects',
+      'f.safety.t': 'Link risk hints',
+      'f.safety.d':
+        'Flags look-alike domains, punycode hosts and link text that points somewhere else.',
+      'f.safety.g1': 'Look-alike domains',
+      'f.safety.g2': 'Text mismatch',
+      'f.trigger.t': 'Six trigger modes',
+      'f.trigger.d':
+        'Hover, Alt+hover, click, Alt+click, long-press or drag — pick what feels natural.',
+      'f.trigger.g1': 'Alt combos',
+      'f.trigger.g2': 'Long-press and drag',
+      'f.theme.t': 'Themes and appearance',
+      'f.theme.d': 'Light or dark, accent color, window palettes, position, size and backdrop blur.',
+      'f.theme.g1': 'Light and dark',
+      'f.theme.g2': 'Window palettes',
+      'f.privacy.t': 'Privacy-first',
+      'f.privacy.d': 'No account, no server — data never leaves your device.',
+      'f.privacy.g1': 'No account',
+      'f.privacy.g2': 'No server',
+
       'speed.title': 'Engineered for speed',
       'speed.subtitle': 'Three steps that compress waiting out of your perception',
       'speed.s1t': 'Warm on hover',
-      'speed.s1d': 'The instant you hover a link, the browser-native Speculation Rules API queues the target page — through no third-party server.',
+      'speed.s1d':
+        'The instant you hover a link, the browser-native Speculation Rules API queues the target page — through no third-party server.',
       'speed.s2t': 'Instant preview',
-      'speed.s2d': 'The preview window hits a warm cache; embeddable sites render right away, blocked sites flow into reader mode.',
+      'speed.s2d':
+        'The preview window hits a warm cache; embeddable sites render right away, blocked sites flow into reader mode.',
       'speed.s3t': 'Zero-wait click',
-      'speed.s3d': 'With prerendering on, the page is already painted in the background — clicking navigates instantly.',
+      'speed.s3d':
+        'With prerendering on, the page is already painted in the background — clicking navigates instantly.',
+      'speed.compare': 'Load time comparison',
       'speed.cold': 'Cold load',
       'speed.warm': 'After TabPeek warm-up',
-      'f.search.t': 'Selection search',
-      'f.search.d': 'Select text — Google / Bing / Baidu / DuckDuckGo in one click.',
-      'f.ai.t': 'AI search',
-      'f.ai.d': 'DeepSeek / Doubao / Kimi, ask right away.',
-      'f.theme.t': 'Customization',
-      'f.theme.d': 'Theme color, size, position and backdrop blur.',
-      'f.privacy.t': 'Privacy-first',
-      'f.privacy.d': 'No account, no server — data never leaves your device.',
+      'speed.note': 'Illustrative: a warmed preview window shows what is already on your machine.',
+
+      'download.title': 'Get it running',
+      'download.subtitle': 'Three browsers, one codebase. Install and go — no sign-up, no login.',
+      'download.badge': 'Recommended',
+      'download.chrome.t': 'Chrome version',
+      'download.edge.t': 'Edge version',
+      'download.firefox.t': 'Firefox version',
+      'download.f1': 'All twelve features open',
+      'download.f2': 'Auto-updates from the store',
+      'download.f2ff': 'Auto-updates from the add-on site',
+      'download.f3': 'No sign-up required',
+      'download.manual.hint': 'Another browser, or prefer an offline install?',
+      'download.meta.mv3': 'MV3',
+      'download.meta.mv2': 'MV2',
+      'download.store.chrome': 'Chrome Web Store',
+      'download.store.edge': 'Edge Add-ons',
+      'download.store.firefox': 'Firefox Add-ons',
+      'req.title': 'Before you install',
+      'req.browser.l': 'Browsers',
+      'req.browser.v': 'Chrome / Edge / Firefox',
+      'req.account.l': 'Account',
+      'req.account.v': 'Not needed, install and go',
+      'req.perm.l': 'Permissions',
+      'req.perm.v': 'Tabs, storage, context menus',
+      'req.net.l': 'Network',
+      'req.net.v': 'Only sites you preview',
+
       'sponsor.title': 'Free forever — sponsorship welcome',
-      'sponsor.subtitle': 'No account, no server, no paid tier: every feature is open. If TabPeek helps you, a sponsorship keeps development going.',
+      'sponsor.subtitle':
+        'No account, no server, no paid tier: every feature is open. If TabPeek helps you, a sponsorship keeps development going.',
       'sponsor.afdian.t': 'Afdian',
       'sponsor.afdian.d': 'For China — WeChat or Alipay',
       'sponsor.patreon.t': 'Patreon',
-      'sponsor.patreon.d': 'For everywhere else — monthly or one-off',
+      'sponsor.patreon.d': 'Everywhere else — monthly or one-off',
+      'sponsor.action': 'Support me',
       'sponsor.note': 'Sponsoring is entirely optional and unlocks nothing extra.',
+
       'faq.title': 'FAQ',
+      'faq.subtitle': 'Still curious? Start here.',
       'faq.q1': 'The preview window is blank — what now?',
-      'faq.a1': 'Some sites forbid embedding; TabPeek switches to reader mode automatically. If both fail, the window offers an "open in new tab" button.',
+      'faq.a1':
+        'Some sites forbid embedding; TabPeek switches to reader mode automatically. If both fail, the window offers an open-in-new-tab button.',
       'faq.q2': 'Is my data uploaded?',
-      'faq.a2': 'No. Previews and settings live entirely in your browser — no accounts, no servers.',
+      'faq.a2':
+        'No. Previews and settings live entirely in your browser — no accounts, no servers.',
       'faq.q3': 'Does TabPeek cost anything?',
-      'faq.a3': 'It is completely free: no Pro tier, no in-app purchases, no locked features — multi-window previews included. The project runs on sponsorships, which are purely optional.',
+      'faq.a3':
+        'It is completely free: no Pro tier, no in-app purchases, no locked features — multi-window previews included. The project runs on sponsorships, which are purely optional.',
       'faq.q4': 'Why are the previews so fast?',
-      'faq.a4': 'TabPeek uses the browser-native Speculation Rules API: the moment you hover a link, prefetching (or prerendering) begins, so the preview window shows content that has already arrived locally. The browser does all the scheduling — the extension runs no servers.',
+      'faq.a4':
+        'TabPeek uses the browser-native Speculation Rules API: the moment you hover a link, prefetching (or prerendering) begins, so the preview window shows content that has already arrived locally. The browser does all the scheduling — the extension runs no servers.',
+      'faq.q5': 'Will it slow my browser down?',
+      'faq.a5':
+        'There is no constant overhead. Warm-up fires only while the pointer rests on a link and is cancelled when it leaves; a built-in power-saver mode can drop warm-up and backdrop blur automatically on battery.',
+
+      'footer.about': 'TabPeek is a free extension by 冷石Boy that puts previews right in the browser.',
       'footer.slogan': 'Peek first, tab less.',
       'footer.links': 'Links',
-      'footer.contact': 'Contact',
       'footer.sponsor': 'Sponsor',
+      'footer.contact': 'Contact',
       'footer.legal': 'Legal',
       'footer.privacy': 'Privacy policy',
       'footer.terms': 'Terms of service',
       'footer.rights': 'All rights reserved',
+      'footer.top': 'Back to top',
     },
   };
 
-  var LANGS = ['zh-CN', 'en'];
-  var saved = null;
-  try {
-    saved = localStorage.getItem('tabpeek-landing-lang');
-  } catch (e) {
-    /* private mode */
-  }
-  var current = saved && LANGS.indexOf(saved) >= 0 ? saved : 'zh-CN';
+  var TITLES = {
+    'zh-CN': 'TabPeek — 极速悬停预览，告别标签海',
+    en: 'TabPeek — Blazing-fast hover previews, goodbye tab clutter',
+  };
 
-  function applyLang() {
-    var dict = I18N[current];
-    document.documentElement.lang = current === 'zh-CN' ? 'zh-CN' : 'en';
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      if (dict[key]) el.textContent = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-ph');
-      if (dict[key]) el.setAttribute('placeholder', dict[key]);
-    });
-    var btn = document.getElementById('langBtn');
-    if (btn) btn.textContent = current === 'zh-CN' ? 'EN' : '中文';
-    document.title =
-      current === 'zh-CN'
-        ? 'TabPeek — 极速悬停预览，告别标签海'
-        : 'TabPeek — Blazing-fast hover previews, goodbye tab clutter';
+  var LANG_KEY = 'tabpeek-landing-lang';
+  var THEME_KEY = 'tabpeek-landing-theme';
+  var LANGS = ['zh-CN', 'en'];
+
+  function readStore(key) {
     try {
-      localStorage.setItem('tabpeek-landing-lang', current);
+      return localStorage.getItem(key);
     } catch (e) {
-      /* ignore */
+      return null; /* 隐私模式下存储不可用 */
     }
   }
 
-  document.getElementById('langBtn').addEventListener('click', function () {
-    current = current === 'zh-CN' ? 'en' : 'zh-CN';
-    applyLang();
-  });
+  function writeStore(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      /* 忽略 */
+    }
+  }
+
+  /* ---------- 语言 ---------- */
+  var savedLang = readStore(LANG_KEY);
+  var current = savedLang && LANGS.indexOf(savedLang) >= 0 ? savedLang : 'zh-CN';
+
+  var langBtn = document.getElementById('langToggle');
+
+  function applyLang() {
+    var dict = I18N[current];
+
+    document.documentElement.lang = current;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var text = dict[el.getAttribute('data-i18n')];
+      if (text !== undefined) el.textContent = text;
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+      var label = dict[el.getAttribute('data-i18n-aria')];
+      if (label !== undefined) el.setAttribute('aria-label', label);
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var ph = dict[el.getAttribute('data-i18n-ph')];
+      if (ph !== undefined) el.setAttribute('placeholder', ph);
+    });
+
+    if (langBtn) {
+      langBtn.textContent = current === 'zh-CN' ? 'EN' : '中文';
+      langBtn.setAttribute('lang', current === 'zh-CN' ? 'en' : 'zh-CN');
+    }
+    document.title = TITLES[current];
+    writeStore(LANG_KEY, current);
+  }
+
+  if (langBtn) {
+    langBtn.addEventListener('click', function () {
+      current = current === 'zh-CN' ? 'en' : 'zh-CN';
+      applyLang();
+    });
+  }
   applyLang();
 
-  // scroll reveal
-  var revealTargets = document.querySelectorAll('.card, .sponsor-card, .faq details, .hero-mock, .step, .compare');
-  revealTargets.forEach(function (el) {
-    el.classList.add('reveal');
-  });
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in');
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 },
-    );
-    revealTargets.forEach(function (el) {
-      io.observe(el);
-    });
-  } else {
-    revealTargets.forEach(function (el) {
-      el.classList.add('in');
+  /* ---------- 主题 ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+  function chosenTheme() {
+    var stored = readStore(THEME_KEY);
+    return stored === 'light' || stored === 'dark' ? stored : null;
+  }
+
+  function systemTheme() {
+    return media && media.matches ? 'dark' : 'light';
+  }
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      writeStore(THEME_KEY, next);
     });
   }
 
-  // nav highlight
-  var links = document.querySelectorAll('.nav-links a');
-  var sections = ['speed', 'features', 'sponsor', 'faq'].map(function (id) {
-    return document.getElementById(id);
-  });
-  window.addEventListener('scroll', function () {
-    var pos = window.scrollY + 90;
-    var active = -1;
-    sections.forEach(function (sec, i) {
-      if (sec && sec.offsetTop <= pos) active = i;
+  // 用户没手动选过就跟着系统走（首帧由 <head> 内联脚本负责）
+  if (media) {
+    var onSystemChange = function () {
+      if (!chosenTheme()) root.setAttribute('data-theme', systemTheme());
+    };
+    if (media.addEventListener) media.addEventListener('change', onSystemChange);
+    else if (media.addListener) media.addListener(onSystemChange);
+  }
+
+  /* ---------- 滚动高亮当前区块 ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-menu .nav-link'));
+  var spySections = navLinks
+    .map(function (link) {
+      return document.querySelector(link.getAttribute('href'));
+    })
+    .filter(Boolean);
+
+  var SPY_OFFSET = 80; // 与 CSS 的 scroll-margin-top 保持一致
+
+  function updateActiveNav() {
+    if (!spySections.length) return;
+
+    var scrollPos = window.scrollY + SPY_OFFSET + 1;
+    var activeId = '';
+
+    spySections.forEach(function (section) {
+      if (section.offsetTop <= scrollPos) activeId = section.id;
     });
-    links.forEach(function (a, i) {
-      a.classList.toggle('active', i === active);
+
+    // 滚到底部时高亮最后一项：页脚较矮，否则永远点不亮
+    var isAtBottom =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (isAtBottom) activeId = spySections[spySections.length - 1].id;
+
+    navLinks.forEach(function (link) {
+      var isActive = link.getAttribute('href') === '#' + activeId;
+      link.classList.toggle('active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
     });
+  }
+
+  var spyTicking = false;
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (spyTicking) return;
+      spyTicking = true;
+      requestAnimationFrame(function () {
+        updateActiveNav();
+        sweepReveals();
+        spyTicking = false;
+      });
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', function () {
+    updateActiveNav();
+    sweepReveals();
   });
+  updateActiveNav();
+
+  /* ---------- 滚动入场 ---------- */
+  var revealTargets = []
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.section-header')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.features-grid .feature-card')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.steps-grid .step-card')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.download-grid .download-card')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-content .sponsor-card')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.faq-list details')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.compare, .requirements-grid')))
+    .concat(Array.prototype.slice.call(document.querySelectorAll('.sponsor-thanks, .footer-content')));
+
+  var reduceMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var revealObserver = null;
+  var pendingReveals = [];
+
+  function revealNow(el) {
+    el.classList.add('is-visible');
+    if (revealObserver) revealObserver.unobserve(el);
+  }
+
+  // IntersectionObserver 是"采样"而不是"穿越检测"：快速滚动时某些区块可能
+  // 整段跨过视口却一次都没被采样到，那样它会一直停在 opacity:0。
+  // 每次滚动再用几何位置兜一遍底，凡是已经进入（或越过）视口的直接点亮。
+  function sweepReveals() {
+    if (!pendingReveals.length) return;
+    var limit = window.innerHeight * 0.92;
+    pendingReveals = pendingReveals.filter(function (el) {
+      if (el.getBoundingClientRect().top >= limit) return true;
+      revealNow(el);
+      return false;
+    });
+  }
+
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    // 同组卡片按序号错峰出现（最多 350ms），避免整片一起闪
+    ['.features-grid', '.steps-grid', '.download-grid', '.sponsor-content'].forEach(function (sel) {
+      var group = document.querySelector(sel);
+      if (!group) return;
+      Array.prototype.slice.call(group.children).forEach(function (child, index) {
+        child.style.setProperty('--reveal-delay', Math.min(index, 5) * 70 + 'ms');
+      });
+    });
+
+    revealTargets.forEach(function (el) {
+      el.classList.add('reveal');
+    });
+    pendingReveals = revealTargets.slice();
+
+    revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          revealNow(entry.target);
+          var i = pendingReveals.indexOf(entry.target);
+          if (i >= 0) pendingReveals.splice(i, 1);
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    revealTargets.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+    sweepReveals();
+  }
+
+  /* ---------- 按钮涟漪 ---------- */
+  if (!reduceMotion) {
+    document.addEventListener('pointerdown', function (event) {
+      var btn = event.target.closest ? event.target.closest('.btn') : null;
+      if (!btn) return;
+
+      var rect = btn.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left = event.clientX - rect.left - size / 2 + 'px';
+      ripple.style.top = event.clientY - rect.top - size / 2 + 'px';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', function () {
+        ripple.remove();
+      });
+    });
+  }
 })();
