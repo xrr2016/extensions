@@ -57,13 +57,13 @@
     "message": "Preview"
   },
   "panel_tab_search": {
-    "message": "Search"
+    "message": "Selection"
   },
   "panel_tab_settings": {
     "message": "Settings"
   },
   "panel_enabled": {
-    "message": "Enable Prelook"
+    "message": "Enable Preview"
   },
   "panel_reset": {
     "message": "Reset to defaults"
@@ -228,10 +228,10 @@
     "message": "Download hovered links in advance for faster previews and opens; prerendering is heavier and Chrome-only"
   },
   "panel_section_selection": {
-    "message": "Text selection search"
+    "message": "Selection settings"
   },
   "selection_enable": {
-    "message": "Show toolbar on text selection"
+    "message": "Enable selection search"
   },
   "selection_engines": {
     "message": "Web search"
@@ -262,6 +262,9 @@
   },
   "sponsor_afdian": {
     "message": "Afdian"
+  },
+  "sponsor_patreon": {
+    "message": "Patreon"
   },
   "panel_section_protect": {
     "message": "Link protection"

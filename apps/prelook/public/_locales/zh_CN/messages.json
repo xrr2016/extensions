@@ -54,13 +54,13 @@
     "message": "预览"
   },
   "panel_tab_search": {
-    "message": "搜索"
+    "message": "划词"
   },
   "panel_tab_settings": {
     "message": "设置"
   },
   "panel_enabled": {
-    "message": "启用 Prelook"
+    "message": "启用预览"
   },
   "panel_reset": {
     "message": "恢复默认设置"
@@ -228,10 +228,10 @@
     "message": "悬停链接时提前下载目标页，让预览与打开更快；预渲染更耗资源，仅 Chrome 支持"
   },
   "panel_section_selection": {
-    "message": "划词搜索"
+    "message": "划词设置"
   },
   "selection_enable": {
-    "message": "选中文字时显示搜索工具条"
+    "message": "启用划词搜索"
   },
   "selection_engines": {
     "message": "Web 搜索"
@@ -262,6 +262,9 @@
   },
   "sponsor_afdian": {
     "message": "爱发电"
+  },
+  "sponsor_patreon": {
+    "message": "Patreon"
   },
   "panel_section_protect": {
     "message": "链接保护"

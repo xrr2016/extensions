@@ -5,6 +5,7 @@ import { translate } from "@/utils/i18n";
 
 const SPONSORS = [
   { id: "afdian", url: "https://ifdian.net/a/coldstoneboy" },
+  { id: "patreon", url: "https://patreon.com/coldstoneboy" },
 ] as const;
 
 // Text comes from `browser.i18n` like everywhere else — no lang prop, since
@@ -20,7 +21,7 @@ function openSponsor(url: string) {
 
 <template>
   <section class="sponsor-section">
-    <h2>{{ t("panel.section.sponsor") }}</h2>
+    <h2 class="row-label">{{ t("panel.section.sponsor") }}</h2>
     <p class="hint">{{ t("sponsor.hint") }}</p>
     <div class="sponsor">
       <button v-for="s in SPONSORS" :key="s.id" type="button" @click="openSponsor(s.url)">

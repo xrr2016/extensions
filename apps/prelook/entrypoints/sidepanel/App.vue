@@ -275,7 +275,7 @@ function resetAll() {
 
         <!-- 触发模式 -->
         <section>
-          <h2>{{ t("panel.section.trigger") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.trigger") }}</h2>
           <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
           <label class="row sz" v-if="settings.triggerMode === 'hover'">
             <span>{{ t("trigger.delay") }}</span>
@@ -306,7 +306,7 @@ function resetAll() {
 
         <!-- 预览窗位置 -->
         <section>
-          <h2>{{ t("panel.section.position") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.position") }}</h2>
           <RadioGroup
             v-model="settings.position"
             name="position"
@@ -320,7 +320,7 @@ function resetAll() {
 
         <!-- 预览窗大小 -->
         <section>
-          <h2>{{ t("panel.section.size") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.size") }}</h2>
           <label class="row sz">
             <span>{{ t("size.unit") }}</span>
             <RadioGroup
@@ -380,7 +380,7 @@ function resetAll() {
 
         <!-- 预览窗主题 -->
         <section>
-          <h2>{{ t("panel.section.theme") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.theme") }}</h2>
           <p class="hint">{{ t("windowTheme.hint") }}</p>
           <div class="win-themes">
             <label
@@ -426,7 +426,7 @@ function resetAll() {
 
         <!-- 预览窗数量 -->
         <section>
-          <h2>{{ t("panel.section.windows") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.windows") }}</h2>
           <label class="row sz">
             <span>{{ t("windows.max") }}</span>
             <SliderInput v-model="settings.maxWindows" :min="1" :max="MAX_WINDOWS_LIMIT" />
@@ -440,7 +440,7 @@ function resetAll() {
 
         <!-- 关闭模式 -->
         <section>
-          <h2>{{ t("panel.section.close") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.close") }}</h2>
           <label class="row switch-row">
             <span>{{ t("close.outside") }}</span>
             <ToggleSwitch v-model="settings.closeOnOutsideClick" />
@@ -458,7 +458,7 @@ function resetAll() {
 
         <!-- 其他设置 -->
         <section>
-          <h2>{{ t("panel.section.others") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.others") }}</h2>
           <label class="row switch-row">
             <span>{{ t("trigger.highlight") }}</span>
             <ToggleSwitch v-model="settings.highlightLinks" />
@@ -493,19 +493,28 @@ function resetAll() {
         aria-labelledby="tab-search"
       >
         <section>
-          <h2>{{ t("panel.section.selection") }}</h2>
           <label class="row switch-row">
             <span>{{ t("selection.enable") }}</span>
             <ToggleSwitch v-model="settings.selectionSearch" />
           </label>
-          <div class="row-label">{{ t("selection.engines") }}</div>
+        </section>
+
+        <section>
+          <h2 class="row-label">{{ t("selection.engines") }}</h2>
           <RadioGroup
             v-model="settings.searchEngine"
             name="searchEngine"
             :options="searchOptions"
           />
-          <div class="row-label">{{ t("selection.aiEngine") }}</div>
+        </section>
+
+        <section>
+          <h2 class="row-label">{{ t("selection.aiEngine") }}</h2>
           <RadioGroup v-model="settings.aiEngine" name="aiEngine" :options="aiOptions" />
+        </section>
+
+        <section>
+          <h2 class="row-label">{{ t("panel.section.selection") }}</h2>
           <label class="row sz">
             <span>{{ t("selection.minLength") }}</span>
             <SliderInput v-model="settings.minSelectionChars" :min="1" :max="10" />
@@ -531,7 +540,7 @@ function resetAll() {
         aria-labelledby="tab-settings"
       >
         <section>
-          <h2>{{ t("panel.section.speculation") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.speculation") }}</h2>
           <RadioGroup
             v-model="settings.speculationMode"
             name="speculationMode"
@@ -541,7 +550,7 @@ function resetAll() {
         </section>
 
         <section>
-          <h2>{{ t("panel.section.protect") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.protect") }}</h2>
           <label class="row switch-row">
             <span>{{ t("protect.tracking") }}</span>
             <ToggleSwitch v-model="settings.stripTracking" />
@@ -555,7 +564,7 @@ function resetAll() {
         </section>
 
         <section>
-          <h2>{{ t("panel.section.power") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.power") }}</h2>
           <label class="row">
             <span>{{ t("power.label") }}</span>
             <DropdownSelect
@@ -573,7 +582,7 @@ function resetAll() {
         </section>
 
         <section>
-          <h2>{{ t("panel.section.sites") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.sites") }}</h2>
           <div class="sites">
             <span v-for="s in settings.disabledSites" :key="s" class="site">
               {{ s }}<button @click="removeSite(s)">✕</button>
@@ -595,7 +604,7 @@ function resetAll() {
         </section>
 
         <section>
-          <h2>{{ t("panel.section.appearance") }}</h2>
+          <h2 class="row-label">{{ t("panel.section.appearance") }}</h2>
           <p class="hint">{{ t("appearance.hint") }}</p>
           <div class="theme-cards">
             <label

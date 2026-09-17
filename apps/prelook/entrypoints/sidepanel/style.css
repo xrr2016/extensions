@@ -387,6 +387,7 @@ h2 {
    chips: alone under the language picker a bare text button reads as a heading,
    and a destructive action deserves a target to aim at. */
 .btn-reset {
+  width: 100%;
   font: inherit;
   font-size: 12.5px;
   padding: 7px 14px;
