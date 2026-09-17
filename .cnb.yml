@@ -7,5 +7,6 @@ main:
           settings:
             target_url: https://github.com/xrr2016/extensions.git
             auth_type: https
+            push_tags: true
             username: ${GITHUB_USERNAME}
             password: ${GITHUB_ACCESS_TOKEN}

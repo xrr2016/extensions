@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: prelook-zips
-          path: apps/prelook/.output/*.zip
+          path: .output/*.zip
           if-no-files-found: error
 
       # - name: Attach the zips to the release
