@@ -11,6 +11,7 @@ export default defineConfig({
   manifest: {
     name: "Prelook",
     description: "悬停链接即预览，不必再点开 — 链接预热秒开、阅读模式、划词搜索、风险提示",
+    default_locale: "zh-CN",
     permissions: ["tabs", "storage", "contextMenus"],
     host_permissions: ["<all_urls>"],
     // Written out by hand because WXT only emits `action` for a popup
