@@ -95,11 +95,11 @@ const highlightStyleOptions = computed(() =>
 const sizeUnitOptions = computed(() =>
   (["percent", "px"] as const).map((u) => ({ value: u, label: t(`size.unit.${u}`) })),
 );
-const sizeBounds = computed(() =>
-  settings.value.sizeUnit === "px"
-    ? { min: WINDOW_PX_MIN, max: WINDOW_PX_MAX, unit: "px" as const }
-    : { min: WINDOW_PCT_MIN, max: WINDOW_PCT_MAX, unit: "%" as const },
-);
+// Two independent bound groups: each unit branch reads its own, so the
+// slider ranges never need to be recomputed on unit switch.
+const sizeBoundsPx = { min: WINDOW_PX_MIN, max: WINDOW_PX_MAX, unit: "px" as const };
+const sizeBoundsPercent = { min: WINDOW_PCT_MIN, max: WINDOW_PCT_MAX, unit: "%" as const };
+
 const widthValue = computed({
   get: () => (settings.value.sizeUnit === "px" ? settings.value.widthPx : settings.value.width),
   set: (v: number) => {
@@ -107,6 +107,7 @@ const widthValue = computed({
     else settings.value.width = v;
   },
 });
+
 const heightValue = computed({
   get: () => (settings.value.sizeUnit === "px" ? settings.value.heightPx : settings.value.height),
   set: (v: number) => {
@@ -114,9 +115,11 @@ const heightValue = computed({
     else settings.value.height = v;
   },
 });
+
 function setSizeUnit(unit: SizeUnit) {
   settings.value.sizeUnit = unit;
 }
+
 const speculationOptions = computed(() =>
   (["off", "prefetch", "prerender"] as const).map((m) => ({
     value: m,
@@ -328,29 +331,56 @@ function resetAll() {
               @update:model-value="setSizeUnit($event as SizeUnit)"
             />
           </label>
-          <label class="row sz">
-            <span
-              >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBounds.unit }}</b></span
-            >
-            <SliderInput
-              v-model="widthValue"
-              :min="sizeBounds.min"
-              :max="sizeBounds.max"
-              :unit="sizeBounds.unit"
-            />
-          </label>
-          <label class="row sz">
-            <span
-              >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBounds.unit }}</b></span
-            >
-            <SliderInput
-              v-model="heightValue"
-              :min="sizeBounds.min"
-              :max="sizeBounds.max"
-              :unit="sizeBounds.unit"
-              :disabled="settings.position === 'sidebar'"
-            />
-          </label>
+          <template v-if="settings.sizeUnit === 'px'">
+            <label class="row sz">
+              <span
+                >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBoundsPx.unit }}</b></span
+              >
+              <SliderInput
+                v-model="widthValue"
+                :min="sizeBoundsPx.min"
+                :max="sizeBoundsPx.max"
+                :unit="sizeBoundsPx.unit"
+              />
+            </label>
+            <label class="row sz">
+              <span
+                >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBoundsPx.unit }}</b></span
+              >
+              <SliderInput
+                v-model="heightValue"
+                :min="sizeBoundsPx.min"
+                :max="sizeBoundsPx.max"
+                :unit="sizeBoundsPx.unit"
+                :disabled="settings.position === 'sidebar'"
+              />
+            </label>
+          </template>
+          <template v-else>
+            <label class="row sz">
+              <span
+                >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBoundsPercent.unit }}</b></span
+              >
+              <SliderInput
+                v-model="widthValue"
+                :min="sizeBoundsPercent.min"
+                :max="sizeBoundsPercent.max"
+                :unit="sizeBoundsPercent.unit"
+              />
+            </label>
+            <label class="row sz">
+              <span
+                >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBoundsPercent.unit }}</b></span
+              >
+              <SliderInput
+                v-model="heightValue"
+                :min="sizeBoundsPercent.min"
+                :max="sizeBoundsPercent.max"
+                :unit="sizeBoundsPercent.unit"
+                :disabled="settings.position === 'sidebar'"
+              />
+            </label>
+          </template>
         </section>
 
         <!-- 预览窗主题 -->
@@ -412,7 +442,6 @@ function resetAll() {
             <span>{{ t("windows.autoPin") }}</span>
             <ToggleSwitch v-model="settings.autoPin" />
           </label>
-          <p class="hint muted">{{ t("windows.autoPinHint") }}</p>
         </section>
 
         <!-- 关闭模式 -->
