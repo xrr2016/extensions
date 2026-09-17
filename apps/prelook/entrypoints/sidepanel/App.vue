@@ -258,6 +258,7 @@ function resetAll() {
 
   <main :style="accentStyle">
     <div class="flex-1 tabs-content">
+      <!-- 预览设置 -->
       <div
         v-if="activeTab === 'preview'"
         id="panel-preview"
@@ -492,6 +493,87 @@ function resetAll() {
         </section>
       </div>
 
+      <!-- 性能设置 -->
+      <div
+        v-else-if="activeTab === 'performance'"
+        id="panel-performance"
+        role="tabpanel"
+        aria-labelledby="tab-performance"
+      >
+        <section>
+          <h2>{{ t("panel.section.speculation") }}</h2>
+          <RadioGroup
+            v-model="settings.speculationMode"
+            name="speculationMode"
+            :options="speculationOptions"
+          />
+          <p class="hint muted">{{ t("speculation.hint") }}</p>
+        </section>
+
+        <section>
+          <h2>{{ t("panel.section.power") }}</h2>
+          <label class="row">
+            <span>{{ t("power.label") }}</span>
+            <DropdownSelect
+              v-model="settings.powerSaver"
+              name="powerSaver"
+              :options="powerOptions"
+            />
+          </label>
+          <p class="hint muted">{{ t("power.hint") }}</p>
+          <label class="row switch-row">
+            <span>{{ t("motion.label") }}</span>
+            <ToggleSwitch v-model="settings.reduceMotion" />
+          </label>
+          <p class="hint muted">{{ t("motion.hint") }}</p>
+        </section>
+      </div>
+
+      <!-- 保护设置 -->
+      <div
+        v-else-if="activeTab === 'protect'"
+        id="panel-protect"
+        role="tabpanel"
+        aria-labelledby="tab-protect"
+      >
+        <section>
+          <h2>{{ t("panel.section.protect") }}</h2>
+          <label class="row switch-row">
+            <span>{{ t("protect.tracking") }}</span>
+            <ToggleSwitch v-model="settings.stripTracking" />
+          </label>
+          <p class="hint muted">{{ t("protect.trackingHint") }}</p>
+          <label class="row switch-row">
+            <span>{{ t("protect.warn") }}</span>
+            <ToggleSwitch v-model="settings.warnDangerous" />
+          </label>
+          <p class="hint muted">{{ t("protect.warnHint") }}</p>
+        </section>
+
+        <section>
+          <h2>{{ t("panel.section.sites") }}</h2>
+          <div class="sites">
+            <span v-for="s in settings.disabledSites" :key="s" class="site">
+              {{ s }}<button @click="removeSite(s)">✕</button>
+            </span>
+            <span v-if="settings.disabledSites.length === 0" class="hint muted">{{
+              t("sites.empty")
+            }}</span>
+          </div>
+          <div class="row-inline">
+            <input
+              v-model="newSite"
+              type="text"
+              :placeholder="t('sites.addPlaceholder')"
+              @keydown.enter="addSite"
+            />
+            <button @click="addSite">{{ t("sites.add") }}</button>
+            <button @click="disableCurrentSite">{{ t("sites.current") }}</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- 插件设置 -->
       <div
         v-else-if="activeTab === 'settings'"
         id="panel-settings"
@@ -516,11 +598,11 @@ function resetAll() {
             <span>{{ t("selection.background") }}</span>
             <ToggleSwitch v-model="settings.openInBackground" />
           </label>
-          <label class="row">
+          <label class="row sz">
             <span
               >{{ t("selection.minLength") }}<b>{{ settings.minSelectionChars }}</b></span
             >
-            <SliderInput v-model="settings.minSelectionChars" :min="1" :max="999" />
+            <SliderInput v-model="settings.minSelectionChars" :min="1" :max="10" />
           </label>
         </section>
 
@@ -565,87 +647,7 @@ function resetAll() {
           </label>
         </section>
 
-        <section>
-          <button class="btn-reset" @click="resetAll">{{ t("panel.reset") }}</button>
-        </section>
-      </div>
-
-      <div
-        v-else-if="activeTab === 'performance'"
-        id="panel-performance"
-        role="tabpanel"
-        aria-labelledby="tab-performance"
-      >
-        <section>
-          <h2>{{ t("panel.section.speculation") }}</h2>
-          <RadioGroup
-            v-model="settings.speculationMode"
-            name="speculationMode"
-            :options="speculationOptions"
-          />
-          <p class="hint muted">{{ t("speculation.hint") }}</p>
-        </section>
-
-        <section>
-          <h2>{{ t("panel.section.power") }}</h2>
-          <label class="row">
-            <span>{{ t("power.label") }}</span>
-            <DropdownSelect
-              v-model="settings.powerSaver"
-              name="powerSaver"
-              :options="powerOptions"
-            />
-          </label>
-          <p class="hint muted">{{ t("power.hint") }}</p>
-          <label class="row switch-row">
-            <span>{{ t("motion.label") }}</span>
-            <ToggleSwitch v-model="settings.reduceMotion" />
-          </label>
-          <p class="hint muted">{{ t("motion.hint") }}</p>
-        </section>
-      </div>
-
-      <div
-        v-else-if="activeTab === 'protect'"
-        id="panel-protect"
-        role="tabpanel"
-        aria-labelledby="tab-protect"
-      >
-        <section>
-          <h2>{{ t("panel.section.protect") }}</h2>
-          <label class="row switch-row">
-            <span>{{ t("protect.tracking") }}</span>
-            <ToggleSwitch v-model="settings.stripTracking" />
-          </label>
-          <p class="hint muted">{{ t("protect.trackingHint") }}</p>
-          <label class="row switch-row">
-            <span>{{ t("protect.warn") }}</span>
-            <ToggleSwitch v-model="settings.warnDangerous" />
-          </label>
-          <p class="hint muted">{{ t("protect.warnHint") }}</p>
-        </section>
-
-        <section>
-          <h2>{{ t("panel.section.sites") }}</h2>
-          <div class="sites">
-            <span v-for="s in settings.disabledSites" :key="s" class="site">
-              {{ s }}<button @click="removeSite(s)">✕</button>
-            </span>
-            <span v-if="settings.disabledSites.length === 0" class="hint muted">{{
-              t("sites.empty")
-            }}</span>
-          </div>
-          <div class="row-inline">
-            <input
-              v-model="newSite"
-              type="text"
-              :placeholder="t('sites.addPlaceholder')"
-              @keydown.enter="addSite"
-            />
-            <button @click="addSite">{{ t("sites.add") }}</button>
-            <button @click="disableCurrentSite">{{ t("sites.current") }}</button>
-          </div>
-        </section>
+        <button class="btn-reset" @click="resetAll">{{ t("panel.reset") }}</button>
       </div>
     </div>
     <!-- Last block in the panel, on every tab: one instance rather than a copy
