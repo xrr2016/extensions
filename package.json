@@ -14,10 +14,18 @@
     "compile:prelook": "pnpm -F @extensions/prelook compile",
     "landing:prelook": "pnpm -F @extensions/prelook-landing dev",
     "compile": "pnpm -r --if-present compile",
-    "build": "pnpm -r --if-present build"
+    "build": "pnpm -r --if-present build",
+    "release:prelook": "pnpm -F @extensions/prelook release"
   },
   "devDependencies": {
+    "@release-it/bumper": "^8.0.1",
     "oxfmt": "^0.68.0",
-    "oxlint": "^1.83.0"
+    "oxlint": "^1.83.0",
+    "release-it": "^21.0.3"
+  },
+  "release-it": {
+    "git": {
+      "requireCleanWorkingDir": false
+    }
   }
 }
