@@ -1,0 +1,356 @@
+{
+  "menu_root": {
+    "message": "Prelook: link preview"
+  },
+  "menu_popup": {
+    "message": "Open in Popup"
+  },
+  "menu_sidebar": {
+    "message": "Open in Sidebar"
+  },
+  "preview_openTab": {
+    "message": "Open in new tab"
+  },
+  "preview_close": {
+    "message": "Close"
+  },
+  "preview_reload": {
+    "message": "Reload preview"
+  },
+  "preview_pin": {
+    "message": "Pin window (keep it open)"
+  },
+  "preview_unpin": {
+    "message": "Unpin window"
+  },
+  "preview_pinLimit": {
+    "message": "All preview slots are pinned — unpin or close one first"
+  },
+  "preview_readerBadge": {
+    "message": "Reader mode"
+  },
+  "preview_failed": {
+    "message": "Failed to load this page"
+  },
+  "selection_ai": {
+    "message": "AI search"
+  },
+  "selection_aiCopyHint": {
+    "message": "(copies the selection first)"
+  },
+  "panel_tab_preview": {
+    "message": "Preview"
+  },
+  "panel_tab_settings": {
+    "message": "Settings"
+  },
+  "panel_tab_performance": {
+    "message": "Performance"
+  },
+  "panel_tab_protect": {
+    "message": "Protect"
+  },
+  "panel_enabled": {
+    "message": "Enable Prelook"
+  },
+  "panel_reset": {
+    "message": "Reset to defaults"
+  },
+  "panel_section_trigger": {
+    "message": "Preview trigger"
+  },
+  "trigger_hover": {
+    "message": "On hover"
+  },
+  "trigger_altHover": {
+    "message": "Alt + hover"
+  },
+  "trigger_longPress": {
+    "message": "Long press"
+  },
+  "trigger_drag": {
+    "message": "Drag link"
+  },
+  "trigger_highlight": {
+    "message": "Highlight link on trigger"
+  },
+  "highlightStyle_label": {
+    "message": "Highlight style"
+  },
+  "highlightStyle_solid": {
+    "message": "Solid"
+  },
+  "highlightStyle_dashed": {
+    "message": "Dashed"
+  },
+  "trigger_delay": {
+    "message": "Hover delay"
+  },
+  "trigger_longPressDelay": {
+    "message": "Hold duration (progress bar shown)"
+  },
+  "images_skip": {
+    "message": "Skip image links"
+  },
+  "panel_section_size": {
+    "message": "Preview size"
+  },
+  "size_unit": {
+    "message": "Size unit"
+  },
+  "size_unit_percent": {
+    "message": "Percent"
+  },
+  "size_unit_px": {
+    "message": "Pixels"
+  },
+  "size_width": {
+    "message": "Width"
+  },
+  "size_height": {
+    "message": "Height"
+  },
+  "panel_section_appearance": {
+    "message": "Appearance"
+  },
+  "appearance_hint": {
+    "message": "Choose how Prelook looks"
+  },
+  "appearance_accent": {
+    "message": "Accent color"
+  },
+  "theme_system": {
+    "message": "Follow system"
+  },
+  "theme_light": {
+    "message": "Light"
+  },
+  "theme_dark": {
+    "message": "Dark"
+  },
+  "panel_section_theme": {
+    "message": "Window theme"
+  },
+  "windowTheme_hint": {
+    "message": "Pick the preview window palette"
+  },
+  "windowTheme_gray": {
+    "message": "Grey"
+  },
+  "windowTheme_midnight": {
+    "message": "Night"
+  },
+  "windowTheme_silver": {
+    "message": "Silver"
+  },
+  "windowTheme_blue": {
+    "message": "Blue"
+  },
+  "windowTheme_green": {
+    "message": "Green"
+  },
+  "windowTheme_purple": {
+    "message": "Purple"
+  },
+  "windowTheme_pink": {
+    "message": "Pink"
+  },
+  "windowTheme_custom": {
+    "message": "Custom colour"
+  },
+  "panel_section_position": {
+    "message": "Preview position"
+  },
+  "position_top_left": {
+    "message": "Top left"
+  },
+  "position_bottom_right": {
+    "message": "Bottom right"
+  },
+  "position_bottom_left": {
+    "message": "Bottom left"
+  },
+  "position_top_right": {
+    "message": "Top right"
+  },
+  "position_center_top": {
+    "message": "Upper center"
+  },
+  "position_center": {
+    "message": "Center"
+  },
+  "position_center_bottom": {
+    "message": "Lower center"
+  },
+  "position_sidebar": {
+    "message": "Sidebar"
+  },
+  "sidebarSide_left": {
+    "message": "Left"
+  },
+  "sidebarSide_right": {
+    "message": "Right"
+  },
+  "panel_section_blur": {
+    "message": "Background blur"
+  },
+  "blur_strength": {
+    "message": "Blur strength"
+  },
+  "blur_hint": {
+    "message": "Blurs the page only while the pointer is over a preview window; 0 turns it off"
+  },
+  "panel_section_speculation": {
+    "message": "Link warm-up"
+  },
+  "speculation_off": {
+    "message": "Off"
+  },
+  "speculation_prefetch": {
+    "message": "Prefetch"
+  },
+  "speculation_prerender": {
+    "message": "Prerender"
+  },
+  "speculation_hint": {
+    "message": "Download hovered links in advance for faster previews and opens; prerendering is heavier and Chrome-only"
+  },
+  "panel_section_selection": {
+    "message": "Text selection search"
+  },
+  "selection_enable": {
+    "message": "Show toolbar on text selection"
+  },
+  "selection_engines": {
+    "message": "Web search"
+  },
+  "selection_aiEngine": {
+    "message": "AI engine"
+  },
+  "selection_background": {
+    "message": "Open in background tab"
+  },
+  "selection_minLength": {
+    "message": "Min selected chars"
+  },
+  "panel_section_windows": {
+    "message": "Multiple windows"
+  },
+  "windows_autoPin": {
+    "message": "Auto-pin previews"
+  },
+  "windows_autoPinHint": {
+    "message": "Newly opened previews start pinned so they survive the pointer leaving; windows already open are unaffected"
+  },
+  "windows_max": {
+    "message": "Max open windows"
+  },
+  "windows_hint": {
+    "message": "Open up to 6 previews at once; in sidebar mode they stack side by side."
+  },
+  "panel_section_sponsor": {
+    "message": "Support the author"
+  },
+  "sponsor_hint": {
+    "message": "Prelook is completely free — no account, no server. If it helps you, a sponsorship keeps development going."
+  },
+  "sponsor_afdian": {
+    "message": "Afdian"
+  },
+  "panel_section_protect": {
+    "message": "Link protection"
+  },
+  "protect_tracking": {
+    "message": "URL tracking protection"
+  },
+  "protect_trackingHint": {
+    "message": "Drops utm_* / gclid and friends when Prelook opens a link, and unwraps known redirect shims"
+  },
+  "protect_warn": {
+    "message": "Warn about dangerous links"
+  },
+  "protect_warnHint": {
+    "message": "Local-only checks for disguised domains and text that does not match the target; no network, no blocking, shown in the preview header"
+  },
+  "risk_userinfo": {
+    "message": "Link hides its real domain behind an @"
+  },
+  "risk_punycode": {
+    "message": "Domain mixes non-ASCII characters, possibly a homograph"
+  },
+  "risk_brandMismatch": {
+    "message": "Domain looks like an impersonated brand"
+  },
+  "risk_textMismatch": {
+    "message": "Shown text does not match the real address"
+  },
+  "risk_ipHost": {
+    "message": "Points straight at an IP address"
+  },
+  "risk_shortener": {
+    "message": "Short link, real destination hidden"
+  },
+  "panel_section_close": {
+    "message": "Close triggers"
+  },
+  "close_outside": {
+    "message": "Close when clicking outside the preview"
+  },
+  "close_leave": {
+    "message": "Close when the pointer leaves"
+  },
+  "close_scroll": {
+    "message": "Close when scrolling"
+  },
+  "close_hint": {
+    "message": "Pinned previews ignore all three"
+  },
+  "panel_section_power": {
+    "message": "Power & motion"
+  },
+  "power_label": {
+    "message": "Power saving"
+  },
+  "power_auto": {
+    "message": "Auto"
+  },
+  "power_on": {
+    "message": "On"
+  },
+  "power_max": {
+    "message": "Maximum"
+  },
+  "power_off": {
+    "message": "Off"
+  },
+  "power_hint": {
+    "message": "Auto follows “On” while on battery. On: no link warm-up and no backdrop blur. Maximum: also no link highlight, no animations, and previews skip the fetch preflight (sites that refuse framing fail outright)"
+  },
+  "motion_label": {
+    "message": "Reduce animations"
+  },
+  "motion_hint": {
+    "message": "Drops the preview window fades and the hover progress-bar transition; also follows the system's reduce-motion setting"
+  },
+  "panel_section_sites": {
+    "message": "Disabled sites"
+  },
+  "sites_empty": {
+    "message": "No disabled sites"
+  },
+  "sites_addPlaceholder": {
+    "message": "example.com"
+  },
+  "sites_add": {
+    "message": "Add"
+  },
+  "sites_current": {
+    "message": "Disable current site"
+  },
+  "extDescription": {
+    "message": "Preview links on hover — no click needed. Instant-load warmup, reader mode, selection search, risky-link hints"
+  },
+  "panel_title": {
+    "message": "Prelook Settings"
+  }
+}

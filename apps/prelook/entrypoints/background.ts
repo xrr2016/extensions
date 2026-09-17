@@ -126,23 +126,17 @@ const MENU_ROOT = "prelook-root";
 const MENU_POPUP = "prelook-open-popup";
 const MENU_SIDEBAR = "prelook-open-sidebar";
 
-/** Language the current menu set was built for; lets the settings watch skip
- *  rebuilds that would not change anything. */
-let menuLanguage = "";
-/** Rebuilds must never overlap: startup, onInstalled and the settings watch's
- *  immediate callback can all fire in the same install tick, and two
- *  interleaved removeAll/create sequences make the second create collide on
- *  the same ids ("Cannot create item with duplicate id"). */
+/** Rebuilds must never overlap: startup and onInstalled can fire in the same
+ *  install tick, and two interleaved removeAll/create sequences make the second
+ *  create collide on the same ids ("Cannot create item with duplicate id"). */
 let menuQueue: Promise<void> = Promise.resolve();
 
-/** Context menus are not localised by the browser, so they are rebuilt from the
- *  stored UI language whenever that changes. */
+/** Chrome does not localise context-menu titles on its own, so they are read
+ *  from `browser.i18n` here. The native API follows the browser UI language and
+ *  cannot change within a session, so nothing needs to trigger a rebuild on a
+ *  settings change — only install/update does. */
 async function setupContextMenus() {
-  const language = await settingsItem
-    .getValue()
-    .then((stored) => ({ ...DEFAULT_SETTINGS, ...stored }).language)
-    .catch(() => DEFAULT_SETTINGS.language);
-  const t = (key: string) => translate(language, key);
+  const t = (key: string) => translate(key);
   await browser.contextMenus.removeAll();
   browser.contextMenus.create({
     id: MENU_ROOT,
@@ -161,7 +155,6 @@ async function setupContextMenus() {
     title: t("menu.sidebar"),
     contexts: ["link"],
   });
-  menuLanguage = language;
 }
 
 function rebuildContextMenus(): Promise<void> {
@@ -195,11 +188,6 @@ export default defineBackground(() => {
   bindIconToPanel();
   void rebuildContextMenus();
   browser.runtime.onInstalled.addListener(() => void rebuildContextMenus());
-  void settingsItem.watch((stored) => {
-    const language = { ...DEFAULT_SETTINGS, ...stored }.language;
-    if (language === menuLanguage) return;
-    void rebuildContextMenus();
-  });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     const sidebar = info.menuItemId === MENU_SIDEBAR;

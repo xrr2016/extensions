@@ -36,21 +36,32 @@ jobs:
       - name: Type check (vue-tsc)
         run: pnpm compile
 
-      # zh-CN.json and en.json must carry the same keys: a missing one renders as
-      # the raw key in the UI (see utils/i18n.ts), which no type covers.
+      # _locales/zh_CN and _locales/en must carry the same message keys, and
+      # every entry must be a non-empty `message`: a missing one renders as the
+      # raw key in the UI (see utils/i18n.ts), which no type covers. Message
+      # names must also be valid for browser.i18n (A-Z a-z 0-9 _ @ only).
       - name: Locale key parity
         run: |
           node -e '
           const { readFileSync } = require("node:fs");
-          const keys = (p) => Object.keys(JSON.parse(readFileSync(p, "utf8")));
-          const zh = keys("apps/prelook/assets/locales/zh-CN.json");
-          const en = keys("apps/prelook/assets/locales/en.json");
+          const load = (p) => JSON.parse(readFileSync(p, "utf8"));
+          const zh = load("apps/prelook/public/_locales/zh_CN/messages.json");
+          const en = load("apps/prelook/public/_locales/en/messages.json");
+          const zhKeys = Object.keys(zh);
+          const enKeys = Object.keys(en);
           const only = (a, b) => a.filter((k) => !b.includes(k));
-          const zhOnly = only(zh, en);
-          const enOnly = only(en, zh);
-          console.log("zh-CN: " + zh.length + " keys, en: " + en.length + " keys");
-          if (zhOnly.length || enOnly.length) {
-            console.error("::error::locale keys out of sync — zh-only: " + zhOnly + " / en-only: " + enOnly);
+          const zhOnly = only(zhKeys, enKeys);
+          const enOnly = only(enKeys, zhKeys);
+          const badNames = [...zhKeys, ...enKeys].filter((k) => !/^[A-Za-z0-9_@]{1,63}$/.test(k));
+          const empty = [...zhKeys, ...enKeys].filter(
+            (k) => !((zh[k] ?? en[k])?.message ?? "").trim(),
+          );
+          console.log("zh_CN: " + zhKeys.length + " keys, en: " + enKeys.length + " keys");
+          if (zhOnly.length || enOnly.length || badNames.length || empty.length) {
+            console.error(
+              "::error::locale problems — zh-only: " + zhOnly + " / en-only: " + enOnly +
+              " / invalid names: " + badNames + " / empty messages: " + empty
+            );
             process.exit(1);
           }
           '

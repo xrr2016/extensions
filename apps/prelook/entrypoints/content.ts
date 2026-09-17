@@ -69,7 +69,7 @@ export default defineContentScript({
     let themeDispose: (() => void) | null = null;
     let powerDispose: (() => void) | null = null;
 
-    const i18n = createI18n(() => settings.language);
+    const i18n = createI18n();
 
     /**
      * The settings the warm-up may work with: power saving can only take the

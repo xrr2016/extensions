@@ -8,7 +8,6 @@ export type PreviewPosition =
   | "center"
   | "center-bottom"
   | "sidebar";
-export type Language = "zh-CN" | "en";
 export type SizeUnit = "percent" | "px";
 export type SidebarSide = "left" | "right";
 export type SpeculationMode = "off" | "prefetch" | "prerender";
@@ -143,7 +142,6 @@ export interface PrelookSettings {
   aiEngine: string;
   openInBackground: boolean;
   minSelectionChars: number;
-  language: Language;
   /** Draw a frame around the link the pointer is over */
   highlightLinks: boolean;
   /** Border style for the link highlight frame */
@@ -195,7 +193,6 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   aiEngine: "kimi",
   openInBackground: false,
   minSelectionChars: 2,
-  language: "zh-CN",
   maxWindows: 3,
   speculationMode: "prefetch",
   powerSaver: "auto",
@@ -253,10 +250,15 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
   const {
     blurPx: legacyBlurPx,
     searchEngines: legacySearchEngines,
+    // The in-app language switch is gone (UI text now comes from
+    // `browser.i18n`, which follows the browser language); strip the stale key
+    // so a merged-in stored value cannot keep writing itself back.
+    language: _legacyLanguage,
     ...rest
   } = s as PrelookSettings & {
     blurPx?: number;
     searchEngines?: string[];
+    language?: string;
   };
   const windowTheme: WindowTheme = WINDOW_THEMES.some((w) => w.id === s.windowTheme)
     ? s.windowTheme

@@ -34,8 +34,10 @@ const loaded = ref(false);
 const settings = ref<PrelookSettings>({ ...DEFAULT_SETTINGS });
 const newSite = ref("");
 
+// Labels come straight from `browser.i18n`: the panel's language is the
+// browser's UI language and cannot change while it is open.
 const t = (key: string, params?: Record<string, string | number>) =>
-  translate(settings.value.language, key, params);
+  translate(key, params);
 
 // Delays are stored in milliseconds but edited in seconds: `toFixed(2)` keeps
 // the readout free of float noise (0.30000000000000004).
@@ -56,8 +58,8 @@ const THEMES = [
   { id: "dark" as const, icon: "moon" },
 ];
 
-// RadioGroup options: translated labels stay reactive to the language setting,
-// engine labels come from the engine tables verbatim.
+// RadioGroup options: computed so labels stay in sync with `t()` like the rest
+// of the panel; engine labels come from the engine tables verbatim.
 const triggerOptions = computed(() =>
   (["hover", "altHover", "longPress", "drag"] as const).map((m) => ({
     value: m,
@@ -528,16 +530,6 @@ function resetAll() {
         </section>
 
         <section>
-          <h2>{{ t("panel.section.language") }}</h2>
-          <div class="seg">
-            <label v-for="l in ['zh-CN', 'en'] as const" :key="l">
-              <input v-model="settings.language" type="radio" name="language" :value="l" />
-              {{ l === "zh-CN" ? "简体中文" : "English" }}
-            </label>
-          </div>
-        </section>
-
-        <section>
           <button class="btn-reset" @click="resetAll">{{ t("panel.reset") }}</button>
         </section>
       </div>
@@ -624,6 +616,6 @@ function resetAll() {
          per panel (the panels are exclusive), sunk to the bottom edge by its own
          `margin-top: auto` (in the component's scoped styles) so a short tab has
          no empty gap. -->
-    <SponsorSection :lang="settings.language" />
+    <SponsorSection />
   </main>
 </template>

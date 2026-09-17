@@ -31,7 +31,6 @@
     // theme, and off because a prerender of the link would be wasted work here.
     theme: "light",
     windowTheme: "blue",
-    language: "zh-CN",
     speculationMode: "off",
     blurStrength: 0,
     maxWindows: 3,
@@ -113,7 +112,29 @@
     onChanged: { addListener: (fn) => listeners.push(fn), removeListener: () => {} },
   };
 
+  // The content script reads its UI strings through `browser.i18n.getMessage`.
+  // Serve them from the real built `_locales` file (sync XHR: getMessage is
+  // synchronous, so the dictionary must be in hand before it is ever called).
+  let MESSAGES = {};
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "../../.output/chrome-mv3/_locales/zh_CN/messages.json", false);
+    xhr.send();
+    MESSAGES = JSON.parse(xhr.responseText);
+  } catch (err) {
+    console.warn("[demo mock] locale file unavailable, UI strings will show as keys", err);
+  }
+
   globalThis.chrome = {
+    i18n: {
+      getUILanguage: () => "zh-CN",
+      getMessage: (name, substitutions) => {
+        const msg = MESSAGES[name];
+        if (!msg) return "";
+        const subs = Array.isArray(substitutions) ? substitutions : [substitutions];
+        return msg.message.replace(/\$(\d+)/g, (_, i) => String(subs[Number(i) - 1] ?? ""));
+      },
+    },
     runtime: {
       id: "demo-extension-id",
       getURL: (path) => path,

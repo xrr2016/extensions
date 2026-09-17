@@ -23,7 +23,26 @@
         // MV3 per-area event; @wxt-dev/storage watches this, not storage.onChanged.
         onChanged: { addListener: (fn) => listeners.push(fn), removeListener: () => {} },
       };
+      // The content script now reads UI strings via browser.i18n.getMessage.
+      // Serve them from the built _locales file (sync XHR: getMessage is
+      // synchronous, so the dictionary must be loaded before it is ever called).
+      let MESSAGES = {};
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '../.output/chrome-mv3/_locales/zh_CN/messages.json', false);
+        xhr.send();
+        MESSAGES = JSON.parse(xhr.responseText);
+      } catch (e) { console.warn('locale file unavailable, strings will show as keys', e); }
       globalThis.chrome = {
+        i18n: {
+          getUILanguage: () => 'zh-CN',
+          getMessage: (name, subs) => {
+            const msg = MESSAGES[name];
+            if (!msg) return '';
+            const list = Array.isArray(subs) ? subs : [subs];
+            return msg.message.replace(/\$(\d+)/g, (_, i) => String(list[Number(i) - 1] ?? ''));
+          },
+        },
         runtime: {
           id: 'repro-extension-id',
           getURL: (p) => p,

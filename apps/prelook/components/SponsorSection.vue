@@ -2,17 +2,14 @@
 // Styling lives in this file's scoped block; the card look itself (background,
 // padding, radius) still comes from the panel-wide `section` rule.
 import { translate } from "@/utils/i18n";
-import type { Language } from "@/utils/storage";
-
-// The language comes from the parent's live settings, so the buttons re-label
-// themselves as soon as the panel's language switch flips.
-const props = defineProps<{ lang: Language }>();
 
 const SPONSORS = [
   { id: "afdian", url: "https://ifdian.net/a/coldstoneboy" },
 ] as const;
 
-const t = (key: string) => translate(props.lang, key);
+// Text comes from `browser.i18n` like everywhere else — no lang prop, since
+// the language is the browser's and fixed for the panel's lifetime.
+const t = (key: string) => translate(key);
 
 // The panel cannot host target="_blank" reliably, so sponsor links go through
 // the tabs API.

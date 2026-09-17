@@ -1,0 +1,356 @@
+{
+  "menu_root": {
+    "message": "Prelook：链接预览"
+  },
+  "menu_popup": {
+    "message": "在预览窗打开"
+  },
+  "menu_sidebar": {
+    "message": "在侧边栏打开"
+  },
+  "preview_openTab": {
+    "message": "在新标签页打开"
+  },
+  "preview_close": {
+    "message": "关闭"
+  },
+  "preview_reload": {
+    "message": "刷新预览内容"
+  },
+  "preview_pin": {
+    "message": "固定窗口（不自动关闭）"
+  },
+  "preview_unpin": {
+    "message": "取消固定"
+  },
+  "preview_pinLimit": {
+    "message": "预览窗已全部固定（上限 $1 个），取消固定或关掉一个再试"
+  },
+  "preview_readerBadge": {
+    "message": "阅读模式"
+  },
+  "preview_failed": {
+    "message": "无法加载该页面内容"
+  },
+  "selection_ai": {
+    "message": "AI 搜索"
+  },
+  "selection_aiCopyHint": {
+    "message": "（会先复制选中文字）"
+  },
+  "panel_tab_preview": {
+    "message": "预览"
+  },
+  "panel_tab_settings": {
+    "message": "设置"
+  },
+  "panel_tab_performance": {
+    "message": "性能"
+  },
+  "panel_tab_protect": {
+    "message": "保护"
+  },
+  "panel_enabled": {
+    "message": "启用 Prelook"
+  },
+  "panel_reset": {
+    "message": "恢复默认设置"
+  },
+  "panel_section_trigger": {
+    "message": "预览触发方式"
+  },
+  "trigger_hover": {
+    "message": "悬停触发"
+  },
+  "trigger_altHover": {
+    "message": "Alt + 悬停"
+  },
+  "trigger_longPress": {
+    "message": "长按链接"
+  },
+  "trigger_drag": {
+    "message": "拖动链接"
+  },
+  "trigger_highlight": {
+    "message": "触发时高亮链接"
+  },
+  "highlightStyle_label": {
+    "message": "高亮样式"
+  },
+  "highlightStyle_solid": {
+    "message": "实线"
+  },
+  "highlightStyle_dashed": {
+    "message": "虚线"
+  },
+  "trigger_delay": {
+    "message": "悬停延迟"
+  },
+  "trigger_longPressDelay": {
+    "message": "长按时长"
+  },
+  "images_skip": {
+    "message": "图片不显示预览窗"
+  },
+  "panel_section_size": {
+    "message": "预览窗尺寸"
+  },
+  "size_unit": {
+    "message": "尺寸单位"
+  },
+  "size_unit_percent": {
+    "message": "百分比"
+  },
+  "size_unit_px": {
+    "message": "像素"
+  },
+  "size_width": {
+    "message": "宽度"
+  },
+  "size_height": {
+    "message": "高度"
+  },
+  "panel_section_appearance": {
+    "message": "外观主题"
+  },
+  "appearance_hint": {
+    "message": "选择应用主题外观"
+  },
+  "appearance_accent": {
+    "message": "主题色"
+  },
+  "theme_system": {
+    "message": "跟随系统"
+  },
+  "theme_light": {
+    "message": "浅色"
+  },
+  "theme_dark": {
+    "message": "深色"
+  },
+  "panel_section_theme": {
+    "message": "弹窗主题"
+  },
+  "windowTheme_hint": {
+    "message": "选择预览窗的配色"
+  },
+  "windowTheme_gray": {
+    "message": "灰白"
+  },
+  "windowTheme_midnight": {
+    "message": "深色"
+  },
+  "windowTheme_silver": {
+    "message": "浅灰"
+  },
+  "windowTheme_blue": {
+    "message": "蓝色"
+  },
+  "windowTheme_green": {
+    "message": "绿色"
+  },
+  "windowTheme_purple": {
+    "message": "紫色"
+  },
+  "windowTheme_pink": {
+    "message": "粉色"
+  },
+  "windowTheme_custom": {
+    "message": "自定义颜色"
+  },
+  "panel_section_position": {
+    "message": "预览窗位置"
+  },
+  "position_top_left": {
+    "message": "左上角"
+  },
+  "position_bottom_right": {
+    "message": "右下角"
+  },
+  "position_bottom_left": {
+    "message": "左下角"
+  },
+  "position_top_right": {
+    "message": "右上角"
+  },
+  "position_center_top": {
+    "message": "居中偏上"
+  },
+  "position_center": {
+    "message": "居中"
+  },
+  "position_center_bottom": {
+    "message": "居中偏下"
+  },
+  "position_sidebar": {
+    "message": "侧边栏"
+  },
+  "sidebarSide_left": {
+    "message": "靠左"
+  },
+  "sidebarSide_right": {
+    "message": "靠右"
+  },
+  "panel_section_blur": {
+    "message": "背景模糊"
+  },
+  "blur_strength": {
+    "message": "模糊强度"
+  },
+  "blur_hint": {
+    "message": "指针移到预览窗上时才模糊背景，0 为关闭"
+  },
+  "panel_section_speculation": {
+    "message": "链接预热"
+  },
+  "speculation_off": {
+    "message": "关闭"
+  },
+  "speculation_prefetch": {
+    "message": "预获取"
+  },
+  "speculation_prerender": {
+    "message": "预渲染"
+  },
+  "speculation_hint": {
+    "message": "悬停链接时提前下载目标页，让预览与打开更快；预渲染更耗资源，仅 Chrome 支持"
+  },
+  "panel_section_selection": {
+    "message": "划词搜索"
+  },
+  "selection_enable": {
+    "message": "选中文字时显示搜索工具条"
+  },
+  "selection_engines": {
+    "message": "Web 搜索"
+  },
+  "selection_aiEngine": {
+    "message": "AI 搜索引擎"
+  },
+  "selection_background": {
+    "message": "在后台标签页打开"
+  },
+  "selection_minLength": {
+    "message": "最小选中字数"
+  },
+  "panel_section_windows": {
+    "message": "多窗口预览"
+  },
+  "windows_autoPin": {
+    "message": "自动固定预览窗"
+  },
+  "windows_autoPinHint": {
+    "message": "开启后新开出的预览窗自带固定，鼠标移开也不会关闭；已打开的窗口不受影响"
+  },
+  "windows_max": {
+    "message": "同开窗口数"
+  },
+  "windows_hint": {
+    "message": "最多 6 个预览窗同时打开；侧边栏模式下并排堆叠。"
+  },
+  "panel_section_sponsor": {
+    "message": "赞助支持"
+  },
+  "sponsor_hint": {
+    "message": "Prelook 完全免费。如果它帮到了你，欢迎赞助支持后续开发。"
+  },
+  "sponsor_afdian": {
+    "message": "爱发电"
+  },
+  "panel_section_protect": {
+    "message": "链接保护"
+  },
+  "protect_tracking": {
+    "message": "URL 跟踪保护"
+  },
+  "protect_trackingHint": {
+    "message": "打开链接时移除 utm_* / gclid 等追踪参数，并还原已知的中转跳转"
+  },
+  "protect_warn": {
+    "message": "警告危险链接"
+  },
+  "protect_warnHint": {
+    "message": "仅本地判断域名伪装、文字与目标不符等可疑特征，不联网、不拦截，只在预览窗标题栏提示"
+  },
+  "risk_userinfo": {
+    "message": "链接含 @ 伪装，真实域名与显示不符"
+  },
+  "risk_punycode": {
+    "message": "域名含非 ASCII 字符，可能是同形字仿冒"
+  },
+  "risk_brandMismatch": {
+    "message": "域名疑似仿冒知名品牌"
+  },
+  "risk_textMismatch": {
+    "message": "显示的文字与真实地址不符"
+  },
+  "risk_ipHost": {
+    "message": "直接指向 IP 地址"
+  },
+  "risk_shortener": {
+    "message": "短链接，真实目标不可见"
+  },
+  "panel_section_close": {
+    "message": "关闭触发器"
+  },
+  "close_outside": {
+    "message": "单击预览窗外部时关闭"
+  },
+  "close_leave": {
+    "message": "鼠标离开时关闭预览窗"
+  },
+  "close_scroll": {
+    "message": "滚动时关闭预览窗"
+  },
+  "close_hint": {
+    "message": "固定住的预览窗不受这三项影响"
+  },
+  "panel_section_power": {
+    "message": "节电与动画"
+  },
+  "power_label": {
+    "message": "节电模式"
+  },
+  "power_auto": {
+    "message": "自动"
+  },
+  "power_on": {
+    "message": "启用"
+  },
+  "power_max": {
+    "message": "最大"
+  },
+  "power_off": {
+    "message": "禁用"
+  },
+  "power_hint": {
+    "message": "自动＝电池供电时按「启用」执行；启用＝不预热链接、不使用背景模糊；最大＝另外不画链接高亮、不用动画，预览也跳过抓取预检（不能内嵌的站点会直接失败）"
+  },
+  "motion_label": {
+    "message": "减少动画"
+  },
+  "motion_hint": {
+    "message": "关闭预览窗淡入淡出与悬停进度条过渡；系统开启「减少动态效果」时同样生效"
+  },
+  "panel_section_sites": {
+    "message": "禁用站点"
+  },
+  "sites_empty": {
+    "message": "暂无禁用站点"
+  },
+  "sites_addPlaceholder": {
+    "message": "example.com"
+  },
+  "sites_add": {
+    "message": "添加"
+  },
+  "sites_current": {
+    "message": "禁用当前站点"
+  },
+  "extDescription": {
+    "message": "悬停链接即预览，不必再点开 — 链接预热秒开、阅读模式、划词搜索、风险提示"
+  },
+  "panel_title": {
+    "message": "Prelook 设置"
+  }
+}

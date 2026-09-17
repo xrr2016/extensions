@@ -9,9 +9,17 @@ const ZEN_BINARY = "C:\\Program Files\\Zen Browser\\zen.exe";
 export default defineConfig({
   modules: ["@wxt-dev/module-vue", "@wxt-dev/auto-icons", "@wxt-dev/analytics/module"],
   manifest: {
+    // The name is a brand and identical in both locales, so it stays literal;
+    // the description goes through `browser.i18n` (`__MSG_…__` is resolved by
+    // the browser from public/_locales/<locale>/messages.json).
     name: "Prelook",
-    description: "悬停链接即预览，不必再点开 — 链接预热秒开、阅读模式、划词搜索、风险提示",
-    default_locale: "zh-CN",
+    description: "__MSG_extDescription__",
+    // Must match a `_locales` folder name exactly; also the fallback locale
+    // for keys missing from the user's browser language. The underscore form
+    // is not cosmetic: Chrome rejects `zh-CN` here (it then reports
+    // "localization used but no default_locale"), and web-ext accepts `zh_CN`
+    // too, so this spelling works on both engines.
+    default_locale: "en",
     permissions: ["tabs", "storage", "contextMenus"],
     host_permissions: ["<all_urls>"],
     // Written out by hand because WXT only emits `action` for a popup
