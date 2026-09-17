@@ -2,7 +2,7 @@
   "name": "@extensions/prelook",
   "description": "悬停链接即预览，不必再点开",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "type": "module",
   "scripts": {
     "dev": "wxt",
