@@ -56,12 +56,13 @@ jobs:
           if-no-files-found: error
 
       - name: Attach the zips to the release
-        run: echo ${{ github.event_name }}
         # if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ secrets.EXTENSIONS_RELEASE_TOKEN }}
           TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
+        run: |
+          echo ${{ github.event_name }}
+          gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
 
       # - name: Submit to stores
       #   run: |
