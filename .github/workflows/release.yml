@@ -3,13 +3,17 @@ name: Release
 # Builds the store zips for a published release and attaches them to it, so the
 # release page carries the exact artifact that was built from that tag.
 #
+# The tag is namespaced per extension (see apps/prelook/.release-it.json), so
+# this only fires for Prelook's own version bumps — a tag for another app in the
+# monorepo, or a repo-wide version, no longer starts this workflow.
+#
 # `workflow_dispatch` builds the same zips without cutting a release — the files
 # then only land in the run's artifacts, which is what you want for a re-build or
 # a test upload.
 on:
   push:
     tags:
-      - "v*"
+      - "prelook-v*"
   workflow_dispatch:
 
 jobs:
