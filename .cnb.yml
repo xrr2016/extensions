@@ -1,10 +1,11 @@
 main:
   push:
+    - imports: env.yml
     - stages:
         - name: sync to github
           image: tencentcom/git-sync
           settings:
             target_url: https://github.com/xrr2016/extensions.git
             auth_type: https
-            username: xrr2016
-            password: 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
+            username: ${GIT_USERNAME}
+            password: ${GIT_ACCESS_TOKEN}
