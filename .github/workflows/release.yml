@@ -41,14 +41,18 @@ jobs:
           pnpm zip:prelook
           pnpm zip:prelook:firefox
 
-      # Every step runs with the repo root as its working directory, so `path`
-      # here is repo-root relative: the zips land in the package's own `.output`
-      # (`pnpm zip:prelook` runs wxt inside apps/prelook).
+      # Two traps live in this step. Every step runs with the repo root as its
+      # working directory, so `path` is repo-root relative and must carry the
+      # package prefix (wxt writes `.output` inside apps/prelook). And
+      # upload-artifact excludes hidden files by default since v4.4 — `.output`
+      # counts as hidden because it starts with a dot, which silently makes the
+      # glob match nothing.
       - name: Upload the zips as run artifacts
         uses: actions/upload-artifact@v7
         with:
           name: prelook-zips
           path: apps/prelook/.output/*.zip
+          include-hidden-files: true
           if-no-files-found: error
 
       # - name: Attach the zips to the release
