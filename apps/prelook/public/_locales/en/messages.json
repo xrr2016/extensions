@@ -44,14 +44,11 @@
   "panel_tab_preview": {
     "message": "Preview"
   },
+  "panel_tab_search": {
+    "message": "Search"
+  },
   "panel_tab_settings": {
     "message": "Settings"
-  },
-  "panel_tab_performance": {
-    "message": "Performance"
-  },
-  "panel_tab_protect": {
-    "message": "Protect"
   },
   "panel_enabled": {
     "message": "Enable Prelook"
@@ -234,7 +231,7 @@
     "message": "Open in background tab"
   },
   "selection_minLength": {
-    "message": "Min selected chars"
+    "message": "Min chars"
   },
   "panel_section_windows": {
     "message": "Multiple windows"

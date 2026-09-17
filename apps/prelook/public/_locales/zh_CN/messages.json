@@ -41,14 +41,11 @@
   "panel_tab_preview": {
     "message": "预览"
   },
+  "panel_tab_search": {
+    "message": "搜索"
+  },
   "panel_tab_settings": {
     "message": "设置"
-  },
-  "panel_tab_performance": {
-    "message": "性能"
-  },
-  "panel_tab_protect": {
-    "message": "保护"
   },
   "panel_enabled": {
     "message": "启用 Prelook"
@@ -234,7 +231,7 @@
     "message": "在后台标签页打开"
   },
   "selection_minLength": {
-    "message": "最小选中字数"
+    "message": "最小字数"
   },
   "panel_section_windows": {
     "message": "多窗口预览"
