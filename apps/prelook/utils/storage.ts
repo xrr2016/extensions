@@ -39,13 +39,19 @@ export interface WindowThemePreset {
 }
 
 export const WINDOW_THEMES: WindowThemePreset[] = [
-  { id: "silver", accent: "#8c959f", kind: "tint" },
+  // Neighbours in this list have to stay tellable apart on sight: the two
+  // neutrals differ mainly in lightness (silver reads light-cool, gray dark),
+  // and purple is pushed towards violet so it never reads as "blue again".
+  { id: "silver", accent: "#94a3b8", kind: "tint" },
   { id: "blue", accent: "#4f6bf6", kind: "tint" },
-  { id: "gray", accent: "#6b7280", kind: "tint" },
+  { id: "gray", accent: "#475569", kind: "tint" },
   { id: "green", accent: "#10b981", kind: "tint" },
-  { id: "purple", accent: "#8b5cf6", kind: "tint" },
+  { id: "purple", accent: "#a855f7", kind: "tint" },
   { id: "pink", accent: "#ec4899", kind: "tint" },
-  { id: "midnight", accent: "#4f6bf6", kind: "dark", surface: "#1e2432", ink: "#e7eaf0" },
+  // Midnight shares blue's hue family on purpose, but needs a lighter indigo:
+  // #4f6bf6 sinks into its own dark surface, and only the medium tone stays
+  // legible there.
+  { id: "midnight", accent: "#818cf8", kind: "dark", surface: "#1e2432", ink: "#e7eaf0" },
   { id: "custom", accent: "#4f6bf6", kind: "tint" },
 ];
 
@@ -186,7 +192,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   heightPx: 600,
   sizeUnit: "percent",
   themeColor: "#4f6bf6",
-  windowColor: "#8c959f",
+  windowColor: "#94a3b8",
   position: "bottom-right",
   sidebarSide: "right",
   blurStrength: 5,

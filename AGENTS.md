@@ -195,7 +195,7 @@ content script 拿不到部分能力（见"陷阱"），所有跨上下文调用
 
 ### 预览窗固定
 
-窗口头部四个按钮：`pin` / `reload`（重新 fetch + 重渲染，iframe 会换成一个新元素，阅读模式会重新提取）/ `open`（新标签页打开）/ `close`，靠 `data-act` 分派（`preview.ts` 的 `head` click 监听）。点 pin 把 `win.pinned` 置位，效果有两条：`releaseExcept()` 直接跳过（指针移开不再进 400ms 宽限），`open()` 的驱逐循环也只挑`!pinned`的窗口关闭。**所有存活窗口都固定住时，新预览不打开，而是在光标处弹一条提示**（`showNotice('preview.pinLimit', …)`）：文案走 i18n（zh 的 messages.json 用位置占位 `$1`、由 `translate` 的第二参按插入顺序代入；en 不带数字，避免 `max=1` 时出现 "All 1 slots"），2.6s 自动消失，重复触发会重置计时并跟随新的光标位置。提示和倒计时条一样是 `pointer-events: none`——否则它会挡住 hover、把触发自己取消掉（见下面陷阱）。宁可这次不弹，也不悄悄删掉用户明确要留的窗口，这一点在改动驱逐逻辑时要保持。
+窗口头部四个按钮：`pin` / `reload`（重新 fetch + 重渲染，iframe 会换成一个新元素，阅读模式会重新提取）/ `open`（新标签页打开，同时关掉本窗口——交给真实标签页后预览就完成使命了；它是显式点击，不受 `pinned` 的"别自动关"豁免，和 `close` 一致）/ `close`，靠 `data-act` 分派（`preview.ts` 的 `head` click 监听）。点 pin 把 `win.pinned` 置位，效果有两条：`releaseExcept()` 直接跳过（指针移开不再进 400ms 宽限），`open()` 的驱逐循环也只挑`!pinned`的窗口关闭。**所有存活窗口都固定住时，新预览不打开，而是在光标处弹一条提示**（`showNotice('preview.pinLimit', …)`）：文案走 i18n（zh 的 messages.json 用位置占位 `$1`、由 `translate` 的第二参按插入顺序代入；en 不带数字，避免 `max=1` 时出现 "All 1 slots"），2.6s 自动消失，重复触发会重置计时并跟随新的光标位置。提示和倒计时条一样是 `pointer-events: none`——否则它会挡住 hover、把触发自己取消掉（见下面陷阱）。宁可这次不弹，也不悄悄删掉用户明确要留的窗口，这一点在改动驱逐逻辑时要保持。
 
 `autoPin` 打开时，**新建**的窗口直接以 `pinned` 出生（`preview.ts` 的 open 里 `pinned: settings().autoPin`），`syncHeaderButtons()` 随后把图钉按钮的 `.on`/`aria-pressed`/tooltip 一起同步，所以界面不会与状态脱节。刻意**不**在设置变更时给已打开的窗口补固定：那样容易瞬间顶到窗口上限，之后新预览全被拦住。
 

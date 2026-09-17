@@ -43,7 +43,7 @@ export default defineConfig({
       doubao: "C:\\Users\\coldstonestudio\\AppData\\Local\\Doubao\\Application\\app\\Doubao.exe",
       firefox: ZEN_BINARY,
     },
-    startUrls: ["https://bbs.hupu.com/4860"],
+    startUrls: ["https://bbs.hupu.com/4860", "https://www.xiaoheihe.cn/app/bbs/home"],
   },
   autoIcons: {
     baseIconPath: "./assets/logo.webp",

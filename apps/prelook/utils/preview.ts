@@ -831,7 +831,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         setBodyContent(win, skeletonEl());
         void loadFlow(win);
       } else if (btn.dataset.act === "open") {
+        // Handing off to a real tab ends this preview: the user asked for the
+        // page itself, so the window has done its job. Pinned or not — this is
+        // an explicit click on this window, not one of the automatic closes
+        // that `pinned` exists to survive.
         void browser.runtime.sendMessage({ type: "prelook:openTab", url: win.url });
+        closeWindow(win);
       }
     });
 
