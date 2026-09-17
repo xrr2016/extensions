@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 
 // Slider styled after the reference: a thin track with the filled part in the
 // panel accent and a dark value bubble floating above the thumb. A real
@@ -24,11 +24,23 @@ const pct = computed(() => {
   return span > 0 ? (model.value - props.min) / span : 0;
 });
 const label = computed(() => `${model.value.toFixed(props.decimals ?? 0)}${props.unit ?? ""}`);
+
+// The value bubble shows on any value change, then fades out on its own after
+// the slider stops moving — no reliance on the pointer staying over it.
+const AUTO_HIDE_MS = 1200;
+const bubbleOn = ref(false);
+let hideTimer: ReturnType<typeof setTimeout> | undefined;
+watch(model, () => {
+  bubbleOn.value = true;
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => (bubbleOn.value = false), AUTO_HIDE_MS);
+});
+onBeforeUnmount(() => clearTimeout(hideTimer));
 </script>
 
 <template>
   <span class="tp-slider" :style="{ '--pct': pct }">
-    <span class="bubble" aria-hidden="true">{{ label }}</span>
+    <span class="bubble" :class="{ on: bubbleOn }" aria-hidden="true">{{ label }}</span>
     <input
       v-model.number="model"
       type="range"
@@ -65,8 +77,7 @@ const label = computed(() => `${model.value.toFixed(props.decimals ?? 0)}${props
   pointer-events: none;
   transition: opacity 0.12s ease;
 }
-.tp-slider:hover .bubble,
-.tp-slider:focus-within .bubble {
+.tp-slider .bubble.on {
   opacity: 1;
 }
 

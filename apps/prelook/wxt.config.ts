@@ -49,4 +49,8 @@ export default defineConfig({
     baseIconPath: "./assets/logo.webp",
     developmentIndicator: "overlay",
   },
+  zip: {
+    sourcesTemplate: "prelook-{{versionName}}-{{browser}}{{modeSuffix}}.zip",
+    artifactTemplate: "prelook-{{versionName}}-{{browser}}{{modeSuffix}}.zip",
+  },
 });
