@@ -22,9 +22,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      # Required: `gh release upload` writes release assets with this token.
-      contents: write
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/setup@v2
