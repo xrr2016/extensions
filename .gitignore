@@ -28,5 +28,5 @@ web-ext.config.ts
 *.njsproj
 *.sln
 *.sw?
-
+.v2c
 .tmp-*
