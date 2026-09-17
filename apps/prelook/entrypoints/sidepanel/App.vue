@@ -84,6 +84,9 @@ const sideOptions = computed(() =>
 const searchOptions = SEARCH_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
+const highlightStyleOptions = computed(() =>
+  (["solid", "dashed"] as const).map((s) => ({ value: s, label: t(`highlightStyle.${s}`) })),
+);
 
 // Window size remembers separate percent and px values: the sliders bind to
 // whichever pair the unit selector points at, so switching unit never
@@ -297,6 +300,14 @@ function resetAll() {
           <label class="row switch-row">
             <span>{{ t("trigger.highlight") }}</span>
             <ToggleSwitch v-model="settings.highlightLinks" />
+          </label>
+          <label v-if="settings.highlightLinks" class="row">
+            <span class="sz">{{ t("highlightStyle.label") }}</span>
+            <RadioGroup
+              v-model="settings.highlightStyle"
+              name="highlightStyle"
+              :options="highlightStyleOptions"
+            />
           </label>
           <label class="row switch-row">
             <span>{{ t("images.skip") }}</span>

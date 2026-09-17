@@ -14,6 +14,7 @@ export type SidebarSide = "left" | "right";
 export type SpeculationMode = "off" | "prefetch" | "prerender";
 export type ThemeMode = "system" | "light" | "dark";
 export type PowerMode = "auto" | "on" | "max" | "off";
+export type HighlightStyle = "solid" | "dashed";
 export type WindowTheme =
   | "gray"
   | "midnight"
@@ -145,6 +146,8 @@ export interface PrelookSettings {
   language: Language;
   /** Draw a frame around the link the pointer is over */
   highlightLinks: boolean;
+  /** Border style for the link highlight frame */
+  highlightStyle: HighlightStyle;
   /** New preview windows start pinned, so they survive the pointer leaving */
   autoPin: boolean;
   /** Extension appearance: the settings panel and every in-page shadow UI */
@@ -198,6 +201,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   powerSaver: "auto",
   reduceMotion: false,
   highlightLinks: false,
+  highlightStyle: "dashed",
   autoPin: false,
   theme: "system",
   windowTheme: "silver",
@@ -316,6 +320,9 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
     ).includes(s.position)
       ? s.position
       : DEFAULT_SETTINGS.position,
+    highlightStyle: ["solid", "dashed"].includes(s.highlightStyle)
+      ? s.highlightStyle
+      : DEFAULT_SETTINGS.highlightStyle,
     windowTheme,
     // Two independent colours: the window theme only ever colours preview
     // windows (a preset's own accent, or `windowColor` for "custom"), while

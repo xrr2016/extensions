@@ -273,6 +273,7 @@ const STYLE = `
   /* Never hit-tested: it sits exactly on the hovered link. */
   pointer-events: none;
 }
+.tp-hl.tp-dashed { border-style: dashed; }
 .tp-hl.tp-show { opacity: 1; }
 /* ---------- reduced motion ---------- */
 /* Set by content.ts (data-tp-motion) from the settings plus the OS preference.
@@ -379,11 +380,17 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     return WINDOW_THEMES.find((w) => w.id === s.windowTheme) ?? WINDOW_THEMES[0]!;
   }
 
+  /** The accent colour that paints the preview window chrome — shared with
+   *  the link highlight outline and the hover progress bar so they all read as
+   *  one visual family regardless of whether the user picked a preset or a
+   *  custom `windowColor`. */
+  function windowAccent(s: PrelookSettings): string {
+    const preset = windowPreset(s);
+    return preset.id === "custom" ? s.windowColor : preset.accent;
+  }
+
   /** "tint" presets mix the accent into the app theme's base surface (so dark
-   *  mode still works); "dark" presets bring their own surface and ink. The
-   *  accent itself always comes from here too: a window is coloured by its own
-   *  theme (the preset's accent, or `windowColor` for "custom"), never by the
-   *  plugin accent (`themeColor`) that paints the rest of Prelook's UI. */
+   *  mode still works); "dark" presets bring their own surface and ink. */
   function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset, customColor: string) {
     root.style.setProperty("--tp-accent", preset.id === "custom" ? customColor : preset.accent);
     if (preset.kind === "dark") {
@@ -404,7 +411,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     overlay.style.setProperty("--tp-blur", `${(strength * MAX_BLUR_PX).toFixed(2)}px`);
     overlay.style.setProperty("--tp-dim", `${(strength * MAX_DIM).toFixed(3)}`);
     overlay.style.setProperty("--tp-accent", s.themeColor);
-    highlight.style.setProperty("--tp-accent", s.themeColor);
+    const accent = windowAccent(s);
+    highlight.style.setProperty("--tp-accent", accent);
+    highlight.classList.toggle("tp-dashed", s.highlightStyle === "dashed");
+    progressBar.style.setProperty("--tp-accent", accent);
     for (const win of windows) {
       applyWindowTheme(win.root, windowPreset(s), s.windowColor);
       win.root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
@@ -959,7 +969,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     const s = settings();
     progressFill.style.transition = "none";
     progressFill.style.width = "0";
-    progressBar.style.setProperty("--tp-accent", s.themeColor);
+    progressBar.style.setProperty("--tp-accent", windowAccent(s));
     progressBar.classList.add("tp-show");
     // Size is only known once the bar is displayed, so show before measuring.
     const bw = progressBar.offsetWidth || PROGRESS_BAR_FALLBACK_W;
