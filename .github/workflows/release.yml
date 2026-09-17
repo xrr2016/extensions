@@ -67,7 +67,10 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ secrets.EXTENSIONS_RELEASE_TOKEN }}
-        run: gh release create "$TAG" --draft --title "$TAG" --generate-notes --repo "$GITHUB_REPOSITORY"
+          run: |
+            gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+              || gh release create "$TAG" --draft --title "$TAG" --generate-notes --repo "$GITHUB_REPOSITORY"
+            gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
 
       # - name: Submit to stores
       #   run: |
