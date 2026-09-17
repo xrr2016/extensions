@@ -278,9 +278,7 @@ function resetAll() {
           <h2>{{ t("panel.section.trigger") }}</h2>
           <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
           <label class="row sz" v-if="settings.triggerMode === 'hover'">
-            <span
-              >{{ t("trigger.delay") }}<b>{{ hoverDelaySec }}s</b></span
-            >
+            <span>{{ t("trigger.delay") }}</span>
             <SliderInput
               v-model="hoverDelaySec"
               :min="0.1"
@@ -290,11 +288,10 @@ function resetAll() {
               :decimals="1"
               :disabled="['longPress', 'drag'].includes(settings.triggerMode)"
             />
+            <b>{{ hoverDelaySec }}s</b>
           </label>
           <label v-if="settings.triggerMode === 'longPress'" class="row sz">
-            <span
-              >{{ t("trigger.longPressDelay") }}<b>{{ longPressSec }}s</b></span
-            >
+            <span>{{ t("trigger.longPressDelay") }}</span>
             <SliderInput
               v-model="longPressSec"
               :min="0.2"
@@ -303,6 +300,7 @@ function resetAll() {
               unit="s"
               :decimals="1"
             />
+            <b>{{ longPressSec }}s</b>
           </label>
         </section>
 
@@ -334,20 +332,17 @@ function resetAll() {
           </label>
           <template v-if="settings.sizeUnit === 'px'">
             <label class="row sz">
-              <span
-                >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBoundsPx.unit }}</b></span
-              >
+              <span>{{ t("size.width") }}</span>
               <SliderInput
                 v-model="widthValue"
                 :min="sizeBoundsPx.min"
                 :max="sizeBoundsPx.max"
                 :unit="sizeBoundsPx.unit"
               />
+              <b>{{ widthValue }}{{ sizeBoundsPx.unit }}</b>
             </label>
             <label class="row sz">
-              <span
-                >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBoundsPx.unit }}</b></span
-              >
+              <span>{{ t("size.height") }}</span>
               <SliderInput
                 v-model="heightValue"
                 :min="sizeBoundsPx.min"
@@ -355,24 +350,22 @@ function resetAll() {
                 :unit="sizeBoundsPx.unit"
                 :disabled="settings.position === 'sidebar'"
               />
+              <b>{{ heightValue }}{{ sizeBoundsPx.unit }}</b>
             </label>
           </template>
           <template v-else>
             <label class="row sz">
-              <span
-                >{{ t("size.width") }}<b>{{ widthValue }}{{ sizeBoundsPercent.unit }}</b></span
-              >
+              <span>{{ t("size.width") }}</span>
               <SliderInput
                 v-model="widthValue"
                 :min="sizeBoundsPercent.min"
                 :max="sizeBoundsPercent.max"
                 :unit="sizeBoundsPercent.unit"
               />
+              <b>{{ widthValue }}{{ sizeBoundsPercent.unit }}</b>
             </label>
             <label class="row sz">
-              <span
-                >{{ t("size.height") }}<b>{{ heightValue }}{{ sizeBoundsPercent.unit }}</b></span
-              >
+              <span>{{ t("size.height") }}</span>
               <SliderInput
                 v-model="heightValue"
                 :min="sizeBoundsPercent.min"
@@ -380,6 +373,7 @@ function resetAll() {
                 :unit="sizeBoundsPercent.unit"
                 :disabled="settings.position === 'sidebar'"
               />
+              <b>{{ heightValue }}{{ sizeBoundsPercent.unit }}</b>
             </label>
           </template>
         </section>
@@ -434,10 +428,9 @@ function resetAll() {
         <section>
           <h2>{{ t("panel.section.windows") }}</h2>
           <label class="row sz">
-            <span
-              >{{ t("windows.max") }} <b>{{ settings.maxWindows }}</b></span
-            >
+            <span>{{ t("windows.max") }}</span>
             <SliderInput v-model="settings.maxWindows" :min="1" :max="MAX_WINDOWS_LIMIT" />
+            <b>{{ settings.maxWindows }}</b>
           </label>
           <label class="row switch-row">
             <span>{{ t("windows.autoPin") }}</span>
@@ -484,10 +477,9 @@ function resetAll() {
           </label>
 
           <label class="row sz">
-            <span
-              >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
-            >
+            <span>{{ t("blur.strength") }}</span>
             <SliderInput v-model="settings.blurStrength" :min="0" :max="100" unit="%" />
+            <b>{{ settings.blurStrength }}%</b>
           </label>
           <p class="hint muted">{{ t("blur.hint") }}</p>
         </section>
@@ -514,16 +506,20 @@ function resetAll() {
           />
           <div class="row-label">{{ t("selection.aiEngine") }}</div>
           <RadioGroup v-model="settings.aiEngine" name="aiEngine" :options="aiOptions" />
+          <label class="row sz">
+            <span>{{ t("selection.minLength") }}</span>
+            <SliderInput v-model="settings.minSelectionChars" :min="1" :max="10" />
+            <b>{{ settings.minSelectionChars }}</b>
+          </label>
           <label class="row switch-row">
             <span>{{ t("selection.background") }}</span>
             <ToggleSwitch v-model="settings.openInBackground" />
           </label>
-          <label class="row sz">
-            <span
-              >{{ t("selection.minLength") }}<b>{{ settings.minSelectionChars }}</b></span
-            >
-            <SliderInput v-model="settings.minSelectionChars" :min="1" :max="10" />
+          <label class="row switch-row">
+            <span>{{ t("selection.detectLinks") }}</span>
+            <ToggleSwitch v-model="settings.detectLinks" />
           </label>
+          <p class="hint muted">{{ t("selection.detectLinksHint") }}</p>
         </section>
       </div>
 

@@ -133,7 +133,17 @@ export default defineContentScript({
               },
               shadow,
             );
-            selection = createSelectionSystem(ctx, { getSettings: () => settings, i18n }, shadow);
+            selection = createSelectionSystem(
+              ctx,
+              {
+                getSettings: () => settings,
+                i18n,
+                // An explicit command, so — like the context menu — it skips
+                // the site disable list and the image-link switch.
+                openPreview: (url, rect) => preview?.open(anchorInfoFor(url, rect)),
+              },
+              shadow,
+            );
           },
         });
         ui.mount();
@@ -405,19 +415,21 @@ export default defineContentScript({
     );
 
     /** Anchor rect for a URL, for previews started from outside the page
-     *  (context menu). Falls back to the middle of the viewport. */
-    function anchorInfoFor(url: string) {
+     *  (context menu, selection toolbar). Falls back to the middle of the
+     *  viewport. `rect`, when given, is the rect the user actually pointed at
+     *  (the text selection) and wins over the anchor box. */
+    function anchorInfoFor(url: string, rect?: DOMRect | null) {
       const s = clampSettings(settings);
       const clean = s.stripTracking ? stripTracking(url) : url;
       const anchor = [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find(
         (a) => a.href === url || a.href === clean,
       );
       const risk = s.warnDangerous ? riskFor(clean, anchor?.textContent ?? "") : undefined;
-      if (anchor) {
-        const rect = anchor.getBoundingClientRect();
+      const box = rect ?? anchor?.getBoundingClientRect();
+      if (box) {
         return {
           url: clean,
-          pointer: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+          pointer: { x: box.left + box.width / 2, y: box.top + box.height / 2 },
           risk,
         };
       }

@@ -32,6 +32,18 @@
   "preview_failed": {
     "message": "无法加载该页面内容"
   },
+  "selection_preview": {
+    "message": "预览"
+  },
+  "selection_previewHint": {
+    "message": "选中链接后可预览"
+  },
+  "selection_detectLinks": {
+    "message": "识别链接"
+  },
+  "selection_detectLinksHint": {
+    "message": "选中内容为链接时，可在当前页面打开预览窗"
+  },
   "selection_ai": {
     "message": "AI 搜索"
   },
@@ -195,7 +207,7 @@
     "message": "背景模糊"
   },
   "blur_strength": {
-    "message": "模糊强度"
+    "message": "背景模糊强度"
   },
   "blur_hint": {
     "message": "指针移到预览窗上时才模糊背景，0 为关闭"

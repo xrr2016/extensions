@@ -5,7 +5,7 @@
 - **[Prelook](apps/prelook/)** — 悬停链接即预览，不必再点开（WXT + Vue 3，MV3，Chrome/Edge/Firefox）
 - **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页（零构建，可直接部署）
 
-## Prelook 功能
+## Prelook
 
 - **链接预览**：悬停链接浮出预览窗（iframe 优先，被禁嵌站点自动切阅读模式）
 - **划词搜索**：选中文字弹出工具条，普通搜索（Google/Bing/百度/DuckDuckGo）与 AI 搜索（DeepSeek/豆包/Kimi）
@@ -48,4 +48,3 @@ Prelook 没有任何付费版本，也没有服务器成本之外的开销。如
 - `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
 
 新增插件请参考 [AGENTS.md](AGENTS.md) 的接入清单。
-

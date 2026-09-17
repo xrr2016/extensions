@@ -35,6 +35,18 @@
   "preview_failed": {
     "message": "Failed to load this page"
   },
+  "selection_preview": {
+    "message": "Preview"
+  },
+  "selection_previewHint": {
+    "message": "Available once the selection is a link"
+  },
+  "selection_detectLinks": {
+    "message": "Detect links"
+  },
+  "selection_detectLinksHint": {
+    "message": "When the selection is a link, open preview window right here on the page"
+  },
   "selection_ai": {
     "message": "AI search"
   },
@@ -195,7 +207,7 @@
     "message": "Background blur"
   },
   "blur_strength": {
-    "message": "Blur strength"
+    "message": "Background blur strength"
   },
   "blur_hint": {
     "message": "Blurs the page only while the pointer is over a preview window; 0 turns it off"

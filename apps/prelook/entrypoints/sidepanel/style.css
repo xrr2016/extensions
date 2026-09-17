@@ -42,6 +42,7 @@ body {
 /* The tab strip stays put while the panel scrolls: it is the only way to reach
    the other sections, so it must always be on screen. */
 .topbar {
+  padding-top: 15px;
   background: #fff;
   border-bottom: 1px solid #e8ebef;
 }

@@ -142,6 +142,8 @@ export interface PrelookSettings {
   aiEngine: string;
   openInBackground: boolean;
   minSelectionChars: number;
+  /** Offer the in-page preview when the selected text itself is a link */
+  detectLinks: boolean;
   /** Draw a frame around the link the pointer is over */
   highlightLinks: boolean;
   /** Border style for the link highlight frame */
@@ -193,6 +195,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   aiEngine: "kimi",
   openInBackground: false,
   minSelectionChars: 2,
+  detectLinks: true,
   maxWindows: 3,
   speculationMode: "prefetch",
   powerSaver: "auto",
