@@ -41,11 +41,14 @@ jobs:
           pnpm zip:prelook
           pnpm zip:prelook:firefox
 
+      # Every step runs with the repo root as its working directory, so `path`
+      # here is repo-root relative: the zips land in the package's own `.output`
+      # (`pnpm zip:prelook` runs wxt inside apps/prelook).
       - name: Upload the zips as run artifacts
         uses: actions/upload-artifact@v7
         with:
           name: prelook-zips
-          path: .output/*.zip
+          path: apps/prelook/.output/*.zip
           if-no-files-found: error
 
       # - name: Attach the zips to the release
