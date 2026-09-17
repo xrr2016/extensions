@@ -24,9 +24,6 @@ jobs:
         with:
           cache: true
 
-      - name: Install
-        run: pnpm install --frozen-lockfile
-
       # A tag can be cut without CI having run on its commit; shipping a zip built
       # from a tree that no longer type-checks is the expensive failure.
       - name: Type check (vue-tsc)
