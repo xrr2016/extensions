@@ -1,7 +1,10 @@
 name: Release
 
 # Builds the store zips for a published release and attaches them to it, so the
-# release page carries the exact artifact that was built from that tag.
+# release page carries the exact artifact that was built from that tag. The
+# release itself is created here as a draft — `release-it` only cuts the tag
+# (`release: false`), so there is nothing to attach to until this workflow makes
+# one; publishing stays a deliberate manual click.
 #
 # The tag is namespaced per extension (see apps/prelook/.release-it.json), so
 # this only fires for Prelook's own version bumps — a tag for another app in the
@@ -55,13 +58,21 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
 
+      # Two things this step must not assume. `github.event.release` is empty on a
+      # tag push (the payload is a push, not a release), so the tag has to come
+      # from `github.ref_name` — reading it off `github.event.release.tag_name`
+      # yields an empty string and `gh release upload "" ...` fails as "release
+      # not found". And since `release-it` runs with `release: false`, the release
+      # does not exist yet, so it gets created here as a draft. A manual run has
+      # no tag to attach to and stops at the run artifacts.
       - name: Attach the zips to the release
-        # if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/')
         env:
+          TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ secrets.EXTENSIONS_RELEASE_TOKEN }}
-          TAG: ${{ github.event.release.tag_name }}
         run: |
-          echo ${{ github.event_name }}
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+            || gh release create "$TAG" --draft --title "$TAG" --generate-notes --repo "$GITHUB_REPOSITORY"
           gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
 
       # - name: Submit to stores
