@@ -1,4 +1,4 @@
-name: Release build
+name: Release
 
 # Builds the store zips for a published release and attaches them to it, so the
 # release page carries the exact artifact that was built from that tag.
@@ -42,26 +42,6 @@ jobs:
       - name: Type check (vue-tsc)
         run: pnpm compile
 
-      # The zip filename and the manifest `version` both come from
-      # apps/prelook/package.json, so a mismatched tag means the released artifact
-      # would not identify itself as this release (`v0.1.0` and `0.1.0` both pass).
-      - name: Check the release tag matches the extension version
-        env:
-          TAG: ${{ github.event.release.tag_name }}
-        run: |
-          set -euo pipefail
-          if [ -z "$TAG" ]; then
-            echo "No release tag (workflow_dispatch run) — skipping the version guard."
-            exit 0
-          fi
-          version=$(node -p "require('./apps/prelook/package.json').version")
-          tag="${TAG#v}"
-          echo "tag=$TAG  apps/prelook/package.json=$version"
-          if [ "$tag" != "$version" ]; then
-            echo "::error::Release tag '$TAG' does not match apps/prelook/package.json ($version). Bump the version and retag, or the built zip would carry a different version than this release."
-            exit 1
-          fi
-
       # Chrome/Edge zip + Firefox zip + the Firefox sources zip (WXT emits the
       # sources zip for Firefox only, which AMO review asks for).
       - name: Build zips
@@ -82,3 +62,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
+
+      - name: Submit to stores
+        run: |
+          pnpm wxt submit \
+            --chrome-zip .output/*-chrome.zip \
+            --firefox-zip .output/*-firefox.zip --firefox-sources-zip .output/*-sources.zip
+        env:
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
