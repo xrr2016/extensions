@@ -5,8 +5,6 @@
   "scripts": {
     "dev:prelook": "pnpm -F @extensions/prelook dev",
     "dev:prelook:firefox": "pnpm -F @extensions/prelook dev:firefox",
-    "dev:prelook:zen": "pnpm -F @extensions/prelook dev:zen",
-    "dev:prelook:doubao": "pnpm -F @extensions/prelook dev:doubao",
     "build:prelook": "pnpm -F @extensions/prelook build",
     "build:prelook:firefox": "pnpm -F @extensions/prelook build:firefox",
     "zip:prelook": "pnpm -F @extensions/prelook zip",

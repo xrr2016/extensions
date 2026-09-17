@@ -27,6 +27,15 @@ export default defineConfig({
     // there is no toolbar icon left to click. WXT turns this into
     // `browser_action` for MV2 targets.
     action: {},
+    // Required by Firefox AMO for all new extensions. This extension does not
+    // collect any user data, so the list is empty.
+    browser_specific_settings: {
+      gecko: {
+        data_collection_permissions: {
+          required: ["none"],
+        },
+      },
+    },
   },
   // `binaries` is keyed by the `-b` browser name, so a plain `wxt` run still
   // launches Chrome and `pnpm dev:prelook:doubao` hits that entry.
