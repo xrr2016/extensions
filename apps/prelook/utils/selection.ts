@@ -21,6 +21,8 @@ export const SELECTION_STYLE = `
   font-size: 12.5px; line-height: 1.2; color: #1f2328; cursor: pointer; white-space: nowrap;
 }
 .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, #fff); color: var(--tp-accent, #4f6bf6); }
+.tp-sel .tp-sel-div { width: 1px; height: 16px; margin: 0 2px; background: rgba(0,0,0,.12); }
+:host([data-tp-theme='dark']) .tp-sel .tp-sel-div { background: #333941; }
 :host([data-tp-theme='dark']) .tp-sel { background: #1e2126; border-color: #333941; box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.4); }
 :host([data-tp-theme='dark']) .tp-sel button { color: #e6e8eb; }
 :host([data-tp-theme='dark']) .tp-sel button:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 24%, #1e2126); }
@@ -61,6 +63,8 @@ export function createSelectionSystem(
     }
     const ai = AI_ENGINES.find((e) => e.id === s.aiEngine);
     if (ai) {
+      // Divider between the Web-search and AI-search groups.
+      bar.appendChild(document.createElement("i")).className = "tp-sel-div";
       const btn = document.createElement("button");
       btn.textContent = `✨ ${deps.i18n.t("selection.ai")}`;
       btn.title = ai.url.includes("%s")
