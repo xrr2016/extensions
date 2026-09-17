@@ -45,10 +45,11 @@ function riskFor(url: string, anchorText: string): RiskReason | undefined {
   return assessLink(url, anchorText)?.reason;
 }
 
-/** A link "is an image" when it wraps an <img> or points at an image file —
- *  the kinds of links users typically open straight to the picture. */
-function isImageLink(anchor: HTMLAnchorElement, url: string): boolean {
-  if (anchor.querySelector("img")) return true;
+/** A link "is an image" when its URL points at an image file — the kind of link
+ *  users typically open straight to the picture. Wrapping an <img> must NOT
+ *  count: card-style feeds wrap a whole post (thumbnail included) in a single
+ *  <a>, so treating every such anchor as an image would skip the entire feed. */
+function isImageLink(url: string): boolean {
   try {
     return /\.(jpe?g|png|gif|webp|svg|bmp|ico|avif)$/i.test(new URL(url).pathname);
   } catch {
@@ -169,7 +170,7 @@ export default defineContentScript({
       } catch {
         return null;
       }
-      if (settings.skipImages && isImageLink(anchor, href)) return null;
+      if (settings.skipImages && isImageLink(href)) return null;
       if (isSiteDisabled(settings.disabledSites, location.hostname)) return null;
       // Cleaned here, once: keep()/find()/open()/fetch all compare this same value.
       return { anchor, url: clampSettings(settings).stripTracking ? stripTracking(href) : href };
