@@ -11,6 +11,9 @@
   "preview_openTab": {
     "message": "Open in new tab"
   },
+  "panel_section_others": {
+    "message": "Other settings"
+  },
   "preview_close": {
     "message": "Close"
   },
@@ -239,14 +242,8 @@
   "windows_autoPin": {
     "message": "Auto-pin previews"
   },
-  "windows_autoPinHint": {
-    "message": "Newly opened previews start pinned so they survive the pointer leaving; windows already open are unaffected"
-  },
   "windows_max": {
     "message": "Max open windows"
-  },
-  "windows_hint": {
-    "message": "Open up to 6 previews at once; in sidebar mode they stack side by side."
   },
   "panel_section_sponsor": {
     "message": "Support the author"

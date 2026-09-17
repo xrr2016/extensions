@@ -129,7 +129,10 @@
     "message": "深色"
   },
   "panel_section_theme": {
-    "message": "弹窗主题"
+    "message": "预览窗主题"
+  },
+  "panel_section_others": {
+    "message": "其他设置"
   },
   "windowTheme_hint": {
     "message": "选择预览窗的配色"
@@ -239,14 +242,8 @@
   "windows_autoPin": {
     "message": "自动固定预览窗"
   },
-  "windows_autoPinHint": {
-    "message": "开启后新开出的预览窗自带固定，鼠标移开也不会关闭；已打开的窗口不受影响"
-  },
   "windows_max": {
     "message": "同开窗口数"
-  },
-  "windows_hint": {
-    "message": "最多 6 个预览窗同时打开；侧边栏模式下并排堆叠。"
   },
   "panel_section_sponsor": {
     "message": "赞助支持"
@@ -291,7 +288,7 @@
     "message": "短链接，真实目标不可见"
   },
   "panel_section_close": {
-    "message": "关闭触发器"
+    "message": "关闭模式"
   },
   "close_outside": {
     "message": "单击预览窗外部时关闭"

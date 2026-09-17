@@ -36,8 +36,7 @@ const newSite = ref("");
 
 // Labels come straight from `browser.i18n`: the panel's language is the
 // browser's UI language and cannot change while it is open.
-const t = (key: string, params?: Record<string, string | number>) =>
-  translate(key, params);
+const t = (key: string, params?: Record<string, string | number>) => translate(key, params);
 
 // Delays are stored in milliseconds but edited in seconds: `toFixed(2)` keeps
 // the readout free of float noise (0.30000000000000004).
@@ -61,7 +60,7 @@ const THEMES = [
 // RadioGroup options: computed so labels stay in sync with `t()` like the rest
 // of the panel; engine labels come from the engine tables verbatim.
 const triggerOptions = computed(() =>
-  (["hover", "altHover", "longPress", "drag"] as const).map((m) => ({
+  (["hover", "longPress", "drag", "altHover"] as const).map((m) => ({
     value: m,
     label: t(`trigger.${m}`),
   })),
@@ -262,6 +261,7 @@ function resetAll() {
         role="tabpanel"
         aria-labelledby="tab-preview"
       >
+        <!-- 是否开启预览功能 -->
         <section>
           <label class="row switch-row">
             <span>{{ t("panel.enabled") }}</span>
@@ -269,10 +269,11 @@ function resetAll() {
           </label>
         </section>
 
+        <!-- 触发模式 -->
         <section>
           <h2>{{ t("panel.section.trigger") }}</h2>
           <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
-          <label class="row sz">
+          <label class="row sz" v-if="settings.triggerMode === 'hover'">
             <span
               >{{ t("trigger.delay") }}<b>{{ hoverDelaySec }}s</b></span
             >
@@ -286,7 +287,7 @@ function resetAll() {
               :disabled="['longPress', 'drag'].includes(settings.triggerMode)"
             />
           </label>
-          <label v-if="settings.triggerMode === 'longPress'" class="row">
+          <label v-if="settings.triggerMode === 'longPress'" class="row sz">
             <span
               >{{ t("trigger.longPressDelay") }}<b>{{ longPressSec }}s</b></span
             >
@@ -299,41 +300,9 @@ function resetAll() {
               :decimals="1"
             />
           </label>
-          <label class="row switch-row">
-            <span>{{ t("trigger.highlight") }}</span>
-            <ToggleSwitch v-model="settings.highlightLinks" />
-          </label>
-          <label v-if="settings.highlightLinks" class="row">
-            <span class="sz">{{ t("highlightStyle.label") }}</span>
-            <RadioGroup
-              v-model="settings.highlightStyle"
-              name="highlightStyle"
-              :options="highlightStyleOptions"
-            />
-          </label>
-          <label class="row switch-row">
-            <span>{{ t("images.skip") }}</span>
-            <ToggleSwitch v-model="settings.skipImages" />
-          </label>
         </section>
 
-        <section>
-          <h2>{{ t("panel.section.close") }}</h2>
-          <label class="row switch-row">
-            <span>{{ t("close.outside") }}</span>
-            <ToggleSwitch v-model="settings.closeOnOutsideClick" />
-          </label>
-          <label class="row switch-row">
-            <span>{{ t("close.leave") }}</span>
-            <ToggleSwitch v-model="settings.closeOnMouseLeave" />
-          </label>
-          <label class="row switch-row">
-            <span>{{ t("close.scroll") }}</span>
-            <ToggleSwitch v-model="settings.closeOnScroll" />
-          </label>
-          <p class="hint muted">{{ t("close.hint") }}</p>
-        </section>
-
+        <!-- 预览窗位置 -->
         <section>
           <h2>{{ t("panel.section.position") }}</h2>
           <RadioGroup
@@ -347,6 +316,7 @@ function resetAll() {
           </div>
         </section>
 
+        <!-- 预览窗大小 -->
         <section>
           <h2>{{ t("panel.section.size") }}</h2>
           <label class="row sz">
@@ -383,17 +353,7 @@ function resetAll() {
           </label>
         </section>
 
-        <section>
-          <h2>{{ t("panel.section.blur") }}</h2>
-          <label class="row sz">
-            <span
-              >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
-            >
-            <SliderInput v-model="settings.blurStrength" :min="0" :max="100" unit="%" />
-          </label>
-          <p class="hint muted">{{ t("blur.hint") }}</p>
-        </section>
-
+        <!-- 预览窗主题 -->
         <section>
           <h2>{{ t("panel.section.theme") }}</h2>
           <p class="hint">{{ t("windowTheme.hint") }}</p>
@@ -439,6 +399,7 @@ function resetAll() {
           </div>
         </section>
 
+        <!-- 预览窗数量 -->
         <section>
           <h2>{{ t("panel.section.windows") }}</h2>
           <label class="row sz">
@@ -451,8 +412,54 @@ function resetAll() {
             <span>{{ t("windows.autoPin") }}</span>
             <ToggleSwitch v-model="settings.autoPin" />
           </label>
-          <p class="hint muted">{{ t("windows.hint") }}</p>
           <p class="hint muted">{{ t("windows.autoPinHint") }}</p>
+        </section>
+
+        <!-- 关闭模式 -->
+        <section>
+          <h2>{{ t("panel.section.close") }}</h2>
+          <label class="row switch-row">
+            <span>{{ t("close.outside") }}</span>
+            <ToggleSwitch v-model="settings.closeOnOutsideClick" />
+          </label>
+          <label class="row switch-row">
+            <span>{{ t("close.leave") }}</span>
+            <ToggleSwitch v-model="settings.closeOnMouseLeave" />
+          </label>
+          <label class="row switch-row">
+            <span>{{ t("close.scroll") }}</span>
+            <ToggleSwitch v-model="settings.closeOnScroll" />
+          </label>
+          <p class="hint muted">{{ t("close.hint") }}</p>
+        </section>
+
+        <!-- 其他设置 -->
+        <section>
+          <h2>{{ t("panel.section.others") }}</h2>
+          <label class="row switch-row">
+            <span>{{ t("trigger.highlight") }}</span>
+            <ToggleSwitch v-model="settings.highlightLinks" />
+          </label>
+          <label v-if="settings.highlightLinks" class="row sz">
+            <span>{{ t("highlightStyle.label") }}</span>
+            <RadioGroup
+              v-model="settings.highlightStyle"
+              name="highlightStyle"
+              :options="highlightStyleOptions"
+            />
+          </label>
+          <label class="row switch-row">
+            <span>{{ t("images.skip") }}</span>
+            <ToggleSwitch v-model="settings.skipImages" />
+          </label>
+
+          <label class="row sz">
+            <span
+              >{{ t("blur.strength") }}<b>{{ settings.blurStrength }}%</b></span
+            >
+            <SliderInput v-model="settings.blurStrength" :min="0" :max="100" unit="%" />
+          </label>
+          <p class="hint muted">{{ t("blur.hint") }}</p>
         </section>
       </div>
 
