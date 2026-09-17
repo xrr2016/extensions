@@ -7,14 +7,10 @@ name: Release
 # then only land in the run's artifacts, which is what you want for a re-build or
 # a test upload.
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
-
-# A release build must never be cancelled by a newer one.
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,16 +19,10 @@ jobs:
       # Required: `gh release upload` writes release assets with this token.
       contents: write
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
         with:
-          version: 12
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+          cache: true
 
       - name: Install
         run: pnpm install --frozen-lockfile
@@ -49,30 +39,30 @@ jobs:
           pnpm zip:prelook
           pnpm zip:prelook:firefox
 
-      - name: Upload the zips as run artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: prelook-zips
-          path: apps/prelook/.output/*.zip
-          if-no-files-found: error
+      # - name: Upload the zips as run artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: prelook-zips
+      #     path: apps/prelook/.output/*.zip
+      #     if-no-files-found: error
 
-      - name: Attach the zips to the release
-        if: github.event_name == 'release'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
+      # - name: Attach the zips to the release
+      #   if: github.event_name == 'release'
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     TAG: ${{ github.event.release.tag_name }}
+      #   run: gh release upload "$TAG" apps/prelook/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"
 
-      - name: Submit to stores
-        run: |
-          pnpm wxt submit \
-            --chrome-zip .output/*-chrome.zip \
-            --firefox-zip .output/*-firefox.zip --firefox-sources-zip .output/*-sources.zip
-        env:
-          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
-          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
-          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+      # - name: Submit to stores
+      #   run: |
+      #     pnpm wxt submit \
+      #       --chrome-zip .output/*-chrome.zip \
+      #       --firefox-zip .output/*-firefox.zip --firefox-sources-zip .output/*-sources.zip
+      #   env:
+      #     CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+      #     CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+      #     CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+      #     CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      #     FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+      #     FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+      #     FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
