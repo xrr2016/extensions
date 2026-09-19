@@ -133,6 +133,20 @@ const accentStyle = computed(() => ({ "--tp-accent": settings.value.themeColor }
 // The panel is its own document: resolve the theme onto <html> and follow the OS
 // while the setting says "system".
 let themeDispose: (() => void) | null = null;
+
+// Theme flip changes color/background/border/shadow on every element at once;
+// without this guard every CSS transition fires together and the switch smears.
+// Inject a no-transition style, force a reflow so the new colors commit while
+// it applies, then remove it on the next frame.
+function applyTheme(theme: string) {
+  const style = document.createElement("style");
+  style.textContent = "*,*::before,*::after{transition:none !important}";
+  document.head.append(style);
+  document.documentElement.dataset.theme = theme;
+  void document.body.offsetHeight;
+  requestAnimationFrame(() => requestAnimationFrame(() => style.remove()));
+}
+
 watch(
   () => settings.value.theme,
   () => {
@@ -141,7 +155,7 @@ watch(
     themeDispose = watchTheme(
       () => settings.value.theme,
       (theme) => {
-        document.documentElement.dataset.theme = theme;
+        applyTheme(theme);
       },
     );
   },
@@ -167,7 +181,7 @@ async function load() {
     themeDispose = watchTheme(
       () => settings.value.theme,
       (theme) => {
-        document.documentElement.dataset.theme = theme;
+        applyTheme(theme);
       },
     );
   } catch (err) {

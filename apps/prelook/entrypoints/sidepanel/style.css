@@ -177,9 +177,13 @@ h2 {
   cursor: pointer;
   text-align: center;
   transition:
-    border-color 0.12s ease,
-    box-shadow 0.12s ease,
-    background 0.12s ease;
+    border-color 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    background 0.15s ease-out,
+    scale 0.15s ease-out;
+}
+.pos-cell:active {
+  scale: 0.96;
 }
 .pos-cell:hover {
   border-color: var(--tp-accent);
@@ -221,13 +225,17 @@ h2 {
   position: relative;
   display: block;
   padding: 7px;
-  border-radius: 8px;
+  border-radius: 11px;
   cursor: pointer;
   border: 1px solid #d8dee4;
   background: #fff;
   transition:
-    border-color 0.12s ease,
-    box-shadow 0.12s ease;
+    border-color 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    scale 0.15s ease-out;
+}
+.win-themes label:active {
+  scale: 0.96;
 }
 .win-themes label:hover {
   border-color: var(--card-accent);
@@ -302,6 +310,14 @@ h2 {
   font-size: 12px;
   cursor: pointer;
   color: #57606a;
+  transition:
+    background 0.15s ease-out,
+    border-color 0.15s ease-out,
+    color 0.15s ease-out,
+    scale 0.15s ease-out;
+}
+.chip:active {
+  scale: 0.96;
 }
 .chip.on {
   background: var(--tp-accent);
@@ -372,6 +388,13 @@ h2 {
   padding: 5px 9px;
   cursor: pointer;
   font-size: 12px;
+  transition:
+    background 0.15s ease-out,
+    border-color 0.15s ease-out,
+    scale 0.15s ease-out;
+}
+.row-inline button:active {
+  scale: 0.96;
 }
 
 /* Appearance picker: big cards, the selected one filled with the accent. */
@@ -395,9 +418,13 @@ h2 {
   color: #57606a;
   font-size: 12px;
   transition:
-    background 0.12s ease,
-    border-color 0.12s ease,
-    color 0.12s ease;
+    background 0.15s ease-out,
+    border-color 0.15s ease-out,
+    color 0.15s ease-out,
+    scale 0.15s ease-out;
+}
+.theme-cards label:active {
+  scale: 0.96;
 }
 .theme-cards label:hover {
   border-color: var(--tp-accent);
@@ -435,10 +462,17 @@ h2 {
   color: #cf222e;
   border: 1px solid #f0c2c6;
   background: #fdf2f3;
+  transition:
+    background 0.15s ease-out,
+    border-color 0.15s ease-out,
+    scale 0.15s ease-out;
 }
 .btn-reset:hover {
   background: #fbe4e6;
   border-color: #e79aa1;
+}
+.btn-reset:active {
+  scale: 0.98;
 }
 
 /* ---------- dark appearance ---------- */

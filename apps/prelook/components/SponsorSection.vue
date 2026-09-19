@@ -143,6 +143,9 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   transform: scale(1.03);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
+.qrcode img:active {
+  transform: scale(0.98);
+}
 .qrcode-missing {
   font-size: 11px;
   color: #9aa0a6;
@@ -161,18 +164,23 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   margin: 14px auto 0;
   width: 180px;
   max-width: 100%;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
   border-radius: 8px;
   overflow: hidden;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, scale 0.15s ease-out;
 }
 .kofi-btn img {
   display: block;
   width: 100%;
   height: auto;
+  outline: 1px solid oklch(0 0 0 / 0.1);
+  outline-offset: -1px;
 }
 .kofi-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+.kofi-btn:active {
+  scale: 0.96;
 }
 
 /* ---------- Lightbox ---------- */
@@ -244,5 +252,8 @@ html[data-theme="dark"] .qrcode-missing {
 }
 html[data-theme="dark"] .qrcode-missing {
   color: #6b7078;
+}
+html[data-theme="dark"] .kofi-btn img {
+  outline-color: oklch(1 0 0 / 0.1);
 }
 </style>
