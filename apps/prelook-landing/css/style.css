@@ -1022,9 +1022,51 @@ section {
   color: var(--text-secondary);
 }
 
+/* ---------- 赞助 ---------- */
+/* 接在 reviews（--bg-secondary）之后，取相反的 --bg-primary；
+   后面的 faq 因此翻成 --bg-secondary（见下文）。 */
+.sponsor {
+  background: var(--bg-primary);
+}
+
+.sponsor-grid {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+/* 二维码卡片固定白底：扫码需要浅色背景，不能跟随主题变深。 */
+.sponsor-card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-md);
+}
+
+.sponsor-card img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
+.sponsor-card figcaption {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 /* ---------- 常见问题 ---------- */
 .faq {
-  /* background: var(--bg-secondary); */
+  /* 赞助区取了 --bg-primary，FAQ 翻到 --bg-secondary 保持深浅交替 */
+  background: var(--bg-secondary);
 }
 
 .faq-list {

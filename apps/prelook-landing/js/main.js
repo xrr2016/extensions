@@ -8,6 +8,7 @@
       "nav.speed": "极速",
       "nav.install": "安装",
       "nav.reviews": "评价",
+      "nav.sponsor": "赞助",
       "nav.faq": "FAQ",
       "nav.theme": "切换深浅色主题",
       "nav.lang": "切换语言",
@@ -116,6 +117,11 @@
       "reviews.r6.name": "示例用户 F",
       "reviews.r6.text": "（占位）没有真实评价之前，这一段先别上线。",
 
+      "sponsor.title": "赞助支持",
+      "sponsor.subtitle": "Prelook 完全免费、无账号、无服务器。如果它帮到了你，欢迎扫码赞助，支持后续开发。",
+      "sponsor.wechat": "微信支付",
+      "sponsor.alipay": "支付宝",
+
       "faq.title": "常见问题",
       "faq.subtitle": "还有疑问？先看这几条。",
       "faq.q1": "预览窗口是空白的怎么办？",
@@ -147,6 +153,7 @@
       "nav.speed": "Speed",
       "nav.install": "Install",
       "nav.reviews": "Reviews",
+      "nav.sponsor": "Sponsor",
       "nav.faq": "FAQ",
       "nav.theme": "Toggle color theme",
       "nav.lang": "Switch language",
@@ -260,6 +267,11 @@
       "reviews.r5.text": "(Placeholder) The small icon shows which browser the reviewer used.",
       "reviews.r6.name": "Sample user F",
       "reviews.r6.text": "(Placeholder) Do not publish this section until real reviews exist.",
+
+      "sponsor.title": "Support the project",
+      "sponsor.subtitle": "Prelook is completely free — no account, no server. If it helps you, scan a QR code to keep development going.",
+      "sponsor.wechat": "WeChat Pay",
+      "sponsor.alipay": "Alipay",
 
       "faq.title": "FAQ",
       "faq.subtitle": "Still curious? Start here.",
@@ -516,6 +528,7 @@
     .concat(Array.prototype.slice.call(document.querySelectorAll(".features-grid .feature-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".steps-grid .step-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".reviews-grid .review-card")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".sponsor-grid .sponsor-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".faq-list details")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".compare")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".cta-copy, .cta-art")))
@@ -547,7 +560,7 @@
 
   if (!reduceMotion && "IntersectionObserver" in window) {
     // 同组卡片按序号错峰出现（最多 350ms），避免整片一起闪
-    [".features-grid", ".steps-grid", ".reviews-grid"].forEach(function (sel) {
+    [".features-grid", ".steps-grid", ".reviews-grid", ".sponsor-grid"].forEach(function (sel) {
       var group = document.querySelector(sel);
       if (!group) return;
       Array.prototype.slice.call(group.children).forEach(function (child, index) {

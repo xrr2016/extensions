@@ -30,3 +30,5 @@ web-ext.config.ts
 *.sw?
 .v2c
 .tmp-*
+
+.pnpm-store/*

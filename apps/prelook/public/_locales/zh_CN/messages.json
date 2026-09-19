@@ -279,13 +279,16 @@
     "message": "赞助支持"
   },
   "sponsor_hint": {
-    "message": "Prelook 完全免费。如果它帮到了你，欢迎赞助支持后续开发。"
+    "message": "Prelook 完全免费。如果它帮到了你，欢迎扫码赞助支持后续开发。"
   },
-  "sponsor_afdian": {
-    "message": "爱发电"
+  "sponsor_wechat": {
+    "message": "微信支付"
   },
-  "sponsor_patreon": {
-    "message": "Patreon"
+  "sponsor_alipay": {
+    "message": "支付宝"
+  },
+  "sponsor_qrMissing": {
+    "message": "二维码待添加"
   },
   "panel_section_protect": {
     "message": "链接保护"

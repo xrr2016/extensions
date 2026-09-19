@@ -279,13 +279,16 @@
     "message": "Support the author"
   },
   "sponsor_hint": {
-    "message": "Prelook is completely free — no account, no server. If it helps you, a sponsorship keeps development going."
+    "message": "Prelook is completely free — no account, no server. If it helps you, scan a QR code to keep development going."
   },
-  "sponsor_afdian": {
-    "message": "Afdian"
+  "sponsor_wechat": {
+    "message": "WeChat Pay"
   },
-  "sponsor_patreon": {
-    "message": "Patreon"
+  "sponsor_alipay": {
+    "message": "Alipay"
+  },
+  "sponsor_qrMissing": {
+    "message": "QR code missing"
   },
   "panel_section_protect": {
     "message": "Link protection"
