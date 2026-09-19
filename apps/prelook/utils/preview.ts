@@ -319,8 +319,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   const highlight = document.createElement("div");
   highlight.className = "tp-hl";
   let highlighted: Element | null = null;
-  const notice = document.createElement("div");
-  notice.className = "tp-notice";
+  const noticeEl = document.createElement("div");
+  noticeEl.className = "tp-notice";
   let noticeTimer: ReturnType<typeof setTimeout> | undefined;
   const progressBar = document.createElement("div");
   progressBar.className = "tp-progress";
@@ -328,7 +328,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   progressFill.className = "tp-progress-fill";
   progressBar.appendChild(progressFill);
   shadow.appendChild(progressBar);
-  shadow.appendChild(notice);
+  shadow.appendChild(noticeEl);
   shadow.appendChild(highlight);
   const windows: WindowInstance[] = [];
   let nextId = 1;
@@ -1049,18 +1049,18 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   /** Shows a short-lived message near a point: why nothing opened (every slot is
    *  held by a pinned window), or that the selection went to the clipboard. */
   function notice(key: string, x: number, y: number, params?: Record<string, string | number>) {
-    notice.textContent = deps.i18n.t(key, params);
-    notice.classList.add("tp-show");
+    noticeEl.textContent = deps.i18n.t(key, params);
+    noticeEl.classList.add("tp-show");
     // Size is only known once it is displayed, so show before measuring.
-    const bw = notice.offsetWidth;
-    const bh = notice.offsetHeight;
+    const bw = noticeEl.offsetWidth;
+    const bh = noticeEl.offsetHeight;
     const bx = Math.min(Math.max(8, x - bw / 2), Math.max(8, innerWidth - bw - 8));
     const above = y - PROGRESS_BAR_GAP - bh;
     const below = Math.min(y + PROGRESS_BAR_GAP, Math.max(8, innerHeight - bh - 8));
-    notice.style.left = `${bx}px`;
-    notice.style.top = `${above >= 8 ? above : below}px`;
+    noticeEl.style.left = `${bx}px`;
+    noticeEl.style.top = `${above >= 8 ? above : below}px`;
     if (noticeTimer) clearTimeout(noticeTimer);
-    noticeTimer = setTimeout(() => notice.classList.remove("tp-show"), NOTICE_MS);
+    noticeTimer = setTimeout(() => noticeEl.classList.remove("tp-show"), NOTICE_MS);
   }
 
   function cancelProgress() {

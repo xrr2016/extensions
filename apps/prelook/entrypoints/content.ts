@@ -146,6 +146,9 @@ export default defineContentScript({
                     ...anchorInfoFor(url, rect),
                     translate: options?.translate === true,
                   }),
+                // Same toast as the "every window is pinned" hint: it sits at the
+                // toolbar the user just clicked.
+                notify: (key, x, y) => preview?.notice(key, x, y),
               },
               shadow,
             );

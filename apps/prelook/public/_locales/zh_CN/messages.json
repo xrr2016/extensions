@@ -53,8 +53,14 @@
   "selection_aiCopyHint": {
     "message": "（会先复制选中文字）"
   },
+  "selection_aiCopied": {
+    "message": "已复制选中文字，在新标签页粘贴即可"
+  },
   "selection_translate": {
     "message": "翻译"
+  },
+  "selection_translateHint": {
+    "message": "Google 翻译不允许被嵌入，会在新标签页打开；Bing 翻译在预览窗中打开"
   },
   "translate_google": {
     "message": "Google 翻译"

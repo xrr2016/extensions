@@ -521,6 +521,7 @@ function resetAll() {
             name="translateEngine"
             :options="translateOptions"
           />
+          <p class="hint muted">{{ t("selection.translateHint") }}</p>
         </section>
 
         <section>

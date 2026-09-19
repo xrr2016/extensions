@@ -56,8 +56,14 @@
   "selection_aiCopyHint": {
     "message": "(copies the selection first)"
   },
+  "selection_aiCopied": {
+    "message": "Copied — paste it in the new tab"
+  },
   "selection_translate": {
     "message": "Translate"
+  },
+  "selection_translateHint": {
+    "message": "Google Translate can't be embedded, so it opens in a new tab; Bing Translate opens in a preview window"
   },
   "translate_google": {
     "message": "Google Translate"
