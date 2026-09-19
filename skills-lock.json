@@ -61,6 +61,12 @@
       "skillPath": "skills/interface-review/SKILL.md",
       "computedHash": "e8575144eb155448757a82a3b89825c87045a85ca2ed3bd9131c53fc9682c8a5"
     },
+    "ip-as-logo": {
+      "source": "s1dashu/ip-as-logo-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9e9d17f9df4712080eb2a602071328e3d76f25541248d29e2f7c93b2f8f7f606"
+    },
     "variant": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",

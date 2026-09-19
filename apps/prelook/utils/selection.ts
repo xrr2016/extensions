@@ -29,6 +29,23 @@ export const SELECTION_STYLE = `
 .tp-sel button:disabled { color: #aab2bd; cursor: default; }
 .tp-sel button:disabled:hover { background: transparent; color: #aab2bd; }
 .tp-sel .tp-sel-div { width: 1px; height: 16px; margin: 0 3px; background: rgba(0,0,0,.12); }
+/* The tail pointing back at the selected text: a rotated square that inherits
+   the bar's fill *and* border colour, so the dark theme needs no rule of its
+   own. Only the two sides that face away from the bar carry a border — the
+   other two would draw lines across the bar's interior. Its position along the
+   edge comes from --tp-arrow-x, written by show(). */
+.tp-sel::after {
+  content: ""; position: absolute; width: 10px; height: 10px;
+  background: inherit; border: 0 solid; border-color: inherit; pointer-events: none;
+}
+.tp-sel.tp-arrow-down::after {
+  bottom: -5px; left: calc(var(--tp-arrow-x, 50%) - 5px); transform: rotate(45deg);
+  border-right-width: 1px; border-bottom-width: 1px;
+}
+.tp-sel.tp-arrow-up::after {
+  top: -5px; left: calc(var(--tp-arrow-x, 50%) - 5px); transform: rotate(45deg);
+  border-left-width: 1px; border-top-width: 1px;
+}
 :host([data-tp-theme='dark']) .tp-sel .tp-sel-div { background: #333941; }
 :host([data-tp-theme='dark']) .tp-sel { background: #1e2126; border-color: #333941; box-shadow: 0 10px 32px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4); }
 :host([data-tp-theme='dark']) .tp-sel button { color: #e6e8eb; }
@@ -239,12 +256,23 @@ export function createSelectionSystem(
     bar.classList.add("tp-show");
     visible = true;
     const bw = bar.offsetWidth || 200;
+    const bh = bar.offsetHeight || 40;
     let x = rect.left + rect.width / 2 - bw / 2;
-    let y = rect.top - bar.offsetHeight - 8;
-    if (y < 8) y = Math.min(rect.bottom + 8, innerHeight - bar.offsetHeight - 8);
+    let y = rect.top - bh - 8;
+    // Not enough room above the selection: drop the bar below it and flip the tail.
+    const below = y < 8;
+    if (below) y = Math.min(rect.bottom + 8, innerHeight - bh - 8);
     x = Math.min(Math.max(8, x), Math.max(8, innerWidth - bw - 8));
     bar.style.left = `${x}px`;
     bar.style.top = `${y}px`;
+    // The tail follows the selection's centre, but stays on the pill's flat
+    // stretch: past the rounded cap (radius = half the bar height) it would poke
+    // out sideways beyond the curve as a bare sliver without any border.
+    const pad = Math.min(bh / 2 + 8, bw / 2);
+    const tip = rect.left + rect.width / 2 - x;
+    bar.style.setProperty("--tp-arrow-x", `${Math.min(Math.max(tip, pad), bw - pad)}px`);
+    bar.classList.toggle("tp-arrow-up", below);
+    bar.classList.toggle("tp-arrow-down", !below);
   }
 
   function hide() {
