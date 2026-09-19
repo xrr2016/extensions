@@ -32,6 +32,9 @@
   "preview_failed": {
     "message": "无法加载该页面内容"
   },
+  "preview_embedBlocked": {
+    "message": "该网站不允许嵌入预览窗"
+  },
   "selection_preview": {
     "message": "预览"
   },
@@ -39,7 +42,7 @@
     "message": "选中链接后可预览"
   },
   "selection_detectLinks": {
-    "message": "识别链接"
+    "message": "识别文字链接"
   },
   "selection_detectLinksHint": {
     "message": "选中内容为链接时，可在当前页面打开预览窗"
@@ -49,6 +52,15 @@
   },
   "selection_aiCopyHint": {
     "message": "（会先复制选中文字）"
+  },
+  "selection_translate": {
+    "message": "翻译"
+  },
+  "translate_google": {
+    "message": "Google 翻译"
+  },
+  "translate_bing": {
+    "message": "Bing 翻译"
   },
   "panel_tab_preview": {
     "message": "预览"
@@ -234,7 +246,10 @@
     "message": "启用划词搜索"
   },
   "selection_engines": {
-    "message": "Web 搜索"
+    "message": "搜索"
+  },
+  "selection_translateEngine": {
+    "message": "翻译引擎"
   },
   "selection_aiEngine": {
     "message": "AI 搜索引擎"

@@ -35,6 +35,9 @@
   "preview_failed": {
     "message": "Failed to load this page"
   },
+  "preview_embedBlocked": {
+    "message": "This site can't be embedded in a preview window"
+  },
   "selection_preview": {
     "message": "Preview"
   },
@@ -42,7 +45,7 @@
     "message": "Available once the selection is a link"
   },
   "selection_detectLinks": {
-    "message": "Detect links"
+    "message": "Detect text links"
   },
   "selection_detectLinksHint": {
     "message": "When the selection is a link, open preview window right here on the page"
@@ -52,6 +55,15 @@
   },
   "selection_aiCopyHint": {
     "message": "(copies the selection first)"
+  },
+  "selection_translate": {
+    "message": "Translate"
+  },
+  "translate_google": {
+    "message": "Google Translate"
+  },
+  "translate_bing": {
+    "message": "Bing Translate"
   },
   "panel_tab_preview": {
     "message": "Preview"
@@ -234,7 +246,10 @@
     "message": "Enable selection search"
   },
   "selection_engines": {
-    "message": "Web search"
+    "message": "Search"
+  },
+  "selection_translateEngine": {
+    "message": "Translation engine"
   },
   "selection_aiEngine": {
     "message": "AI engine"

@@ -141,7 +141,11 @@ export default defineContentScript({
                 i18n,
                 // An explicit command, so — like the context menu — it skips
                 // the site disable list and the image-link switch.
-                openPreview: (url, rect) => preview?.open(anchorInfoFor(url, rect)),
+                openPreview: (url, rect, options) =>
+                  preview?.open({
+                    ...anchorInfoFor(url, rect),
+                    translate: options?.translate === true,
+                  }),
               },
               shadow,
             );

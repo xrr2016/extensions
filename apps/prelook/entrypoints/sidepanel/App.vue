@@ -12,6 +12,7 @@ import {
   MAX_WINDOWS_LIMIT,
   POWER_MODES,
   SEARCH_ENGINES,
+  TRANSLATE_ENGINES,
   WINDOW_PCT_MAX,
   WINDOW_PCT_MIN,
   WINDOW_PX_MAX,
@@ -83,6 +84,11 @@ const sideOptions = computed(() =>
   (["left", "right"] as const).map((s) => ({ value: s, label: t(`sidebarSide.${s}`) })),
 );
 const searchOptions = SEARCH_ENGINES.map((e) => ({ value: e.id, label: e.label }));
+// Translation engine names are localised (they carry a 翻译/Translate suffix),
+// so unlike the search engines above these labels come from `browser.i18n`.
+const translateOptions = computed(() =>
+  TRANSLATE_ENGINES.map((e) => ({ value: e.id, label: t(`translate.${e.id}`) })),
+);
 const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
 const highlightStyleOptions = computed(() =>
@@ -505,6 +511,15 @@ function resetAll() {
             v-model="settings.searchEngine"
             name="searchEngine"
             :options="searchOptions"
+          />
+        </section>
+
+        <section>
+          <h2 class="row-label">{{ t("selection.translateEngine") }}</h2>
+          <RadioGroup
+            v-model="settings.translateEngine"
+            name="translateEngine"
+            :options="translateOptions"
           />
         </section>
 

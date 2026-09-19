@@ -69,6 +69,42 @@ export const SEARCH_ENGINES: SearchEngine[] = [
 ];
 
 /**
+ * Translation sites for the selection toolbar. `%s` is the encoded selection
+ * and `%t` the target language from `lang`.
+ *
+ * `openIn` is not a preference but a fact about the site: a page that refuses to
+ * be framed (`X-Frame-Options: SAMEORIGIN`, i.e. Google) can only be handed to a
+ * real tab, while an embeddable one (Bing) is what the preview window exists
+ * for. The window still guards itself against a refused frame (see
+ * `preview.ts`), in case an "embeddable" engine changes its mind.
+ */
+export interface TranslateEngine {
+  id: string;
+  /** URL template: `%s` = selection, `%t` = target language code */
+  url: string;
+  /** This engine's own spelling of the target language, per browser UI language */
+  lang: { zh: string; en: string };
+  /** Where the URL opens: Prelook's preview window, or a real tab */
+  openIn: "preview" | "tab";
+}
+
+export const TRANSLATE_ENGINES: TranslateEngine[] = [
+  {
+    id: "google",
+    url: "https://translate.google.com/?sl=auto&tl=%t&op=translate&text=%s",
+    lang: { zh: "zh-CN", en: "en" },
+    // Answers with X-Frame-Options: SAMEORIGIN, so it can never be a preview.
+    openIn: "tab",
+  },
+  {
+    id: "bing",
+    url: "https://www.bing.com/translator?text=%s&to=%t",
+    lang: { zh: "zh-Hans", en: "en" },
+    openIn: "preview",
+  },
+];
+
+/**
  * AI engines for the selection toolbar. A template containing `%s` receives the
  * selected text in the URL; a template without it means the site cannot take a
  * prompt that way (Kimi/豆包/DeepSeek read no such query param), so the caller
@@ -145,6 +181,8 @@ export interface PrelookSettings {
   selectionSearch: boolean;
   /** Web search engine the selection toolbar opens (single choice) */
   searchEngine: string;
+  /** Translation site the toolbar's 翻译 button opens in a preview window */
+  translateEngine: string;
   aiEngine: string;
   openInBackground: boolean;
   minSelectionChars: number;
@@ -198,6 +236,9 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   blurStrength: 5,
   selectionSearch: true,
   searchEngine: "google",
+  // Google is the more familiar name but refuses to be framed, so the default
+  // is an engine whose page actually renders inside the preview window.
+  translateEngine: "bing",
   aiEngine: "kimi",
   openInBackground: false,
   minSelectionChars: 2,
@@ -304,6 +345,11 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
       ? s.searchEngine
       : (legacySearchEngines?.find((id) => SEARCH_ENGINES.some((e) => e.id === id)) ??
         DEFAULT_SETTINGS.searchEngine),
+    // Same reasoning as the AI engine above: a retired engine id falls back
+    // rather than leaving the toolbar without a 翻译 button.
+    translateEngine: TRANSLATE_ENGINES.some((e) => e.id === s.translateEngine)
+      ? s.translateEngine
+      : DEFAULT_SETTINGS.translateEngine,
     theme: (["system", "light", "dark"] as const).includes(s.theme)
       ? s.theme
       : DEFAULT_SETTINGS.theme,

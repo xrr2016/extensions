@@ -2,9 +2,11 @@ import type { I18n } from "@/utils/i18n";
 import {
   AI_ENGINES,
   SEARCH_ENGINES,
+  TRANSLATE_ENGINES,
   clampSettings,
   isSiteDisabled,
   type PrelookSettings,
+  type TranslateEngine,
 } from "@/utils/storage";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 
@@ -39,14 +41,31 @@ export interface SelectionDeps {
   getSettings: () => PrelookSettings;
   i18n: I18n;
   /** Opens the floating preview for the URL picked in the toolbar; `rect` is
-   *  the selection, so the window lands where the user was reading. */
-  openPreview: (url: string, rect: DOMRect | null) => void;
+   *  the selection, so the window lands where the user was reading.
+   *  `translate` marks the window as a translation site — an app, not an
+   *  article — which keeps the reader fallback away from it. */
+  openPreview: (url: string, rect: DOMRect | null, options?: { translate?: boolean }) => void;
+  /** Transient toast at a point on screen, for actions whose result happens
+   *  out of sight (the selection was copied on the user's behalf). */
+  notify: (key: string, x: number, y: number) => void;
 }
 
 export interface SelectionSystem {
   isVisible(): boolean;
   hide(): void;
   applySettings(s: PrelookSettings): void;
+}
+
+/** Target language follows the browser's UI language: a Chinese UI translates
+ *  into Chinese, anything else into English (the source is always detected).
+ *  Every engine spells the same target its own way (`tl=zh-CN` vs
+ *  `to=zh-Hans`), so the codes live in the engine table. */
+function translateUrl(engine: TranslateEngine, text: string): string {
+  const uiLang = (browser.i18n.getUILanguage() || "").toLowerCase();
+  const family = uiLang.startsWith("zh") ? "zh" : "en";
+  return engine.url
+    .replace("%t", encodeURIComponent(engine.lang[family]))
+    .replace("%s", encodeURIComponent(text));
 }
 
 export function createSelectionSystem(
@@ -68,6 +87,8 @@ export function createSelectionSystem(
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18.1l-1.8-5.5L4.7 10.8 10.2 9Z"/><path d="M19 15.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9Z"/></svg>';
   const ICON_EYE =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6.3 5.5 12 5.5 21.5 12 21.5 12 17.7 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>';
+  const ICON_LANG =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
 
   /** The selection when it is a bare http(s) URL — the only case where a
    *  preview can be opened straight from the page. */
@@ -92,6 +113,19 @@ export function createSelectionSystem(
       (btn.querySelector("span") as HTMLSpanElement).textContent = deps.i18n.t("selection.engines");
       btn.title = engine.label;
       btn.addEventListener("click", () => open(engine.url));
+      bar.appendChild(btn);
+    }
+    // Translation sits with Web search rather than with the tools that hand the
+    // selection to a real tab: it is the one that opens our own preview window.
+    const translate = TRANSLATE_ENGINES.find((e) => e.id === s.translateEngine);
+    if (translate) {
+      const label = deps.i18n.t(`translate.${translate.id}`);
+      const btn = document.createElement("button");
+      btn.innerHTML = ICON_LANG + `<span></span>`;
+      (btn.querySelector("span") as HTMLSpanElement).textContent =
+        deps.i18n.t("selection.translate");
+      btn.title = `${deps.i18n.t("selection.translate")} · ${label}`;
+      btn.addEventListener("click", () => openTranslate(translate));
       bar.appendChild(btn);
     }
     const ai = AI_ENGINES.find((e) => e.id === s.aiEngine);
@@ -150,22 +184,50 @@ export function createSelectionSystem(
     area.remove();
   }
 
-  function open(template: string) {
-    const sel = document.getSelection();
-    const text = sel?.toString().trim();
-    hide();
-    if (!text) return;
-    sel?.removeAllRanges();
-    // No `%s` means the site can't take the prompt in the URL, so hand the text
-    // over through the clipboard and just start a fresh conversation.
-    const takestext = template.includes("%s");
-    if (!takestext) copyText(text);
-    const url = takestext ? template.replace("%s", encodeURIComponent(text)) : template;
+  /** Hands a URL to a real tab; the panel's "open in background" decides whether
+   *  it steals focus. Shared by the search/AI buttons and the engines that
+   *  cannot be framed. */
+  function openTab(url: string) {
     void browser.runtime.sendMessage({
       type: "prelook:openTab",
       url,
       background: clampSettings(deps.getSettings()).openInBackground,
     });
+  }
+
+  function open(template: string) {
+    const sel = document.getSelection();
+    const text = sel?.toString().trim();
+    // Measured before hide(): the copied-text notice has to land where the
+    // toolbar was, and a hidden element measures as 0×0.
+    const barBox = bar.getBoundingClientRect();
+    hide();
+    if (!text) return;
+    sel?.removeAllRanges();
+    // No `%s` means the site can't take the prompt in the URL, so hand the text
+    // over through the clipboard and just start a fresh conversation — and say
+    // so: the new tab opens on an empty box, which looks like nothing happened.
+    const takestext = template.includes("%s");
+    if (!takestext) {
+      copyText(text);
+      deps.notify("selection.aiCopied", barBox.left + barBox.width / 2, barBox.top);
+    }
+    openTab(takestext ? template.replace("%s", encodeURIComponent(text)) : template);
+  }
+
+  /** Translation keeps the page you are reading in place: the engine opens as a
+   *  preview window — except for the engines `openIn: "tab"` marks as unframeable.
+   *  Preview windows are flagged as translations so they never degrade into
+   *  reader mode (see preview.ts). */
+  function openTranslate(engine: TranslateEngine) {
+    const sel = document.getSelection();
+    const text = sel?.toString().trim();
+    hide();
+    if (!text) return;
+    sel?.removeAllRanges();
+    const url = translateUrl(engine, text);
+    if (engine.openIn === "tab") openTab(url);
+    else deps.openPreview(url, selectionRect, { translate: true });
   }
 
   function show(rect: DOMRect) {

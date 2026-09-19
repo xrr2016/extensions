@@ -19,6 +19,10 @@ export interface AnchorInfo {
    *  to `center` when the configured position is the sidebar), `undefined`
    *  follows `settings.position`. */
   sidebar?: boolean;
+  /** A translation site opened by the selection toolbar: an interactive app
+   *  rather than a document, so this window must never fall back to reader
+   *  mode — which would render the app's own chrome as the "content". */
+  translate?: boolean;
 }
 
 interface FetchReply {
@@ -52,6 +56,8 @@ interface WindowInstance {
   manualPosition: boolean;
   /** `undefined` follows settings; `true`/`false` override the sidebar mode */
   sidebar?: boolean;
+  /** Translation site: the reader fallback is off (see `AnchorInfo`) */
+  translate: boolean;
   risk?: RiskReason;
   /** Pointer is inside this window — drives the backdrop focus effect */
   hovered: boolean;
@@ -73,6 +79,10 @@ export interface PreviewSystem {
   cancelProgress(): void;
   /** Frame the hovered link; `null` hides it */
   highlightLink(anchor: Element | null): void;
+  /** Transient message anchored to a point on screen (its own `key` may carry
+   *  `{params}` for `t()`); used for "nothing opened" and for the selection
+   *  toolbar's "the text is on your clipboard" confirmation. */
+  notice(key: string, x: number, y: number, params?: Record<string, string | number>): void;
   /** Close every unpinned window at once (outside click / scroll triggers) */
   dismissUnpinned(): void;
   applySettings(s: PrelookSettings): void;
@@ -636,6 +646,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   }
 
   function fallbackToReader(win: WindowInstance) {
+    // A translation site is an app, not an article: reader mode would render the
+    // app's own chrome as the "content", so those windows fail honestly instead.
+    if (win.translate) return showError(win);
     const result = win.fetchResult;
     if (!result?.html) return showError(win);
     const reader = extractReaderContent(result.html, result.finalUrl ?? win.url);
@@ -646,11 +659,13 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.iframe = undefined;
   }
 
-  function showError(win: WindowInstance) {
+  /** `messageKey` lets a window explain *why* nothing rendered; the action is
+   *  always the same hand-off to a real tab. */
+  function showError(win: WindowInstance, messageKey = "preview.failed") {
     const box = document.createElement("div");
     box.className = "tp-error";
     const span = document.createElement("span");
-    span.textContent = deps.i18n.t("preview.failed");
+    span.textContent = deps.i18n.t(messageKey);
     const btn = document.createElement("button");
     btn.textContent = deps.i18n.t("preview.openTab");
     btn.addEventListener("click", () => {
@@ -687,7 +702,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       win.faviconEl.onerror = () => win.faviconEl.classList.add("tp-hide");
     }
     if (reply && !reply.canEmbed) {
-      if (reply.html) fallbackToReader(win);
+      // Google Translate answers with `X-Frame-Options: SAMEORIGIN`, so a
+      // translation window has to say "this site refuses to be framed" and offer
+      // the real tab — extracting the page instead would show a translator UI's
+      // own chrome as if it were an article.
+      if (win.translate) showError(win, "preview.embedBlocked");
+      else if (reply.html) fallbackToReader(win);
       else showError(win);
       return;
     }
@@ -716,7 +736,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       // preview is skipped rather than dropping one the user asked to keep.
       const victim = windows.find((w) => !w.closed && !w.pinned);
       if (!victim) {
-        showNotice("preview.pinLimit", info.pointer.x, info.pointer.y, { max });
+        notice("preview.pinLimit", info.pointer.x, info.pointer.y, { max });
         return;
       }
       closeWindow(victim);
@@ -785,6 +805,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       closed: false,
       manualPosition: false,
       sidebar: info.sidebar,
+      translate: info.translate === true,
       hovered: false,
       // Auto-pin is applied when a window is created, not to windows that are
       // already open: pinning everything on a settings change could hit the
@@ -1025,8 +1046,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     highlight.style.height = `${r.height + 4}px`;
   }
 
-  /** Explains why nothing opened: every slot is held by a pinned window. */
-  function showNotice(key: string, x: number, y: number, params?: Record<string, string | number>) {
+  /** Shows a short-lived message near a point: why nothing opened (every slot is
+   *  held by a pinned window), or that the selection went to the clipboard. */
+  function notice(key: string, x: number, y: number, params?: Record<string, string | number>) {
     notice.textContent = deps.i18n.t(key, params);
     notice.classList.add("tp-show");
     // Size is only known once it is displayed, so show before measuring.
@@ -1057,6 +1079,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     cancelProgress,
     highlightLink,
     dismissUnpinned,
+    notice,
     applySettings,
     applyPower,
     destroy,
