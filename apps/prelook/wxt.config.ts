@@ -52,7 +52,12 @@ export default defineConfig({
       doubao: "C:\\Users\\coldstonestudio\\AppData\\Local\\Doubao\\Application\\app\\Doubao.exe",
       firefox: ZEN_BINARY,
     },
-    startUrls: ["https://bbs.hupu.com/4860"],
+    startUrls: [
+      "https://tieba.baidu.com/",
+      "https://bbs.hupu.com/4860",
+      "https://www.xiaoheihe.cn/app/bbs/home/",
+      "https://ngabbs.com/thread.php?fid=-152678",
+    ],
   },
   autoIcons: {
     baseIconPath: "./assets/logo.webp",
