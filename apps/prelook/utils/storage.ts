@@ -241,7 +241,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   sizeUnit: "percent",
   themeColor: "#4f6bf6",
   windowColor: "#94a3b8",
-  position: "bottom-right",
+  position: "center",
   sidebarSide: "right",
   blurStrength: 5,
   selectionSearch: true,
@@ -380,11 +380,7 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
       // on PreviewPosition anymore.
       const rawPos = s.position as string;
       const stored =
-        rawPos === "center-top"
-          ? "top"
-          : rawPos === "center-bottom"
-            ? "bottom"
-            : s.position;
+        rawPos === "center-top" ? "top" : rawPos === "center-bottom" ? "bottom" : s.position;
       return (
         [
           "top-left",

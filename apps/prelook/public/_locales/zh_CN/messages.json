@@ -213,13 +213,13 @@
     "message": "右上"
   },
   "position_left": {
-    "message": "中左"
+    "message": "左中"
   },
   "position_center": {
     "message": "居中"
   },
   "position_right": {
-    "message": "中右"
+    "message": "右中"
   },
   "position_bottom_left": {
     "message": "左下"
