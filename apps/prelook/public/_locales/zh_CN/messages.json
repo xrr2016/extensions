@@ -185,6 +185,18 @@
   "windowTheme_pink": {
     "message": "粉色"
   },
+  "windowTheme_orange": {
+    "message": "橙色"
+  },
+  "windowTheme_cyan": {
+    "message": "青色"
+  },
+  "windowTheme_red": {
+    "message": "红色"
+  },
+  "windowTheme_amber": {
+    "message": "琥珀"
+  },
   "windowTheme_custom": {
     "message": "自定义颜色"
   },
@@ -192,25 +204,31 @@
     "message": "预览窗位置"
   },
   "position_top_left": {
-    "message": "左上角"
+    "message": "左上"
   },
-  "position_bottom_right": {
-    "message": "右下角"
-  },
-  "position_bottom_left": {
-    "message": "左下角"
+  "position_top": {
+    "message": "上方"
   },
   "position_top_right": {
-    "message": "右上角"
+    "message": "右上"
   },
-  "position_center_top": {
-    "message": "居中偏上"
+  "position_left": {
+    "message": "中左"
   },
   "position_center": {
     "message": "居中"
   },
-  "position_center_bottom": {
-    "message": "居中偏下"
+  "position_right": {
+    "message": "中右"
+  },
+  "position_bottom_left": {
+    "message": "左下"
+  },
+  "position_bottom": {
+    "message": "下方"
+  },
+  "position_bottom_right": {
+    "message": "右下"
   },
   "position_sidebar": {
     "message": "侧边栏"
@@ -289,6 +307,9 @@
   },
   "sponsor_qrMissing": {
     "message": "二维码待添加"
+  },
+  "sponsor_kofi": {
+    "message": "在 Ko-fi 上支持我"
   },
   "panel_section_protect": {
     "message": "链接保护"

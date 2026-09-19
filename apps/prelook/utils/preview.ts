@@ -491,13 +491,22 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         break;
       // Horizontally centred like `center`, but parked in the upper / lower
       // third of the free space so the page's own centre line stays visible.
-      case "center-top":
+      case "top":
         x = (vw - w) / 2;
         y = (vh - h) / 3;
         break;
-      case "center-bottom":
+      case "bottom":
         x = (vw - w) / 2;
         y = ((vh - h) * 2) / 3;
+        break;
+      // Vertically centred, docked to the left / right edge.
+      case "left":
+        x = 16;
+        y = (vh - h) / 2;
+        break;
+      case "right":
+        x = vw - w - 16;
+        y = (vh - h) / 2;
         break;
       case "bottom-right":
       default:

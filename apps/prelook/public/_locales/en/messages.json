@@ -185,6 +185,18 @@
   "windowTheme_pink": {
     "message": "Pink"
   },
+  "windowTheme_orange": {
+    "message": "Orange"
+  },
+  "windowTheme_cyan": {
+    "message": "Cyan"
+  },
+  "windowTheme_red": {
+    "message": "Red"
+  },
+  "windowTheme_amber": {
+    "message": "Amber"
+  },
   "windowTheme_custom": {
     "message": "Custom colour"
   },
@@ -194,23 +206,29 @@
   "position_top_left": {
     "message": "Top left"
   },
-  "position_bottom_right": {
-    "message": "Bottom right"
-  },
-  "position_bottom_left": {
-    "message": "Bottom left"
+  "position_top": {
+    "message": "Top"
   },
   "position_top_right": {
     "message": "Top right"
   },
-  "position_center_top": {
-    "message": "Upper center"
+  "position_left": {
+    "message": "Left"
   },
   "position_center": {
     "message": "Center"
   },
-  "position_center_bottom": {
-    "message": "Lower center"
+  "position_right": {
+    "message": "Right"
+  },
+  "position_bottom_left": {
+    "message": "Bottom left"
+  },
+  "position_bottom": {
+    "message": "Bottom"
+  },
+  "position_bottom_right": {
+    "message": "Bottom right"
   },
   "position_sidebar": {
     "message": "Sidebar"
@@ -289,6 +307,9 @@
   },
   "sponsor_qrMissing": {
     "message": "QR code missing"
+  },
+  "sponsor_kofi": {
+    "message": "Support me on Ko-fi"
   },
   "panel_section_protect": {
     "message": "Link protection"

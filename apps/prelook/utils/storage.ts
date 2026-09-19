@@ -1,12 +1,14 @@
 export type TriggerMode = "hover" | "altHover" | "longPress" | "drag";
 export type PreviewPosition =
   | "top-left"
-  | "bottom-right"
-  | "bottom-left"
+  | "top"
   | "top-right"
-  | "center-top"
+  | "left"
   | "center"
-  | "center-bottom"
+  | "right"
+  | "bottom-left"
+  | "bottom"
+  | "bottom-right"
   | "sidebar";
 export type SizeUnit = "percent" | "px";
 export type SidebarSide = "left" | "right";
@@ -22,6 +24,10 @@ export type WindowTheme =
   | "green"
   | "purple"
   | "pink"
+  | "orange"
+  | "cyan"
+  | "red"
+  | "amber"
   | "custom";
 
 export interface WindowThemePreset {
@@ -48,6 +54,10 @@ export const WINDOW_THEMES: WindowThemePreset[] = [
   { id: "green", accent: "#10b981", kind: "tint" },
   { id: "purple", accent: "#a855f7", kind: "tint" },
   { id: "pink", accent: "#ec4899", kind: "tint" },
+  { id: "orange", accent: "#f97316", kind: "tint" },
+  { id: "cyan", accent: "#06b6d4", kind: "tint" },
+  { id: "red", accent: "#ef4444", kind: "tint" },
+  { id: "amber", accent: "#f59e0b", kind: "tint" },
   // Midnight shares blue's hue family on purpose, but needs a lighter indigo:
   // #4f6bf6 sinks into its own dark surface, and only the medium tone stays
   // legible there.
@@ -362,21 +372,36 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
       ? s.triggerMode
       : DEFAULT_SETTINGS.triggerMode,
     // `link`/`mouse` positions were removed; stored legacy values land on the
-    // default corner instead of an unselectable radio.
-    position: (
-      [
-        "top-left",
-        "bottom-right",
-        "bottom-left",
-        "top-right",
-        "center-top",
-        "center",
-        "center-bottom",
-        "sidebar",
-      ] as const
-    ).includes(s.position)
-      ? s.position
-      : DEFAULT_SETTINGS.position,
+    // default corner instead of an unselectable option. `center-top` /
+    // `center-bottom` were renamed to `top` / `bottom` when left/right edges
+    // were added — migrate in place so existing settings survive.
+    position: (() => {
+      // Cast to string: old stored values may be retired names that don't exist
+      // on PreviewPosition anymore.
+      const rawPos = s.position as string;
+      const stored =
+        rawPos === "center-top"
+          ? "top"
+          : rawPos === "center-bottom"
+            ? "bottom"
+            : s.position;
+      return (
+        [
+          "top-left",
+          "top",
+          "top-right",
+          "left",
+          "center",
+          "right",
+          "bottom-left",
+          "bottom",
+          "bottom-right",
+          "sidebar",
+        ] as const
+      ).includes(stored)
+        ? stored
+        : DEFAULT_SETTINGS.position;
+    })(),
     highlightStyle: ["solid", "dashed"].includes(s.highlightStyle)
       ? s.highlightStyle
       : DEFAULT_SETTINGS.highlightStyle,

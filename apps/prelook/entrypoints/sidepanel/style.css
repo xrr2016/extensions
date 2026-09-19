@@ -155,6 +155,45 @@ h2 {
 .seg .tp-seg {
   margin: 0;
 }
+/* Position picker: 3×3 visual grid + sidebar full-width row. */
+.pos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 2px;
+}
+.pos-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.pos-cell {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 1px solid #d8dee4;
+  background: #fff;
+  font-size: 12px;
+  color: #424a53;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+.pos-cell:hover {
+  border-color: var(--tp-accent);
+}
+.pos-cell.on {
+  border-color: var(--tp-accent);
+  background: color-mix(in srgb, var(--tp-accent) 10%, #fff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tp-accent) 25%, transparent);
+  color: var(--tp-accent);
+  font-weight: 600;
+}
+.pos-sidebar {
+  grid-column: 1 / -1;
+}
 .grid3 label {
   display: flex;
   gap: 5px;
@@ -427,7 +466,16 @@ html[data-theme="dark"] .row-inline button {
   border-color: #333941;
   color: #c8cdd4;
 }
-html[data-theme="dark"] .picker {
+html[data-theme="dark"] .pos-cell {
+  background: #22262b;
+  border-color: #333941;
+  color: #c8cdd4;
+}
+html[data-theme="dark"] .pos-cell.on {
+  background: color-mix(in srgb, var(--tp-accent) 22%, #22262b);
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}html[data-theme="dark"] .picker {
   color-scheme: dark;
 }
 /* Must out-specify the dark card/button rules above, or the selected option

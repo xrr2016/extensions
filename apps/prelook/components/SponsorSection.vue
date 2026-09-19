@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // Styling lives in this file's scoped block; the card look itself (background,
 // padding, radius) still comes from the panel-wide `section` rule.
-import { reactive } from "vue";
+import { reactive, ref, onMounted, onUnmounted } from "vue";
 import { translate } from "@/utils/i18n";
 
 // Drop the actual WeChat / Alipay collection QR codes as
@@ -31,6 +31,24 @@ const t = (key: string) => translate(key);
 function onImgError(entry: QrEntry) {
   entry.missing = true;
 }
+
+// Click-to-enlarge lightbox: a full-sidepanel overlay showing the selected
+// QR code large enough to scan from a phone. Closed by clicking the backdrop,
+// the close button, or pressing Escape.
+const activeQr = ref<QrEntry | null>(null);
+
+function openLightbox(qr: QrEntry) {
+  if (!qr.missing) activeQr.value = qr;
+}
+function closeLightbox() {
+  activeQr.value = null;
+}
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape") closeLightbox();
+}
+
+onMounted(() => document.addEventListener("keydown", onKeydown));
+onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 </script>
 
 <template>
@@ -44,11 +62,38 @@ function onImgError(entry: QrEntry) {
           :src="qr.src"
           :alt="t(qr.labelKey)"
           @error="onImgError(qr)"
+          @click="openLightbox(qr)"
         />
         <div v-else class="qrcode-missing">{{ t("sponsor.qrMissing") }}</div>
         <figcaption>{{ t(qr.labelKey) }}</figcaption>
       </figure>
     </div>
+
+    <!-- Ko-fi button: official widget script is blocked by the MV3 CSP, so use
+         the bundled badge image linking to the Ko-fi page in a new tab. -->
+    <a
+      class="kofi-btn"
+      href="https://ko-fi.com/J1R627B7UA"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img src="/kofi.jpg" :alt="t('sponsor.kofi')" />
+    </a>
+
+    <!-- Lightbox overlay: covers the whole sidepanel, dark backdrop, QR centered.
+         Teleport not needed — this component lives at the panel root already. -->
+    <transition name="lb">
+      <div v-if="activeQr" class="lightbox" @click.self="closeLightbox">
+        <button type="button" class="lb-close" aria-label="Close" @click="closeLightbox">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+        <img :src="activeQr.src" :alt="t(activeQr.labelKey)" class="lb-img" />
+        <p class="lb-caption">{{ t(activeQr.labelKey) }}</p>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -59,10 +104,14 @@ function onImgError(entry: QrEntry) {
   margin-top: auto;
   border-color: color-mix(in srgb, var(--tp-accent) 35%, #fff);
 }
+
+/* Vertical stack: the sidepanel is narrow, two columns made each QR too small
+   to scan. Stacking lets each code be wider. */
 .qrcodes {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   margin-top: 12px;
 }
 .qrcode {
@@ -76,8 +125,8 @@ function onImgError(entry: QrEntry) {
    this must NOT follow the dark theme, otherwise the codes become unreadable. */
 .qrcode img,
 .qrcode-missing {
-  width: 128px;
-  height: 128px;
+  width: 180px;
+  height: 180px;
   object-fit: contain;
   background: #fff;
   border: 1px solid #e2e5e9;
@@ -87,16 +136,98 @@ function onImgError(entry: QrEntry) {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.qrcode img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 .qrcode-missing {
   font-size: 11px;
   color: #9aa0a6;
   text-align: center;
   line-height: 1.4;
+  cursor: default;
 }
 .qrcode figcaption {
   font-size: 12px;
   color: inherit;
+}
+
+/* Ko-fi badge image, centred below the QR codes. */
+.kofi-btn {
+  display: block;
+  margin: 14px auto 0;
+  width: 180px;
+  max-width: 100%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.kofi-btn img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.kofi-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.lb-img {
+  max-width: 86vw;
+  max-height: 74vh;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+.lb-caption {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+.lb-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transition: background 0.15s ease;
+}
+.lb-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Lightbox enter/exit fade */
+.lb-enter-active,
+.lb-leave-active {
+  transition: opacity 0.18s ease;
+}
+.lb-enter-from,
+.lb-leave-to {
+  opacity: 0;
 }
 
 /* The scope attribute makes these (0,3,2) / (0,2,2), so they out-rank the

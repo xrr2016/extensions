@@ -66,20 +66,15 @@ const triggerOptions = computed(() =>
     label: t(`trigger.${m}`),
   })),
 );
-const positionOptions = computed(() =>
-  (
-    [
-      "top-left",
-      "bottom-right",
-      "bottom-left",
-      "top-right",
-      "center-top",
-      "center",
-      "center-bottom",
-      "sidebar",
-    ] as const
-  ).map((p) => ({ value: p, label: t(`position.${p}`) })),
-);
+// 3×3 grid of floating positions, then sidebar as a full-width row below.
+const positionGrid: { value: PreviewPosition; label: string }[][] = (
+  [
+    ["top-left", "top", "top-right"],
+    ["left", "center", "right"],
+    ["bottom-left", "bottom", "bottom-right"],
+  ] as const
+).map((row) => row.map((value) => ({ value, label: t(`position.${value}`) })));
+const sidebarOption = { value: "sidebar" as const, label: t("position.sidebar") };
 const sideOptions = computed(() =>
   (["left", "right"] as const).map((s) => ({ value: s, label: t(`sidebarSide.${s}`) })),
 );
@@ -310,15 +305,35 @@ function resetAll() {
           </label>
         </section>
 
-        <!-- 预览窗位置 -->
+        <!-- 预览窗位置：3×3 网格 + 侧边栏整行 -->
         <section>
           <h2 class="row-label">{{ t("panel.section.position") }}</h2>
-          <RadioGroup
-            v-model="settings.position"
-            name="position"
-            :options="positionOptions"
-            :dividers="false"
-          />
+          <div class="pos-grid">
+            <div
+              v-for="row in positionGrid"
+              :key="row.map((r) => r.value).join('-')"
+              class="pos-row"
+            >
+              <button
+                v-for="opt in row"
+                :key="opt.value"
+                type="button"
+                class="pos-cell"
+                :class="{ on: settings.position === opt.value }"
+                @click="settings.position = opt.value"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+            <button
+              type="button"
+              class="pos-cell pos-sidebar"
+              :class="{ on: settings.position === sidebarOption.value }"
+              @click="settings.position = sidebarOption.value"
+            >
+              {{ sidebarOption.label }}
+            </button>
+          </div>
           <div v-if="settings.position === 'sidebar'" class="seg">
             <RadioGroup v-model="settings.sidebarSide" name="sidebarSide" :options="sideOptions" />
           </div>
