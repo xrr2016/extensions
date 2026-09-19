@@ -1,9 +1,7 @@
 # 浏览器插件
 
-多浏览器插件 monorepo（pnpm workspace）。当前包含：
-
-- **[Prelook](apps/prelook/)** — 悬停链接即预览，不必再点开（WXT + Vue 3，MV3，Chrome/Edge/Firefox）
-- **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页（零构建，可直接部署）
+- **[Prelook](apps/prelook/)** — 悬停链接即预览，不必再点开
+- **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页
 
 ## Prelook
 
@@ -20,7 +18,12 @@
 - **固定窗口**：预览窗头部图钉一键固定，鼠标移开也不关闭，多个窗口可以并排比对（可开启「自动固定」让新窗口默认带上）
 - **完全免费**：无账号、无服务器、无付费版本，全部功能开放；
 
-## 开发（仓库根目录执行）
+> - `apps/prelook/entrypoints/` — 扩展入口（background / content / popup 设置页）
+> - `apps/prelook/utils/` — 预览窗、划词、阅读模式提取、i18n、存储
+> - `apps/prelook/assets/locales/` — 界面词条（zh-CN / en）
+> - `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
+
+## 开发
 
 ```bash
 pnpm install
@@ -35,16 +38,5 @@ pnpm landing:prelook      # 官网本地预览 http://127.0.0.1:4173
 
 ## 赞助
 
-Prelook 没有任何付费版本，也没有服务器成本之外的开销。如果想支持开发：
-
-- 爱发电 — https://ifdian.net/a/coldstoneboy
-- Patreon — https://patreon.com/coldstoneboy
-
-## 目录
-
-- `apps/prelook/entrypoints/` — 扩展入口（background / content / popup 设置页）
-- `apps/prelook/utils/` — 预览窗、划词、阅读模式提取、i18n、存储
-- `apps/prelook/assets/locales/` — 界面词条（zh-CN / en）
-- `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
-
-新增插件请参考 [AGENTS.md](AGENTS.md) 的接入清单。
+1. 爱发电 — https://ifdian.net/a/coldstoneboy
+2. Patreon — https://patreon.com/coldstoneboy
