@@ -31,6 +31,7 @@ export default defineConfig({
     // collect any user data, so the list is empty.
     browser_specific_settings: {
       gecko: {
+        id: "@extension-without-data-collection",
         data_collection_permissions: {
           required: ["none"],
         },
