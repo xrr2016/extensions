@@ -20,7 +20,7 @@ export default defineConfig({
     // "localization used but no default_locale"), and web-ext accepts `zh_CN`
     // too, so this spelling works on both engines.
     default_locale: "en",
-    permissions: ["activeTab", "tabs", "storage", "contextMenus"],
+    permissions: ["tabs", "storage", "contextMenus"],
     // host_permissions: ["<all_urls>"],
     // Written out by hand because WXT only emits `action` for a popup
     // entrypoint, and the settings now live in a side panel instead. Without it
