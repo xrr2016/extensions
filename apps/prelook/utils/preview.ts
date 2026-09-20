@@ -179,6 +179,9 @@ const STYLE = `
   transition: opacity var(--tp-in-motion), transform var(--tp-in-motion);
 }
 .tp-win.tp-in { opacity: 1; transform: none; }
+/* The root takes programmatic focus only to route Escape (tabindex="-1"),
+   never via the keyboard, so it must never render a focus ring. */
+.tp-win:focus { outline: none; }
 .tp-win.tp-out {
   opacity: 0; transform: scale(.96); pointer-events: none;
   transition: opacity var(--tp-out-motion), transform var(--tp-out-motion);
@@ -333,6 +336,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   const windows: WindowInstance[] = [];
   let nextId = 1;
   let zIndex = 2147483641;
+  /** The window a key press should act on: the last opened / clicked one. */
+  let activeWin: WindowInstance | null = null;
 
   function settings(): PrelookSettings {
     return clampSettings(deps.getSettings());
@@ -592,9 +597,24 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     }
   }
 
+  /** The window ESC should close: the last interacted one while still open,
+   *  otherwise the topmost by z-order. */
+  function topWindow(): WindowInstance | undefined {
+    if (activeWin && !activeWin.closed && windows.includes(activeWin)) return activeWin;
+    let top: WindowInstance | undefined;
+    for (const win of windows) {
+      if (win.closed) continue;
+      if (!top || Number(win.root.style.zIndex || 0) >= Number(top.root.style.zIndex || 0)) {
+        top = win;
+      }
+    }
+    return top;
+  }
+
   function closeWindow(win: WindowInstance, animate = true) {
     if (win.closed) return;
     win.closed = true;
+    if (activeWin === win) activeWin = null;
     clearClose(win);
     if (win.loadTimer) clearTimeout(win.loadTimer);
     const i = windows.indexOf(win);
@@ -736,6 +756,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       existing.lastPointer = info.pointer;
       place(existing);
       existing.root.style.zIndex = String(++zIndex);
+      activeWin = existing;
       keep(info.url);
       return;
     }
@@ -754,6 +775,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     const s = settings();
     const root = document.createElement("div");
     root.className = "tp-win";
+    // Allows pulling keyboard focus off an embedded iframe and onto the window
+    // chrome (see the mousedown handler below).
+    root.tabIndex = -1;
     root.style.zIndex = String(++zIndex);
     applyWindowTheme(root, windowPreset(s), s.windowColor);
     root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
@@ -830,7 +854,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     syncHeaderButtons(win);
 
     root.addEventListener("mousedown", () => {
+      activeWin = win;
       root.style.zIndex = String(++zIndex);
+      // Key events from a focused cross-origin iframe never reach the host
+      // document, so Escape couldn't close it. Clicking the window chrome pulls
+      // focus back to the root (the iframe itself never receives this event).
+      root.focus();
     });
     root.addEventListener("mouseover", () => {
       win.hovered = true;
@@ -942,6 +971,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
 
     shadow.appendChild(root);
     windows.push(win);
+    activeWin = win;
     place(win);
     syncOverlay();
     // Two frames: let the transparent state land before arming the fade.
@@ -986,9 +1016,24 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   window.addEventListener("resize", onViewportResize);
   window.addEventListener("scroll", onScroll, { capture: true, passive: true });
 
+  /** Escape closes the topmost window. Capture phase so the page's own
+   *  handlers do not swallow it first; it stays a no-op while no window exists.
+   *  `repeat` is ignored so a held key closes one window per press. */
+  function onKeydown(e: KeyboardEvent) {
+    if (e.key !== "Escape" || e.repeat) return;
+    const win = topWindow();
+    if (!win) return;
+    e.preventDefault();
+    // An explicit key press has the same semantics as the header × button:
+    // a pinned window closes too (pinning only survives automatic closes).
+    closeWindow(win);
+  }
+  window.addEventListener("keydown", onKeydown, true);
+
   function destroy() {
     window.removeEventListener("resize", onViewportResize);
     window.removeEventListener("scroll", onScroll, { capture: true });
+    window.removeEventListener("keydown", onKeydown, true);
     if (noticeTimer) clearTimeout(noticeTimer);
     for (const win of [...windows]) {
       if (win.fadeTimer) clearTimeout(win.fadeTimer);

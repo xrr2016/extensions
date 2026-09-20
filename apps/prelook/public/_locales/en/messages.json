@@ -15,7 +15,7 @@
     "message": "Other settings"
   },
   "preview_close": {
-    "message": "Close"
+    "message": "Close (Esc)"
   },
   "preview_reload": {
     "message": "Reload preview"

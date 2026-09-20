@@ -12,7 +12,7 @@
     "message": "在新标签页打开"
   },
   "preview_close": {
-    "message": "关闭"
+    "message": "关闭（Esc）"
   },
   "preview_reload": {
     "message": "刷新预览内容"
