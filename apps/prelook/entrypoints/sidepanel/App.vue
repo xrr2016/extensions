@@ -291,7 +291,12 @@ function resetAll() {
         <!-- 触发模式 -->
         <section>
           <h2 class="row-label">{{ t("panel.section.trigger") }}</h2>
-          <RadioGroup v-model="settings.triggerMode" name="triggerMode" :options="triggerOptions" />
+          <RadioGroup
+            v-model="settings.triggerMode"
+            name="triggerMode"
+            :options="triggerOptions"
+            :dividers="false"
+          />
           <label class="row sz" v-if="settings.triggerMode === 'hover'">
             <span>{{ t("trigger.delay") }}</span>
             <SliderInput

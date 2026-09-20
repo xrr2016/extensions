@@ -191,7 +191,6 @@ h2 {
 .pos-cell.on {
   border-color: var(--tp-accent);
   background: color-mix(in srgb, var(--tp-accent) 10%, #fff);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tp-accent) 25%, transparent);
   color: var(--tp-accent);
   font-weight: 600;
 }
@@ -509,7 +508,8 @@ html[data-theme="dark"] .pos-cell.on {
   background: color-mix(in srgb, var(--tp-accent) 22%, #22262b);
   border-color: var(--tp-accent);
   color: var(--tp-accent);
-}html[data-theme="dark"] .picker {
+}
+html[data-theme="dark"] .picker {
   color-scheme: dark;
 }
 /* Must out-specify the dark card/button rules above, or the selected option

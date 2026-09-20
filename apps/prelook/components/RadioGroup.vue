@@ -32,10 +32,12 @@ withDefaults(
 
 <style scoped>
 .tp-seg {
-  /* Content-sized capsule, capped at the row: never stretched edge to edge. */
-  display: flex;
+  /* auto-fill (not auto-fit) keeps the empty tracks on a wrapped last row, so
+     an orphan option stays one column wide instead of stretching across the
+     whole row. */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   width: 100%;
-  flex-wrap: wrap;
   gap: 2px;
   margin: 6px 0;
   padding: 3px;
@@ -43,7 +45,6 @@ withDefaults(
   background: #f1f3f5;
 }
 .tp-seg label {
-  flex: 1 0 60px;
   position: relative;
   display: flex;
   align-items: center;
