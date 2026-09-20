@@ -530,7 +530,7 @@
     .concat(Array.prototype.slice.call(document.querySelectorAll(".features-grid .feature-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".steps-grid .step-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".reviews-grid .review-card")))
-    .concat(Array.prototype.slice.call(document.querySelectorAll(".sponsor-grid .sponsor-card")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".sponsor-grid .sponsor-tile")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".faq-list details")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".compare")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".cta-copy, .cta-art")))

@@ -1036,31 +1036,99 @@ section {
   flex-wrap: wrap;
 }
 
-/* 二维码卡片固定白底：扫码需要浅色背景，不能跟随主题变深。 */
-.sponsor-card {
-  margin: 0;
+/* 外层卡片：柔和淡紫底色，大号圆角。 */
+.sponsor-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
+  background: #ede9fe;
+  border-radius: 1.5rem;
+  padding: var(--spacing-lg);
+  min-width: 260px;
+}
+
+/* 内层白底二维码卡片：扫码需要浅色背景，不跟随主题变深。 */
+.sponsor-qr {
   background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
+  border-radius: 1.25rem;
+  padding: 1rem;
   box-shadow: var(--shadow-md);
 }
 
-.sponsor-card img {
+.sponsor-qr img {
+  display: block;
   width: 200px;
   height: 200px;
   object-fit: contain;
   border-radius: var(--radius-md);
 }
 
-.sponsor-card figcaption {
-  font-size: 0.9375rem;
+/* 底部平台标签：图标 + 文字横排。 */
+.sponsor-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.sponsor-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sponsor-icon.wechat {
+  color: #07c160;
+}
+
+.sponsor-icon.alipay {
+  color: #1677ff;
+}
+
+/* Ko-fi 按钮：居中，蓝色圆角。 */
+.kofi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: var(--spacing-lg) auto 0;
+  padding: 0.75rem 1.5rem;
+  background: #264653;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.kofi-btn:hover {
+  transform: translateY(-1px);
+  background: #1f3a44;
+  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.3);
+}
+
+.kofi-btn:active {
+  transform: translateY(0);
+}
+
+.kofi-logo {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* 深色主题下保留外层柔和底色，让赞助区有独立层级。 */
+html[data-theme="dark"] .sponsor-tile {
+  background: #2a2744;
+}
+
+html[data-theme="dark"] .sponsor-qr {
+  background: #fff;
 }
 
 /* ---------- 常见问题 ---------- */

@@ -72,6 +72,12 @@
       "sourceType": "github",
       "skillPath": "skills/variant/SKILL.md",
       "computedHash": "9d6d18d4305ff7f46e2120c05596986800780fee069ac978c94d60b587cb80cc"
+    },
+    "video-shotcraft": {
+      "source": "Vincentwei1021/video-shotcraft",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "c6daeba26ded819bf03c3ec4e2d6d15bca27e3ea31331ca294ec657640d50e87"
     }
   }
 }
