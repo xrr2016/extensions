@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Prelook 隐私政策</title>
+    <!-- 主题初始化：必须在样式表之前执行，否则深色模式首帧会闪白 -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("prelook-landing-theme");
+          if (theme !== "light" && theme !== "dark") {
+            theme =
+              window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          }
+          document.documentElement.setAttribute("data-theme", theme);
+          var meta = document.getElementById("metaThemeColor");
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#111318" : "#f8f9fb");
+        } catch (e) {
+          /* 存储不可用（隐私模式）时按系统偏好走 */
+        }
+      })();
+    </script>
+    <meta
+      name="description"
+      content="Prelook 隐私政策：扩展不收集任何个人信息，无账号、无服务器，所有设置与处理均在本机完成。"
+    />
+    <link rel="icon" type="image/webp" href="./assets/logo.webp" />
+    <meta name="theme-color" id="metaThemeColor" content="#f8f9fb" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- 隐私政策页专用排版：只做文章版式，颜色/间距全部走设计令牌 -->
+    <style>
+      .privacy-doc {
+        max-width: 46rem;
+        margin: 0 auto;
+        padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-2xl);
+      }
+      .privacy-doc h1 {
+        font-size: 2rem;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        margin-bottom: var(--spacing-xs);
+      }
+      .privacy-doc .privacy-effective {
+        color: var(--text-tertiary);
+        font-size: 0.925rem;
+        margin-bottom: var(--spacing-md);
+      }
+      .privacy-doc .privacy-lead {
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-sm);
+      }
+      .privacy-summary {
+        background: var(--primary-light);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--primary);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin: var(--spacing-md) 0 var(--spacing-lg);
+        font-weight: 500;
+      }
+      .privacy-doc h2 {
+        font-size: 1.2rem;
+        margin: var(--spacing-lg) 0 var(--spacing-sm);
+        padding-top: var(--spacing-sm);
+        border-top: 1px solid var(--border);
+      }
+      .privacy-doc p {
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-sm);
+      }
+      .privacy-doc ul {
+        margin: 0 0 var(--spacing-sm);
+        padding-left: 1.4rem;
+        color: var(--text-secondary);
+      }
+      .privacy-doc li {
+        margin-bottom: var(--spacing-xs);
+      }
+      .privacy-doc li strong {
+        color: var(--text-primary);
+      }
+      .privacy-doc a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      .privacy-doc a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 键盘用户跳过导航：Tab 一下即可直达正文 -->
+    <a class="skip-link" href="#main" data-i18n="a11y.skip">跳到主要内容</a>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" id="top">
+      <div class="nav-container">
+        <a href="./index.html" class="nav-brand">
+          <img src="./assets/logo.webp" alt="Prelook" width="36" height="36" class="logo" />
+          <span class="brand-name">Prelook</span>
+        </a>
+
+        <div class="nav-menu" id="navMenu">
+          <a href="./index.html" class="nav-link" data-i18n="pr.nav.home">返回首页</a>
+        </div>
+
+        <div class="nav-actions">
+          <button
+            type="button"
+            class="lang-toggle"
+            id="langToggle"
+            aria-label="切换语言"
+            data-i18n-aria="pr.nav.lang"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="切换深浅色主题"
+            data-i18n-aria="pr.nav.theme"
+          >
+            <svg
+              class="icon-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              ></path>
+            </svg>
+            <svg
+              class="icon-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 9 9 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 隐私政策正文 -->
+    <main class="privacy-doc" id="main">
+      <h1 data-i18n="pr.title">Prelook 隐私政策</h1>
+      <p class="privacy-effective" data-i18n="pr.effective">生效日期：2026 年 9 月 20 日</p>
+      <p class="privacy-lead" data-i18n="pr.lead">
+        感谢你使用 Prelook。本政策说明 Prelook 浏览器扩展（下称「扩展」）以及 Prelook
+        官网（下称「网站」）如何处理你的数据。
+      </p>
+      <p class="privacy-summary" data-i18n="pr.summary">
+        一句话概括：Prelook 不收集你的任何个人信息。扩展没有账号体系、不设自有服务器，所有设置与绝大多数处理都在你的设备本地完成。
+      </p>
+
+      <section>
+        <h2 data-i18n="pr.s1t">1. 我们收集什么</h2>
+        <p data-i18n="pr.s1p1">
+          我们不收集任何个人身份信息。Prelook 不采集浏览历史、不追踪上网行为、不读取通讯录或文件，也不向开发者或任何第三方服务器上传任何数据。
+        </p>
+        <p data-i18n="pr.s1p2">
+          扩展不包含广告、不包含远程代码、不加载外部脚本，全部功能免费。
+        </p>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s2t">2. 扩展处理的数据</h2>
+        <p data-i18n="pr.s2intro">扩展仅在本地处理下列数据，用于实现其核心功能：</p>
+        <ul>
+          <li>
+            <strong data-i18n="pr.s2li1t">设置</strong
+            ><span data-i18n="pr.s2li1d">
+              ：你的偏好设置（触发方式、预览窗尺寸、主题、搜索引擎等）保存在浏览器本地的
+              chrome.storage.local 中，仅存于你的设备，不会上传。卸载扩展即删除。</span
+            >
+          </li>
+          <li>
+            <strong data-i18n="pr.s2li2t">悬停链接的 URL 与目标页内容</strong
+            ><span data-i18n="pr.s2li2d">
+              ：当你悬停、长按、拖动或通过右键菜单触发预览时，扩展会读取该链接地址，并由后台直接向目标网站请求页面内容，用于在预览窗中渲染（可内嵌时用
+              iframe，禁嵌站点自动切换阅读模式）。该请求不带你的 Cookie（credentials:
+              'omit'），由扩展直接从你的浏览器发往目标网站，不经过任何中转服务器。</span
+            >
+          </li>
+          <li>
+            <strong data-i18n="pr.s2li3t">链接预热</strong
+            ><span data-i18n="pr.s2li3d">
+              ：当你开启预热后，悬停的链接会通过浏览器原生的 Speculation Rules API
+              预取或预渲染，由浏览器直接向目标网站发起请求。你可以在扩展「性能」设置中随时关闭。</span
+            >
+          </li>
+          <li>
+            <strong data-i18n="pr.s2li4t">划词搜索与翻译</strong
+            ><span data-i18n="pr.s2li4d">
+              ：当你选中文字并点击搜索或翻译按钮时，选中文字会按你的选择发送给对应的搜索引擎或翻译服务（Google、Bing、DuckDuckGo、DeepSeek、豆包、Kimi、Perplexity、Google
+              翻译、Bing 翻译等）。这是你主动触发的操作；其中 DeepSeek、豆包、Kimi
+              三家仅打开其首页，文字由扩展复制到你的剪贴板、由你自行粘贴。</span
+            >
+          </li>
+          <li>
+            <strong data-i18n="pr.s2li5t">追踪参数清理与链接风险提示</strong
+            ><span data-i18n="pr.s2li5d">
+              ：剥离 utm_*、fbclid 等追踪参数、还原中转壳地址、判定链接是否存在仿冒风险，全部在本机完成，不发送任何数据。</span
+            >
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s3t">3. 数据的存储</h2>
+        <ul>
+          <li data-i18n="pr.s3li1">扩展设置存储于浏览器本地存储（chrome.storage.local）；</li>
+          <li data-i18n="pr.s3li2">
+            网站的主题与语言偏好存储于你浏览器的 localStorage；
+          </li>
+          <li data-i18n="pr.s3li3">以上数据均不离开你的设备。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s4t">4. 第三方服务</h2>
+        <p data-i18n="pr.s4p1">
+          划词搜索、AI 搜索与翻译在你主动触发时，会将你选中的文字发送给你选择的第三方服务。这些服务分别适用其各自的隐私政策：Google（policies.google.com/privacy）、Microsoft
+          Bing（privacy.microsoft.com）、DuckDuckGo（duckduckgo.com/privacy），以及
+          DeepSeek、豆包、Kimi、Perplexity 各服务官网的隐私政策。
+        </p>
+        <p data-i18n="pr.s4p2">
+          扩展本身不向这些服务之外的任何第三方披露你的数据。
+        </p>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s5t">5. 权限说明</h2>
+        <p data-i18n="pr.s5intro">扩展申请的权限均用于实现核心功能：</p>
+        <ul>
+          <li data-i18n="pr.s5li1">storage：在本地保存你的设置；</li>
+          <li data-i18n="pr.s5li2">tabs 与 contextMenus：在新标签页打开目标、提供右键菜单；</li>
+          <li data-i18n="pr.s5li3">
+            &lt;all_urls&gt; 主机权限：预览功能需要对任意悬停的链接发起预览请求（请求不带
+            Cookie）。
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s6t">6. 数据安全</h2>
+        <p data-i18n="pr.s6p1">
+          扩展代码开源、全部功能免费，不包含远程代码、不加载外部脚本、不投放广告。由于数据几乎不离开你的设备，本地数据的安全取决于你设备本身的安全状况。
+        </p>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s7t">7. 你的选择与控制</h2>
+        <ul>
+          <li data-i18n="pr.s7li1">你可以随时在扩展设置中关闭预热、划词搜索等功能；</li>
+          <li data-i18n="pr.s7li2">卸载扩展会删除其全部本地数据；</li>
+          <li data-i18n="pr.s7li3">
+            网站的主题与语言偏好可在浏览器设置中清除站点数据后重置。
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s8t">8. 政策更新</h2>
+        <p data-i18n="pr.s8p1">
+          如本政策发生变更，我们会在此页面发布更新版本，并在页面顶部注明生效日期。
+        </p>
+      </section>
+
+      <section>
+        <h2 data-i18n="pr.s9t">9. 联系我们</h2>
+        <p data-i18n="pr.s9p1">
+          如对本政策有任何疑问，可通过 GitHub（github.com/coldstoneboy）与我们联系。
+        </p>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="footer-brand-head">
+              <img
+                src="./assets/logo.webp"
+                alt=""
+                width="48"
+                height="48"
+                loading="lazy"
+                decoding="async"
+                class="footer-logo"
+              />
+              <span class="footer-name">Prelook</span>
+            </div>
+            <p data-i18n="pr.foot.privacy">Prelook 隐私政策</p>
+          </div>
+
+          <div class="footer-links">
+            <div class="footer-column">
+              <h4 data-i18n="pr.nav.home">返回首页</h4>
+              <a href="./index.html" data-i18n="pr.foot.home">首页</a>
+              <a href="./privacy.html" data-i18n="pr.foot.privacy">隐私政策</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 冷石Boy · <span data-i18n="pr.foot.rights">保留所有权利</span></p>
+          <div class="footer-meta">
+            <!-- 备案号是法定标识，不是文案：两种语言都原样保留，并且必须链到工信部
+                 备案系统（beian.miit.gov.cn），这是备案要求，不是可选的出处链接。 -->
+            <a
+              class="footer-filing"
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener"
+              >粤ICP备2026134562号</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <button class="to-top" data-i18n="pr.foot.top" aria-label="回到顶部">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M18 15l-6-6-6 6"></path>
+      </svg>
+    </button>
+
+    <script src="./js/privacy.js"></script>
+  </body>
+</html>

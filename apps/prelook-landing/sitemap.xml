@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Prelook 落地页 sitemap（URL 清单）。
+  站点域名：https://prelook.coldstoneboy.cn/（已配置）。
+  sitemap-index.xml 引用本文件；在 Google Search Console 提交 sitemap-index.xml 即可。
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- 首页：规范地址用根路径，不用 /index.html -->
+  <url>
+    <loc>https://prelook.coldstoneboy.cn/</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- 隐私政策页（Chrome Web Store 审核所需，站点常驻页） -->
+  <url>
+    <loc>https://prelook.coldstoneboy.cn/privacy.html</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

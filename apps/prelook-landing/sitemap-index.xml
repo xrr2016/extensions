@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Prelook 落地页 sitemap 索引。
+  站点域名：https://prelook.coldstoneboy.cn/（已配置，与 sitemap.xml 一致）。
+  在 Google Search Console 提交本文件；新增内容分区时，在此追加对应的 <sitemap> 条目。
+-->
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://prelook.coldstoneboy.cn/sitemap.xml</loc>
+    <lastmod>2026-09-20</lastmod>
+  </sitemap>
+</sitemapindex>
