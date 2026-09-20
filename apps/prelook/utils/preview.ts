@@ -492,15 +492,15 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         x = (vw - w) / 2;
         y = (vh - h) / 2;
         break;
-      // Horizontally centred like `center`, but parked in the upper / lower
-      // third of the free space so the page's own centre line stays visible.
+      // Horizontally centred like `center`, but flush against the top /
+      // bottom edge of the viewport.
       case "top":
         x = (vw - w) / 2;
-        y = (vh - h) / 3;
+        y = 0 + 8;
         break;
       case "bottom":
         x = (vw - w) / 2;
-        y = ((vh - h) * 2) / 3;
+        y = vh - h - 8;
         break;
       // Vertically centred, docked to the left / right edge.
       case "left":
@@ -520,7 +520,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     x += stack;
     y += stack;
     x = Math.min(Math.max(8, x), Math.max(8, vw - w - 8));
-    y = Math.min(Math.max(8, y), Math.max(8, vh - h - 8));
+    // 0 (not 8) so `top` / `bottom` windows can sit flush with the edge.
+    y = Math.min(Math.max(0, y), Math.max(0, vh - h));
     // Size comes from the --tp-w/--tp-h custom properties: a percentage follows
     // the viewport, px stays fixed on resize (place() re-runs either way).
     win.root.style.left = `${x}px`;
