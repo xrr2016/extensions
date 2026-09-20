@@ -61,7 +61,7 @@ const THEMES = [
 // RadioGroup options: computed so labels stay in sync with `t()` like the rest
 // of the panel; engine labels come from the engine tables verbatim.
 const triggerOptions = computed(() =>
-  (["hover", "longPress", "drag", "altHover"] as const).map((m) => ({
+  (["hover", "click", "longPress", "drag", "altHover"] as const).map((m) => ({
     value: m,
     label: t(`trigger.${m}`),
   })),

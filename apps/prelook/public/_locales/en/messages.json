@@ -95,6 +95,9 @@
   "trigger_hover": {
     "message": "On hover"
   },
+  "trigger_click": {
+    "message": "On click"
+  },
   "trigger_altHover": {
     "message": "Alt + hover"
   },

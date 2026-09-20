@@ -92,6 +92,9 @@
   "trigger_hover": {
     "message": "悬停触发"
   },
+  "trigger_click": {
+    "message": "单击链接"
+  },
   "trigger_altHover": {
     "message": "Alt + 悬停"
   },

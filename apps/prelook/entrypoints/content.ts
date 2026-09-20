@@ -409,6 +409,12 @@ export default defineContentScript({
     // original <a>. Calling anchorHref in that case returns null (it bails on
     // uiHost.contains), the click escapes preventDefault, and the browser
     // navigates — opening a new tab for target="_blank" links.
+    //
+    // `click` trigger mode lives in the same capture listener: a plain left
+    // click on a link opens the preview instead of navigating. Every modifier
+    // combination keeps its native meaning (Ctrl/Cmd+click and middle-click
+    // open a background tab, Shift+click a new window, Alt+click downloads), so
+    // only a modifier-free primary click is intercepted.
     ctx.addEventListener(
       document,
       "click",
@@ -417,7 +423,34 @@ export default defineContentScript({
           suppressClickUrl = null;
           e.preventDefault();
           e.stopPropagation();
+          return;
         }
+        const event = e as MouseEvent;
+        if (
+          !settings.enabled ||
+          settings.triggerMode !== "click" ||
+          event.button !== 0 ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+        if (selection?.isVisible()) return; // don't stack a preview onto the toolbar
+        const hit = anchorHref(event);
+        if (!hit) return;
+        // Stop the native navigation synchronously; opening happens once the
+        // UI host is ready.
+        event.preventDefault();
+        event.stopPropagation();
+        const info = toAnchorInfo(
+          hit.anchor,
+          hit.url,
+          event,
+          clampSettings(settings).warnDangerous,
+        );
+        void ensureUi().then(() => preview?.open(info));
       },
       true,
     );
