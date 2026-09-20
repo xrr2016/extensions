@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://prelook.coldstoneboy.cn/sitemap-index.xml
