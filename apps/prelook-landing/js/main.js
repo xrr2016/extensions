@@ -5,9 +5,7 @@
   var I18N = {
     "zh-CN": {
       "nav.features": "功能",
-      "nav.speed": "极速",
       "nav.install": "安装",
-      "nav.reviews": "评价",
       "nav.sponsor": "赞助",
       "nav.faq": "FAQ",
       "nav.theme": "切换深浅色主题",
@@ -18,15 +16,17 @@
       "hero.title1": "悬停即预览，",
       "hero.title2": "不必点开",
       "hero.desc": "鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。",
-      "hero.videoAria": "Prelook 使用演示：指针停在链接上，预览窗浮出并渲染这个页面",
-      "hero.videoPlay": "播放演示",
-      "hero.videoPause": "暂停演示",
 
-      // 安装入口：hero 与页尾色带各一份，四颗等权
+      // 安装入口：hero 卡片组 + 页尾色带按钮组
+      "install.storeLabel": "安装浏览器插件",
+      "install.zipLabel": "离线压缩包",
+      "install.zipChromeCard": "Chrome、Edge",
+      "install.zipFirefoxCard": "Firefox",
       "install.chrome": "Chrome 安装",
       "install.edge": "Edge 安装",
       "install.firefox": "Firefox 安装",
-      "install.manual": "手动安装",
+      "install.zipChrome": "离线包（Chrome / Edge）",
+      "install.zipFirefox": "离线包（Firefox）",
 
       "cta.badge": "三个浏览器，同一份代码",
       "cta.title": "现在就用起来",
@@ -85,38 +85,6 @@
       "f.privacy.g1": "无账号",
       "f.privacy.g2": "无服务器",
 
-      "speed.title": "极速预览，快在每一环",
-      "speed.subtitle": "从悬停到呈现，三步把等待压缩到感知之外",
-      "speed.s1t": "悬停即预热",
-      "speed.s1d":
-        "鼠标停在链接上的刹那，浏览器原生 Speculation Rules 已把目标页加入下载队列——不经过任何第三方服务器。",
-      "speed.s2t": "预览窗秒开",
-      "speed.s2d":
-        "预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。",
-      "speed.s3t": "点击零等待",
-      "speed.s3d": "开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。",
-      "speed.compare": "加载耗时对比",
-      "speed.cold": "冷启动加载",
-      "speed.warm": "Prelook 预热后",
-      "speed.note": "示意对比：预热后的预览窗直接呈现本地已有内容。",
-
-      // 占位评价：上线前必须换成可核实的真实评价原文与昵称，
-      // 不要为了让版式好看而编造或改写原话。
-      "reviews.title": "用户怎么说",
-      "reviews.subtitle": "别只听我们说——看看装上之后的人怎么讲。",
-      "reviews.r1.name": "示例用户 A",
-      "reviews.r1.text": "（占位）这条换成真实评价的原文。",
-      "reviews.r2.name": "示例用户 B",
-      "reviews.r2.text": "（占位）昵称也要替换成评价者本人的。",
-      "reviews.r3.name": "示例用户 C",
-      "reviews.r3.text": "（占位）建议照抄原文，不要自己润色改写。",
-      "reviews.r4.name": "示例用户 D",
-      "reviews.r4.text": "（占位）长短不一的评价会自然形成错落的三栏。",
-      "reviews.r5.name": "示例用户 E",
-      "reviews.r5.text": "（占位）头像右下角的小图标表示评价者用的浏览器。",
-      "reviews.r6.name": "示例用户 F",
-      "reviews.r6.text": "（占位）没有真实评价之前，这一段先别上线。",
-
       "sponsor.title": "赞助支持",
       "sponsor.subtitle": "Prelook 完全免费、无账号、无服务器。如果它帮到了你，欢迎扫码赞助，支持后续开发。",
       "sponsor.wechat": "微信支付",
@@ -151,9 +119,7 @@
 
     en: {
       "nav.features": "Features",
-      "nav.speed": "Speed",
       "nav.install": "Install",
-      "nav.reviews": "Reviews",
       "nav.sponsor": "Sponsor",
       "nav.faq": "FAQ",
       "nav.theme": "Toggle color theme",
@@ -165,16 +131,17 @@
       "hero.title2": "no wasted clicks",
       "hero.desc":
         "The instant your cursor lands on a link, its page is already loading — preview first, decide after.",
-      "hero.videoAria":
-        "Prelook in action: the pointer rests on a link and a preview window opens with that page",
-      "hero.videoPlay": "Play the demo",
-      "hero.videoPause": "Pause the demo",
 
-      // Install entries: one set in the hero, one in the closing band, all equal
+      // Install entries: hero card groups + closing band buttons
+      "install.storeLabel": "Install the extension",
+      "install.zipLabel": "Offline packages",
+      "install.zipChromeCard": "Chrome & Edge",
+      "install.zipFirefoxCard": "Firefox",
       "install.chrome": "Install for Chrome",
       "install.edge": "Install for Edge",
       "install.firefox": "Install for Firefox",
-      "install.manual": "Manual install",
+      "install.zipChrome": "Offline (Chrome / Edge)",
+      "install.zipFirefox": "Offline (Firefox)",
 
       "cta.badge": "Three browsers, one codebase",
       "cta.title": "Get it running today",
@@ -235,39 +202,6 @@
       "f.privacy.d": "No account, no server — data never leaves your device.",
       "f.privacy.g1": "No account",
       "f.privacy.g2": "No server",
-
-      "speed.title": "Engineered for speed",
-      "speed.subtitle": "Three steps that compress waiting out of your perception",
-      "speed.s1t": "Warm on hover",
-      "speed.s1d":
-        "The instant you hover a link, the browser-native Speculation Rules API queues the target page — through no third-party server.",
-      "speed.s2t": "Instant preview",
-      "speed.s2d":
-        "The preview window hits a warm cache; embeddable sites render right away, blocked sites flow into reader mode.",
-      "speed.s3t": "Zero-wait click",
-      "speed.s3d":
-        "With prerendering on, the page is already painted in the background — clicking navigates instantly.",
-      "speed.compare": "Load time comparison",
-      "speed.cold": "Cold load",
-      "speed.warm": "After Prelook warm-up",
-      "speed.note": "Illustrative: a warmed preview window shows what is already on your machine.",
-
-      // Placeholder reviews: replace every entry with a verifiable real review
-      // before shipping. Never invent reviews or rewrite the original wording.
-      "reviews.title": "What our users say",
-      "reviews.subtitle": "Not just our word for it — here is what users say.",
-      "reviews.r1.name": "Sample user A",
-      "reviews.r1.text": "(Placeholder) Replace this with the text of a real review.",
-      "reviews.r2.name": "Sample user B",
-      "reviews.r2.text": "(Placeholder) Swap the name for the actual reviewer.",
-      "reviews.r3.name": "Sample user C",
-      "reviews.r3.text": "(Placeholder) Copy the wording as-is from the source; do not polish it.",
-      "reviews.r4.name": "Sample user D",
-      "reviews.r4.text": "(Placeholder) Uneven lengths are what makes the three columns stagger.",
-      "reviews.r5.name": "Sample user E",
-      "reviews.r5.text": "(Placeholder) The small icon shows which browser the reviewer used.",
-      "reviews.r6.name": "Sample user F",
-      "reviews.r6.text": "(Placeholder) Do not publish this section until real reviews exist.",
 
       "sponsor.title": "Support the project",
       "sponsor.subtitle": "Prelook is completely free — no account, no server. If it helps you, scan a QR code to keep development going.",
@@ -357,8 +291,6 @@
     }
     document.title = TITLES[current];
     writeStore(LANG_KEY, current);
-    // 演示视频那个按钮的文案跟着播放状态走，切换语言时也要重算一遍
-    syncDemoButton();
   }
 
   if (langBtn) {
@@ -528,11 +460,8 @@
   var revealTargets = []
     .concat(Array.prototype.slice.call(document.querySelectorAll(".section-header")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".features-grid .feature-card")))
-    .concat(Array.prototype.slice.call(document.querySelectorAll(".steps-grid .step-card")))
-    .concat(Array.prototype.slice.call(document.querySelectorAll(".reviews-grid .review-card")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".sponsor-grid .sponsor-tile")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".faq-list details")))
-    .concat(Array.prototype.slice.call(document.querySelectorAll(".compare")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".cta-copy, .cta-art")))
     .concat(Array.prototype.slice.call(document.querySelectorAll(".footer-content")));
 
@@ -562,7 +491,7 @@
 
   if (!reduceMotion && "IntersectionObserver" in window) {
     // 同组卡片按序号错峰出现（最多 350ms），避免整片一起闪
-    [".features-grid", ".steps-grid", ".reviews-grid", ".sponsor-grid"].forEach(function (sel) {
+    [".features-grid", ".sponsor-grid"].forEach(function (sel) {
       var group = document.querySelector(sel);
       if (!group) return;
       Array.prototype.slice.call(group.children).forEach(function (child, index) {
@@ -591,47 +520,6 @@
       revealObserver.observe(el);
     });
     sweepReveals();
-  }
-
-  /* ---------- hero 演示视频 ---------- */
-  // 一段真实录屏。静音 + 循环才允许自动播放，而"减少动态效果"和浏览器的省电
-  // 策略都可能让它播不起来——播不动就停在 poster 上，按钮回到"播放"图标，
-  // 不要留一个不动的框让人以为是坏了。
-  var demoVideo = document.getElementById("demoVideo");
-  var demoToggle = document.getElementById("demoToggle");
-
-  function syncDemoButton() {
-    if (!demoVideo || !demoToggle) return;
-    var paused = demoVideo.paused;
-    var key = paused ? "hero.videoPlay" : "hero.videoPause";
-    demoToggle.setAttribute("data-paused", paused ? "true" : "false");
-    // 保持 data-i18n-aria 与当前状态一致，applyLang 才会补上对的文案
-    demoToggle.setAttribute("data-i18n-aria", key);
-    var label = I18N[current][key];
-    if (label !== undefined) {
-      demoToggle.setAttribute("aria-label", label);
-      demoToggle.title = label;
-    }
-  }
-
-  function playDemo() {
-    var attempt = demoVideo.play();
-    if (attempt && attempt.catch) {
-      attempt.catch(function () {
-        syncDemoButton();
-      });
-    }
-  }
-
-  if (demoVideo && demoToggle) {
-    demoToggle.addEventListener("click", function () {
-      if (demoVideo.paused) playDemo();
-      else demoVideo.pause();
-    });
-    demoVideo.addEventListener("play", syncDemoButton);
-    demoVideo.addEventListener("pause", syncDemoButton);
-    if (!reduceMotion) playDemo();
-    syncDemoButton();
   }
 
   /* ---------- 按钮涟漪 ---------- */

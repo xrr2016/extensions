@@ -56,13 +56,11 @@
           <span class="brand-name">Prelook</span>
         </a>
 
-        <!-- 顺序严格跟着页面走：功能 → 极速 → 评价 → FAQ → 安装。
+        <!-- 顺序严格跟着页面走：功能 → 赞助 → FAQ → 安装。
              「安装」指页尾那条色带而不是 hero：hero 是第一屏，本来就在眼前，
              真要点导航找安装的人是在页面下半部分，指向底部才走得近。 -->
         <div class="nav-menu" id="navMenu">
           <a href="#features" class="nav-link" data-i18n="nav.features">功能</a>
-          <a href="#speed" class="nav-link" data-i18n="nav.speed">极速</a>
-          <a href="#reviews" class="nav-link" data-i18n="nav.reviews">评价</a>
           <a href="#sponsor" class="nav-link" data-i18n="nav.sponsor">赞助</a>
           <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
           <a href="#get" class="nav-link" data-i18n="nav.install">安装</a>
@@ -148,7 +146,7 @@
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            <span data-i18n="hero.title1">悬停即预览，</span
+            <span data-i18n="hero.title1">极速预览，</span
             ><span class="gradient-text" data-i18n="hero.title2">不必点开</span>
           </h1>
 
@@ -156,86 +154,104 @@
             鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。
           </p>
 
-          <div class="hero-actions">
-            <a class="btn install-btn" href="#">
-              <img
-                class="browser-logo"
-                src="./assets/browser-chrome.svg"
-                alt=""
-                width="24"
-                height="24"
-              />
-              <span data-i18n="install.chrome">Chrome 安装</span>
-            </a>
-            <a class="btn install-btn" href="#">
-              <img
-                class="browser-logo"
-                src="./assets/browser-edge.svg"
-                alt=""
-                width="24"
-                height="24"
-              />
-              <span data-i18n="install.edge">Edge 安装</span>
-            </a>
-            <a class="btn install-btn" href="#">
-              <img
-                class="browser-logo"
-                src="./assets/browser-firefox.svg"
-                alt=""
-                width="24"
-                height="24"
-              />
-              <span data-i18n="install.firefox">Firefox 安装</span>
-            </a>
-            <a class="btn install-btn" href="#">
-              <svg
-                class="browser-logo"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-              >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-              <span data-i18n="install.manual">手动安装</span>
-            </a>
-          </div>
-        </div>
+          <div class="install-grid">
+            <div class="install-group">
+              <p class="install-group-label" data-i18n="install.storeLabel">安装浏览器插件</p>
+              <div class="install-cards">
+                <a
+                  class="install-card"
+                  href="https://chromewebstore.google.com/detail/bakhoimjnmigalolahgmbeflgifobeho"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    class="install-card-icon"
+                    src="./assets/browser-chrome.svg"
+                    alt=""
+                    width="48"
+                    height="48"
+                  />
+                  <span>Chrome</span>
+                </a>
+                <a
+                  class="install-card"
+                  href="https://microsoftedge.microsoft.com/addons/detail/cfaoggmjcpfmmklonlgjbjgihnenfmmk"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    class="install-card-icon"
+                    src="./assets/browser-edge.svg"
+                    alt=""
+                    width="48"
+                    height="48"
+                  />
+                  <span>Edge</span>
+                </a>
+                <a
+                  class="install-card"
+                  href="https://addons.mozilla.org/zh-CN/firefox/addon/prelook/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    class="install-card-icon"
+                    src="./assets/browser-firefox.svg"
+                    alt=""
+                    width="48"
+                    height="48"
+                  />
+                  <span>Firefox</span>
+                </a>
+              </div>
+            </div>
 
-        <div class="hero-visual">
-          <div class="app-preview">
-            <div class="demo-frame">
-              <video
-                class="demo-video"
-                id="demoVideo"
-                width="928"
-                height="700"
-                poster="assets/demo-poster.webp"
-                muted
-                loop
-                playsinline
-                preload="metadata"
-                data-i18n-aria="hero.videoAria"
-              >
-                <source src="assets/demo.mp4" type="video/mp4" />
-              </video>
-              <button
-                class="demo-toggle"
-                id="demoToggle"
-                type="button"
-                data-i18n-aria="hero.videoPause"
-              >
-                <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="7" y="5" width="3.6" height="14" rx="1.2"></rect>
-                  <rect x="13.4" y="5" width="3.6" height="14" rx="1.2"></rect>
-                </svg>
-                <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.5 5.6v12.8l10.4-6.4z"></path>
-                </svg>
-              </button>
+            <div class="install-group">
+              <p class="install-group-label" data-i18n="install.zipLabel">离线压缩包</p>
+              <div class="install-cards">
+                <a
+                  class="install-card"
+                  href="https://prelook.s3.bitiful.net/prelook-1.4.0-chrome.zip"
+                  download
+                >
+                  <svg
+                    class="install-card-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span data-i18n="install.zipChromeCard">Chrome、Edge</span>
+                </a>
+                <a
+                  class="install-card"
+                  href="https://prelook.s3.bitiful.net/prelook-1.4.0-firefox.zip"
+                  download
+                >
+                  <svg
+                    class="install-card-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span data-i18n="install.zipFirefoxCard">Firefox</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -251,22 +267,6 @@
         </div>
 
         <div class="features-grid">
-          <div class="feature-card featured">
-            <div class="feature-badge" data-i18n="f.preview.tag">核心</div>
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </div>
-            <h3 data-i18n="f.preview.t">链接预览</h3>
-            <p data-i18n="f.preview.d">悬停链接即浮出内容预览，是否打开由你决定。</p>
-            <div class="feature-tags">
-              <span class="tag" data-i18n="f.preview.g1">悬停即预览</span>
-              <span class="tag" data-i18n="f.preview.g2">见后再开</span>
-            </div>
-          </div>
-
           <div class="feature-card">
             <div class="feature-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -325,6 +325,22 @@
             <div class="feature-tags">
               <span class="tag" data-i18n="f.search.g1">4 大引擎</span>
               <span class="tag" data-i18n="f.search.g2">选中即搜</span>
+            </div>
+          </div>
+
+          <div class="feature-card featured">
+            <div class="feature-badge" data-i18n="f.preview.tag">核心</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h3 data-i18n="f.preview.t">链接预览</h3>
+            <p data-i18n="f.preview.d">悬停链接即浮出内容预览，是否打开由你决定。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.preview.g1">极速预览</span>
+              <span class="tag" data-i18n="f.preview.g2">见后再开</span>
             </div>
           </div>
 
@@ -390,206 +406,52 @@
       </div>
     </section>
 
-    <!-- 极速原理 -->
-    <section id="speed" class="speed">
+    <!-- 常见问题 -->
+    <section id="faq" class="faq">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Speed</span>
-          <h2 class="section-title" data-i18n="speed.title">极速预览，快在每一环</h2>
+          <span class="section-tag">FAQ</span>
+          <h2 class="section-title" data-i18n="faq.title">常见问题</h2>
         </div>
 
-        <div class="steps-grid">
-          <div class="step-card">
-            <span class="step-num">01</span>
-            <h3 data-i18n="speed.s1t">悬停即预热</h3>
-            <p data-i18n="speed.s1d">
-              鼠标停在链接上的刹那，浏览器原生 Speculation Rules
-              已把目标页加入下载队列——不经过任何第三方服务器。
+        <div class="faq-list">
+          <details open>
+            <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
+            <p data-i18n="faq.a1">
+              部分网站禁止被内嵌，Prelook
+              会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。
             </p>
-          </div>
+          </details>
 
-          <div class="step-card">
-            <span class="step-num">02</span>
-            <h3 data-i18n="speed.s2t">预览窗秒开</h3>
-            <p data-i18n="speed.s2d">
-              预览窗出现时直接命中缓存；可内嵌的站点一步到位，禁止内嵌的站点无缝转入阅读模式。
+          <details>
+            <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
+            <p data-i18n="faq.a2">
+              不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。
             </p>
-          </div>
+          </details>
 
-          <div class="step-card">
-            <span class="step-num">03</span>
-            <h3 data-i18n="speed.s3t">点击零等待</h3>
-            <p data-i18n="speed.s3d">
-              开启预渲染后，页面在后台提前完成渲染，真正点击时跳转即呈现。
+          <details>
+            <summary data-i18n="faq.q3">Prelook 收费吗？</summary>
+            <p data-i18n="faq.a3">
+              完全免费，没有 Pro
+              版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。
             </p>
-          </div>
-        </div>
+          </details>
 
-        <div class="compare">
-          <h4 class="compare-title" data-i18n="speed.compare">加载耗时对比</h4>
-          <div class="cmp-row">
-            <span class="cmp-label" data-i18n="speed.cold">冷启动加载</span>
-            <div class="cmp-bar cold"><i></i></div>
-          </div>
-          <div class="cmp-row">
-            <span class="cmp-label" data-i18n="speed.warm">Prelook 预热后</span>
-            <div class="cmp-bar warm"><i>⚡</i></div>
-          </div>
-          <p class="compare-note" data-i18n="speed.note">
-            示意对比：预热后的预览窗直接呈现本地已有内容。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 用户评价 -->
-    <!-- ⚠️ 下面六条是占位内容，不是真实评价。上线前必须逐条替换：把 reviews.rN.name /
-         reviews.rN.text 两个语言都改成可核实的真实评价（例如商店后台里的原文与昵称），
-         并按评价者实际使用的浏览器改掉卡片右上角的浏览器图标。
-         不要为了让版式好看而编造评价或改写原话。 -->
-    <section id="reviews" class="reviews">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Reviews</span>
-          <h2 class="section-title" data-i18n="reviews.title">用户怎么说</h2>
-        </div>
-
-        <div class="reviews-grid">
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-chrome.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r1.name">示例用户 A</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r1.text">（占位）这条换成真实评价的原文。</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-edge.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r2.name">示例用户 B</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r2.text">
-              （占位）昵称也要替换成评价者本人的。
+          <details>
+            <summary data-i18n="faq.q4">预览为什么这么快？</summary>
+            <p data-i18n="faq.a4">
+              Prelook 使用浏览器原生的 Speculation Rules
+              API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。
             </p>
-          </div>
+          </details>
 
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-firefox.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r3.name">示例用户 C</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r3.text">
-              （占位）建议照抄原文，不要自己润色改写。
+          <details>
+            <summary data-i18n="faq.q5">会不会拖慢浏览器？</summary>
+            <p data-i18n="faq.a5">
+              不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。
             </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-chrome.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r4.name">示例用户 D</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r4.text">
-              （占位）长短不一的评价会自然形成错落的三栏。
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-edge.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r5.name">示例用户 E</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r5.text">
-              （占位）头像右下角的小图标表示评价者用的浏览器。
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-head">
-              <div class="review-avatar">
-                <svg class="avatar-glyph" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5z"
-                  ></path>
-                </svg>
-                <span class="review-badge">
-                  <img src="./assets/browser-firefox.svg" alt="" width="20" height="20" />
-                </span>
-              </div>
-              <div class="review-who">
-                <span class="review-name" data-i18n="reviews.r6.name">示例用户 F</span>
-                <span class="review-stars" role="img" aria-label="5 / 5">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-text" data-i18n="reviews.r6.text">
-              （占位）没有真实评价之前，这一段先别上线。
-            </p>
-          </div>
+          </details>
         </div>
       </div>
     </section>
@@ -641,63 +503,8 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          <svg class="kofi-logo" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M2 8c0-2.8 2.2-5 5-5s5 2.2 5 5v1h1c3.3 0 6 2.7 6 6v1c0 2.2-1.8 4-4 4H8l-4 4v-3c-1.7-.7-3-2.4-3-4.5V8zm5-3C5.2 5 4 6.2 4 8v2h8V8c0-1.8-1.2-3-3-3s-3 1.2-3 3z"
-            />
-          </svg>
-          <span>Support me on Ko-fi</span>
+          <img src="./assets/kofi.jpg" alt="Support me on Ko-fi" loading="lazy" decoding="async" />
         </a>
-      </div>
-    </section>
-
-    <!-- 常见问题 -->
-    <section id="faq" class="faq">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">FAQ</span>
-          <h2 class="section-title" data-i18n="faq.title">常见问题</h2>
-        </div>
-
-        <div class="faq-list">
-          <details open>
-            <summary data-i18n="faq.q1">预览窗口是空白的怎么办？</summary>
-            <p data-i18n="faq.a1">
-              部分网站禁止被内嵌，Prelook
-              会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。
-            </p>
-          </details>
-
-          <details>
-            <summary data-i18n="faq.q2">我的数据会被上传吗？</summary>
-            <p data-i18n="faq.a2">
-              不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。
-            </p>
-          </details>
-
-          <details>
-            <summary data-i18n="faq.q3">Prelook 收费吗？</summary>
-            <p data-i18n="faq.a3">
-              完全免费，没有 Pro
-              版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。
-            </p>
-          </details>
-
-          <details>
-            <summary data-i18n="faq.q4">预览为什么这么快？</summary>
-            <p data-i18n="faq.a4">
-              Prelook 使用浏览器原生的 Speculation Rules
-              API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。
-            </p>
-          </details>
-
-          <details>
-            <summary data-i18n="faq.q5">会不会拖慢浏览器？</summary>
-            <p data-i18n="faq.a5">
-              不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。
-            </p>
-          </details>
-        </div>
       </div>
     </section>
 
@@ -712,7 +519,12 @@
           <p class="cta-sub" data-i18n="cta.sub">装完即用，不用注册，也不用登录。</p>
 
           <div class="cta-actions">
-            <a class="btn install-btn" href="#">
+            <a
+              class="btn install-btn"
+              href="https://chromewebstore.google.com/detail/bakhoimjnmigalolahgmbeflgifobeho"
+              target="_blank"
+              rel="noopener"
+            >
               <img
                 class="browser-logo"
                 src="./assets/browser-chrome.svg"
@@ -722,7 +534,12 @@
               />
               <span data-i18n="install.chrome">Chrome 安装</span>
             </a>
-            <a class="btn install-btn" href="#">
+            <a
+              class="btn install-btn"
+              href="https://microsoftedge.microsoft.com/addons/detail/cfaoggmjcpfmmklonlgjbjgihnenfmmk"
+              target="_blank"
+              rel="noopener"
+            >
               <img
                 class="browser-logo"
                 src="./assets/browser-edge.svg"
@@ -732,7 +549,12 @@
               />
               <span data-i18n="install.edge">Edge 安装</span>
             </a>
-            <a class="btn install-btn" href="#">
+            <a
+              class="btn install-btn"
+              href="https://addons.mozilla.org/zh-CN/firefox/addon/prelook/"
+              target="_blank"
+              rel="noopener"
+            >
               <img
                 class="browser-logo"
                 src="./assets/browser-firefox.svg"
@@ -742,7 +564,11 @@
               />
               <span data-i18n="install.firefox">Firefox 安装</span>
             </a>
-            <a class="btn install-btn" href="#">
+            <a
+              class="btn install-btn"
+              href="https://prelook.s3.bitiful.net/prelook-1.4.0-chrome.zip"
+              download
+            >
               <svg
                 class="browser-logo"
                 viewBox="0 0 24 24"
@@ -751,11 +577,30 @@
                 stroke-width="2"
                 aria-hidden="true"
               >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
               </svg>
-              <span data-i18n="install.manual">手动安装</span>
+              <span data-i18n="install.zipChrome">离线包（Chrome / Edge）</span>
+            </a>
+            <a
+              class="btn install-btn"
+              href="https://prelook.s3.bitiful.net/prelook-1.4.0-firefox.zip"
+              download
+            >
+              <svg
+                class="browser-logo"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span data-i18n="install.zipFirefox">离线包（Firefox）</span>
             </a>
           </div>
         </div>
@@ -811,15 +656,13 @@
               />
               <span class="footer-name">Prelook</span>
             </div>
-            <p data-i18n="footer.about">Prelook 悬停即预览，不必再点开。</p>
+            <p data-i18n="footer.about">Prelook 极速预览，不必点开。</p>
           </div>
 
           <div class="footer-links">
             <div class="footer-column">
               <h4 data-i18n="footer.links">快速链接</h4>
               <a href="#features" data-i18n="nav.features">功能</a>
-              <a href="#speed" data-i18n="nav.speed">极速</a>
-              <a href="#reviews" data-i18n="nav.reviews">评价</a>
               <a href="#sponsor" data-i18n="nav.sponsor">赞助</a>
               <a href="#faq" data-i18n="nav.faq">FAQ</a>
               <a href="#get" data-i18n="nav.install">安装</a>

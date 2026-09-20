@@ -11,7 +11,6 @@
   --primary-hover: #3f5ae8;
   --primary-light: rgba(79, 107, 246, 0.1);
   --primary-shadow: rgba(79, 107, 246, 0.3);
-  --violet: #8b5cf6;
 
   /* 辅助色 */
   --success: #16a34a;
@@ -28,8 +27,8 @@
   --text-tertiary: #64748b;
   --border: #e2e6ea;
 
-  /* 渐变与阴影（都带主色，避免灰扑扑） */
-  --gradient-1: linear-gradient(135deg, #4f6bf6 0%, #8b5cf6 100%);
+  /* 渐变与阴影：渐变统一取自 logo 主色（#5872f5 蓝）及其深浅变体，不再混紫 */
+  --gradient-1: linear-gradient(135deg, #5872f5 0%, #3b53d6 100%);
   --shadow-sm: 0 1px 3px rgba(79, 107, 246, 0.06);
   --shadow-md: 0 4px 12px rgba(79, 107, 246, 0.08);
   --shadow-lg: 0 8px 24px rgba(79, 107, 246, 0.1);
@@ -78,7 +77,7 @@
   --text-tertiary: #7d8c9f;
   --border: #2d333b;
 
-  --gradient-1: linear-gradient(135deg, #6d86ff 0%, #a78bfa 100%);
+  --gradient-1: linear-gradient(135deg, #8aa4ff 0%, #5872f5 100%);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
@@ -488,13 +487,13 @@ body::after {
 
 .hero-container {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: var(--spacing-2xl);
-  align-items: center;
+  grid-template-columns: 1fr;
+  justify-items: center;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
+  text-align: center;
 }
 
 .hero-title {
@@ -515,29 +514,76 @@ body::after {
   color: var(--text-secondary);
   margin-bottom: var(--spacing-lg);
   max-width: 32rem;
-}
-
-/* 安装入口就在 hero 里。两列而不是一行四颗：hero 的文字栏只有 ~557px，
-   一行塞不下四颗带图标的按钮。max-width 是给单列后的平板准备的，
-   否则每颗会被拉到半屏宽。 */
-.hero-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.625rem;
-  max-width: 560px;
   margin-inline: auto;
-  /* Gap used to come from .hero-stats' bottom margin above; with the stats
-     removed this needs its own spacing. */
-  margin-top: var(--spacing-xl);
 }
 
-/* 四个入口等权：Chrome 不做强调，避免暗示"只该装 Chrome" */
+/* 安装入口就在 hero 里，按参考稿做成两组卡片：商店安装三颗、离线包两颗。
+   卡片自带主题令牌（--bg-primary / --border），深浅主题自动跟随。 */
+.install-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
+}
+
+.install-group-label {
+  margin-bottom: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.install-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.install-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  min-width: 8.25rem;
+  padding: 1.75rem 1.5rem 1.25rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.install-card:hover,
+.install-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  color: var(--primary);
+}
+
+.install-card-icon {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  /* 离线包的线性下载图标取主题色，与参考稿的蓝色箭头一致 */
+  color: var(--primary);
+  stroke-width: 2;
+}
+
+/* 页尾色带（#get）还在用的按钮式安装入口 */
 .install-btn {
   gap: 0.625rem;
   padding: 0.75rem 1rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  /* 两列并排时"Firefox 安装"最长，折行会把它顶成两行高 */
   white-space: nowrap;
   background: var(--bg-primary);
   border: 1px solid var(--border);
@@ -551,99 +597,10 @@ body::after {
   box-shadow: var(--shadow-md);
 }
 
-/* 前三颗挂浏览器官方多色 logo，第四颗是内联的"外链"线性图标 */
 .browser-logo {
   width: 22px;
   height: 22px;
   flex: none;
-}
-
-/* 英雄区域右侧的产品示意 */
-.hero-visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.app-preview {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-}
-
-/* 录屏后面垫一层柔光，免得它像一块贴上去的白色方块 */
-.app-preview::before {
-  content: "";
-  position: absolute;
-  inset: -8% -4%;
-  background: radial-gradient(closest-side, rgba(79, 107, 246, 0.3), transparent 72%);
-  filter: blur(30px);
-  pointer-events: none;
-}
-
-.demo-frame {
-  position: relative;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  background: var(--bg-primary);
-  box-shadow: var(--shadow-xl);
-  overflow: hidden;
-}
-
-/* 宽高属性自带 928×700 的宽高比，元数据到位前也占得住位置。
-   录屏内容永远是浅色页面，所以它不参与深浅主题切换。 */
-.demo-video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.demo-toggle {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  /* 固定浅色而不取主题令牌：它压在白色录屏上，深色主题里跟着变深就糊了 */
-  color: #4a5160;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.16);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  opacity: 0.72;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-.demo-toggle:hover,
-.demo-toggle:focus-visible {
-  opacity: 1;
-}
-
-.demo-toggle svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-/* 正在播放时给的是"暂停"图标，暂停时换成"播放"图标 */
-.demo-toggle .icon-play {
-  display: none;
-}
-
-.demo-toggle[data-paused="true"] .icon-play {
-  display: block;
-}
-
-.demo-toggle[data-paused="true"] .icon-pause {
-  display: none;
 }
 
 /* ---------- 区块标题 ---------- */
@@ -770,263 +727,10 @@ section {
   border-radius: var(--radius-sm);
 }
 
-/* ---------- 极速原理 ---------- */
-.speed {
-  background: var(--bg-primary);
-}
-
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-md);
-}
-
-.step-card {
-  position: relative;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.step-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.step-num {
-  display: block;
-  font-size: 1.875rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  background: var(--gradient-1);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-.step-card h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: var(--spacing-xs) 0 var(--spacing-xs);
-}
-
-.step-card p {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-}
-
-.step-card::after {
-  content: "→";
-  position: absolute;
-  right: -18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-tertiary);
-  font-size: 1.125rem;
-}
-
-.step-card:last-child::after {
-  content: none;
-}
-
-.compare {
-  max-width: 660px;
-  margin: var(--spacing-xl) auto 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg) var(--spacing-md);
-}
-
-.compare-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.cmp-row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin: 10px 0;
-}
-
-.cmp-label {
-  flex: none;
-  width: 132px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.cmp-bar {
-  flex: 1;
-  height: 18px;
-  border-radius: 9999px;
-  background: var(--bg-tertiary);
-  overflow: hidden;
-}
-
-.cmp-bar i {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 100%;
-  padding-right: 8px;
-  border-radius: 9999px;
-  font-style: normal;
-  font-size: 0.75rem;
-  color: #fff;
-}
-
-.cmp-bar.cold i {
-  width: 0;
-  background: linear-gradient(90deg, #c3cadb, #97a1b8);
-  animation: coldfill 4.5s ease-in-out infinite;
-}
-
-.cmp-bar.warm i {
-  width: 0;
-  background: var(--gradient-1);
-  animation: warmfill 4.5s ease-out infinite;
-}
-
-@keyframes coldfill {
-  0% {
-    width: 0;
-  }
-  15% {
-    width: 12%;
-  }
-  85% {
-    width: 100%;
-  }
-  100% {
-    width: 100%;
-  }
-}
-
-@keyframes warmfill {
-  0% {
-    width: 0;
-  }
-  6% {
-    width: 100%;
-  }
-  100% {
-    width: 100%;
-  }
-}
-
-.compare-note {
-  margin-top: var(--spacing-sm);
-  font-size: 0.8125rem;
-  /* 骑在 --bg-secondary 上，三级文字不够 4.5:1，用二级色 */
-  color: var(--text-secondary);
-}
-
-/* ---------- 用户评价 ---------- */
-.reviews {
-  background: var(--bg-secondary);
-}
-
-/* 用多栏而不是 grid：卡片高矮不一时能自然排成参考图那种错落的三列 */
-.reviews-grid {
-  columns: 3;
-  column-gap: var(--spacing-md);
-}
-
-.review-card {
-  break-inside: avoid;
-  margin-bottom: var(--spacing-md);
-  background: var(--bg-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
-}
-
-.review-head {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.review-avatar {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-tertiary);
-  color: var(--text-tertiary);
-}
-
-.review-avatar .avatar-glyph {
-  width: 26px;
-  height: 26px;
-}
-
-/* 小圆环是和卡片同色的底"挖"出来的，不能用 border，否则两边颜色对不上。
-   卡片底色是 --bg-primary，这里必须取同一个令牌，取错了环就会显形成一圈灰。 */
-.review-badge {
-  position: absolute;
-  right: -3px;
-  bottom: -3px;
-  width: 20px;
-  height: 20px;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-primary);
-}
-
-.review-badge img {
-  width: 100%;
-  height: 100%;
-}
-
-.review-who {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  min-width: 0;
-}
-
-.review-name {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.review-stars {
-  color: var(--rating);
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  line-height: 1;
-}
-
-.review-text {
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  color: var(--text-secondary);
-}
-
 /* ---------- 赞助 ---------- */
-/* 接在 reviews（--bg-secondary）之后，取相反的 --bg-primary；
-   后面的 faq 因此翻成 --bg-secondary（见下文）。 */
+/* 排在 faq（--bg-primary）之后，翻回 --bg-secondary 保持交替。 */
 .sponsor {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
 }
 
 .sponsor-grid {
@@ -1042,7 +746,7 @@ section {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
-  background: #ede9fe;
+  background: #e6ebfa;
   border-radius: 1.5rem;
   padding: var(--spacing-lg);
   min-width: 260px;
@@ -1090,26 +794,29 @@ section {
   color: #1677ff;
 }
 
-/* Ko-fi 按钮：居中，蓝色圆角。 */
+/* Ko-fi 官方徽章图整张就是按钮：容器只负责居中、悬停抬起和阴影。
+   jpg 无透明通道，徽章自带的圆角已烘焙在图里，外层再给一层同值
+   border-radius 让阴影贴合形状。 */
 .kofi-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
+  width: fit-content;
   margin: var(--spacing-lg) auto 0;
-  padding: 0.75rem 1.5rem;
-  background: #264653;
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  border-radius: 12px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   box-shadow: var(--shadow-md);
+}
+
+.kofi-btn img {
+  display: block;
+  height: 56px;
+  width: auto;
+  border-radius: 12px;
 }
 
 .kofi-btn:hover {
   transform: translateY(-1px);
-  background: #1f3a44;
   box-shadow: 0 6px 20px rgba(38, 70, 83, 0.3);
 }
 
@@ -1117,14 +824,9 @@ section {
   transform: translateY(0);
 }
 
-.kofi-logo {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 /* 深色主题下保留外层柔和底色，让赞助区有独立层级。 */
 html[data-theme="dark"] .sponsor-tile {
-  background: #2a2744;
+  background: #232b45;
 }
 
 html[data-theme="dark"] .sponsor-qr {
@@ -1133,8 +835,8 @@ html[data-theme="dark"] .sponsor-qr {
 
 /* ---------- 常见问题 ---------- */
 .faq {
-  /* 赞助区取了 --bg-primary，FAQ 翻到 --bg-secondary 保持深浅交替 */
-  background: var(--bg-secondary);
+  /* FAQ 排在评价区后，翻到 --bg-primary 保持深浅交替 */
+  background: var(--bg-primary);
 }
 
 .faq-list {
@@ -1191,13 +893,13 @@ html[data-theme="dark"] .sponsor-qr {
 /* 整段是一个饱和色块，不参与 --bg-* 的深浅交替，所以浅色/深色各写一版渐变：
    深色主题下压暗一档，白字和白色按钮才不至于刺眼。 */
 .cta-band {
-  background: linear-gradient(135deg, #4f6bf6 0%, #6553f0 55%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #4f6bf6 0%, #5872f5 55%, #7ea1ff 100%);
   color: #fff;
   overflow: hidden;
 }
 
 [data-theme="dark"] .cta-band {
-  background: linear-gradient(135deg, #3a4fc4 0%, #4b3ec0 55%, #6638b8 100%);
+  background: linear-gradient(135deg, #3a4fc4 0%, #3b50d0 55%, #5b78e8 100%);
 }
 
 .cta-inner {
@@ -1322,7 +1024,7 @@ html[data-theme="dark"] .sponsor-qr {
   width: 14px;
   height: 14px;
   border-radius: 4px;
-  background: linear-gradient(135deg, #4f6bf6, #a78bfa);
+  background: linear-gradient(135deg, #4f6bf6, #7ea1ff);
 }
 
 .art-btns {
@@ -1508,43 +1210,8 @@ html[data-theme="dark"] .sponsor-qr {
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 1080px) {
-  .hero-container {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .hero-content {
-    order: 1;
-  }
-
-  .hero-visual {
-    order: 0;
-  }
-
-  /* 单列之后视觉不再是"半栏"，可以吃满更多宽度 */
-  .app-preview {
-    max-width: 620px;
-  }
-
-  .hero-description {
-    max-width: 100%;
-    margin-inline: auto;
-  }
-
-  .hero-actions {
-    justify-content: center;
-  }
-  .features-grid,
-  .steps-grid {
+  .features-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .reviews-grid {
-    columns: 2;
-  }
-
-  .step-card::after {
-    content: none;
   }
 }
 
@@ -1628,32 +1295,12 @@ html[data-theme="dark"] .sponsor-qr {
     --spacing-2xl: 3.5rem;
   }
 
-  /* 手机上演示视频照样留着，只是挪到标题与下载按钮之后：先给结论，再给演示 */
-  .hero-visual {
-    order: 2;
-  }
-
   .hero {
     padding-top: 108px;
   }
 
-  .features-grid,
-  .steps-grid {
+  .features-grid {
     grid-template-columns: 1fr;
-  }
-
-  .reviews-grid {
-    columns: 1;
-  }
-
-  .cmp-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-  }
-
-  .cmp-label {
-    width: auto;
   }
 
   .footer-content {
@@ -1681,12 +1328,11 @@ html[data-theme="dark"] .sponsor-qr {
   .hero-title {
     font-size: 2rem;
   }
-}
 
-/* 再窄就只能一行一颗了：两列时每颗只剩 ~140px，装不下"Firefox 安装 + 图标" */
-@media (max-width: 380px) {
-  .hero-actions {
-    grid-template-columns: 1fr;
+  /* 窄屏上卡片收窄，两颗也能并排放下 */
+  .install-card {
+    min-width: 7rem;
+    padding: 1.25rem 1rem 1rem;
   }
 }
 
@@ -1699,12 +1345,6 @@ html[data-theme="dark"] .sponsor-qr {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .cmp-bar.cold i,
-  .cmp-bar.warm i {
-    width: 100%;
-    animation: none;
   }
 
   .reveal {
