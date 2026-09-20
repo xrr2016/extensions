@@ -12,6 +12,9 @@
     "message": "在新标签页打开"
   },
   "preview_close": {
+    "message": "关闭"
+  },
+  "preview_closeEsc": {
     "message": "关闭（Esc）"
   },
   "preview_reload": {
@@ -356,8 +359,11 @@
   "close_scroll": {
     "message": "滚动时关闭预览窗"
   },
+  "close_escape": {
+    "message": "按 Esc 键关闭预览窗"
+  },
   "close_hint": {
-    "message": "固定住的预览窗不受这三项影响"
+    "message": "固定住的预览窗不受这四项影响"
   },
   "panel_section_power": {
     "message": "节电与动画"

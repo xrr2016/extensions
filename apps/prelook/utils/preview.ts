@@ -336,8 +336,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   const windows: WindowInstance[] = [];
   let nextId = 1;
   let zIndex = 2147483641;
-  /** The window a key press should act on: the last opened / clicked one. */
-  let activeWin: WindowInstance | null = null;
 
   function settings(): PrelookSettings {
     return clampSettings(deps.getSettings());
@@ -564,7 +562,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.pinBtnEl.title = deps.i18n.t(win.pinned ? "preview.unpin" : "preview.pin");
     win.reloadBtnEl.title = deps.i18n.t("preview.reload");
     win.openBtnEl.title = deps.i18n.t("preview.openTab");
-    win.closeBtnEl.title = deps.i18n.t("preview.close");
+    // The Esc hint follows the setting: hidden from the tooltip once the user
+    // turns the shortcut off.
+    win.closeBtnEl.title = deps.i18n.t(
+      settings().closeOnEscape ? "preview.closeEsc" : "preview.close",
+    );
     if (win.readerBadge.classList.contains("tp-show")) {
       win.readerBadge.textContent = deps.i18n.t("preview.readerBadge");
     }
@@ -597,13 +599,13 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     }
   }
 
-  /** The window ESC should close: the last interacted one while still open,
-   *  otherwise the topmost by z-order. */
-  function topWindow(): WindowInstance | undefined {
-    if (activeWin && !activeWin.closed && windows.includes(activeWin)) return activeWin;
+  /** Topmost open window that a close trigger may dismiss; pinned windows are
+   *  the user's explicit keep and are skipped (they return `undefined` when
+   *  every window is pinned). */
+  function closableTopWindow(): WindowInstance | undefined {
     let top: WindowInstance | undefined;
     for (const win of windows) {
-      if (win.closed) continue;
+      if (win.closed || win.pinned) continue;
       if (!top || Number(win.root.style.zIndex || 0) >= Number(top.root.style.zIndex || 0)) {
         top = win;
       }
@@ -614,7 +616,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   function closeWindow(win: WindowInstance, animate = true) {
     if (win.closed) return;
     win.closed = true;
-    if (activeWin === win) activeWin = null;
     clearClose(win);
     if (win.loadTimer) clearTimeout(win.loadTimer);
     const i = windows.indexOf(win);
@@ -756,7 +757,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       existing.lastPointer = info.pointer;
       place(existing);
       existing.root.style.zIndex = String(++zIndex);
-      activeWin = existing;
       keep(info.url);
       return;
     }
@@ -854,7 +854,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     syncHeaderButtons(win);
 
     root.addEventListener("mousedown", () => {
-      activeWin = win;
       root.style.zIndex = String(++zIndex);
       // Key events from a focused cross-origin iframe never reach the host
       // document, so Escape couldn't close it. Clicking the window chrome pulls
@@ -971,7 +970,6 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
 
     shadow.appendChild(root);
     windows.push(win);
-    activeWin = win;
     place(win);
     syncOverlay();
     // Two frames: let the transparent state land before arming the fade.
@@ -1016,16 +1014,16 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   window.addEventListener("resize", onViewportResize);
   window.addEventListener("scroll", onScroll, { capture: true, passive: true });
 
-  /** Escape closes the topmost window. Capture phase so the page's own
-   *  handlers do not swallow it first; it stays a no-op while no window exists.
+  /** Escape is one of the configurable close triggers (see "Close triggers"
+   *  in settings): capture phase so the page's own handlers do not swallow it
+   *  first, and it stays a no-op while disabled or when every window is pinned.
    *  `repeat` is ignored so a held key closes one window per press. */
   function onKeydown(e: KeyboardEvent) {
     if (e.key !== "Escape" || e.repeat) return;
-    const win = topWindow();
+    if (!settings().closeOnEscape) return;
+    const win = closableTopWindow();
     if (!win) return;
     e.preventDefault();
-    // An explicit key press has the same semantics as the header × button:
-    // a pinned window closes too (pinning only survives automatic closes).
     closeWindow(win);
   }
   window.addEventListener("keydown", onKeydown, true);

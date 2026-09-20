@@ -15,6 +15,9 @@
     "message": "Other settings"
   },
   "preview_close": {
+    "message": "Close"
+  },
+  "preview_closeEsc": {
     "message": "Close (Esc)"
   },
   "preview_reload": {
@@ -356,8 +359,11 @@
   "close_scroll": {
     "message": "Close when scrolling"
   },
+  "close_escape": {
+    "message": "Close with the Esc key"
+  },
   "close_hint": {
-    "message": "Pinned previews ignore all three"
+    "message": "Pinned previews ignore all four"
   },
   "panel_section_power": {
     "message": "Power & motion"

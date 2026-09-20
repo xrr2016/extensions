@@ -218,6 +218,7 @@ export interface PrelookSettings {
   closeOnOutsideClick: boolean;
   closeOnMouseLeave: boolean;
   closeOnScroll: boolean;
+  closeOnEscape: boolean;
   /** How many preview windows may be open at once */
   maxWindows: number;
   /** Speculation Rules: warm the hovered link before the preview opens */
@@ -257,7 +258,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   speculationMode: "prefetch",
   powerSaver: "auto",
   reduceMotion: false,
-  highlightLinks: false,
+  highlightLinks: true,
   highlightStyle: "dashed",
   autoPin: false,
   theme: "system",
@@ -268,6 +269,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   closeOnOutsideClick: true,
   closeOnMouseLeave: false,
   closeOnScroll: false,
+  closeOnEscape: true,
   disabledSites: [],
 };
 

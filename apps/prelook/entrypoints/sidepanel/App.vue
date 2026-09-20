@@ -481,6 +481,10 @@ function resetAll() {
             <ToggleSwitch v-model="settings.closeOnOutsideClick" />
           </label>
           <label class="row switch-row">
+            <span>{{ t("close.escape") }}</span>
+            <ToggleSwitch v-model="settings.closeOnEscape" />
+          </label>
+          <label class="row switch-row">
             <span>{{ t("close.leave") }}</span>
             <ToggleSwitch v-model="settings.closeOnMouseLeave" />
           </label>
@@ -488,6 +492,7 @@ function resetAll() {
             <span>{{ t("close.scroll") }}</span>
             <ToggleSwitch v-model="settings.closeOnScroll" />
           </label>
+
           <p class="hint muted">{{ t("close.hint") }}</p>
         </section>
 
