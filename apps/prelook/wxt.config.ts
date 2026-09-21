@@ -58,6 +58,7 @@ export default defineConfig({
       "https://bbs.hupu.com/4860",
       "https://www.xiaoheihe.cn/app/bbs/home/",
       "https://ngabbs.com/thread.php?fid=-152678",
+      "https://www.bilibili.com/video/BV1Jiem6XE71/",
     ],
   },
   autoIcons: {

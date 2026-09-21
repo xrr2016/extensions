@@ -90,6 +90,7 @@ export function createSelectionSystem(
   deps: SelectionDeps,
   shadow: ShadowRoot,
 ): SelectionSystem {
+  console.log("[Prelook] selection system created");
   const bar = document.createElement("div");
   bar.className = "tp-sel";
   shadow.appendChild(bar);
@@ -107,12 +108,25 @@ export function createSelectionSystem(
   const ICON_LANG =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
 
-  /** The selection when it is a bare http(s) URL — the only case where a
-   *  preview can be opened straight from the page. */
+  /** The selection when it contains an http(s) URL — the only case where a
+   *  preview can be opened straight from the page. The whole selection does
+   *  not have to *be* a URL: bilibili/weibo wrap comment URLs in quotes
+   *  (so a selection of "https://..." would make new URL throw), and some
+   *  sites sprinkle zero-width characters into URLs as anti-scraping. We
+   *  strip the zero-widths first, then pull the first http(s) URL out of
+   *  the text, stopping at whitespace / quotes / angle brackets. */
   function selectedLink(): string | null {
-    const text = document.getSelection()?.toString().trim() ?? "";
+    const raw = document.getSelection()?.toString() ?? "";
+    if (!raw.trim()) return null;
+    // 剥离 B 站/微博等站点插入的零宽反爬字符
+    const cleaned = raw.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    // 从文本里抽取第一段 http(s)://... 的 URL，在空白/引号/尖括号/反引号/常见括号处停止
+    // （B 站评论用反引号包 URL，括号在 markdown/wiki 链接里也是边界标记）
+    const match = cleaned.match(/https?:\/\/[^\s<>'"`\])）】}]+/i);
+    const candidate = match ? match[0] : cleaned.trim();
     try {
-      const url = new URL(text);
+      console.log("selectedLink:", candidate);
+      const url = new URL(candidate);
       return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
     } catch {
       return null;
@@ -285,34 +299,126 @@ export function createSelectionSystem(
     return !!el?.closest?.('input, textarea, [contenteditable="true"], [contenteditable=""]');
   }
 
-  function check() {
+  function check(snapshot: {
+    text: string;
+    anchorNode: Node | null;
+    rangeCount: number;
+    rect: DOMRect | null;
+  }) {
+    console.log(
+      "[check] entry, text:",
+      JSON.stringify(snapshot.text),
+      "rect:",
+      snapshot.rect ? `${snapshot.rect.width}x${snapshot.rect.height}` : "null",
+    );
     const s = clampSettings(deps.getSettings());
     if (!s.selectionSearch || !s.enabled || isSiteDisabled(s.disabledSites, location.hostname)) {
+      console.log("[check] fail ①");
       hide();
       return;
     }
-    const sel = document.getSelection();
-    const text = sel?.toString().trim() ?? "";
-    if (!sel || sel.isCollapsed || text.length < s.minSelectionChars || sel.rangeCount === 0) {
+    const text = snapshot.text;
+    // Do NOT trust isCollapsed — sites like bilibili collapse the selection
+    // before our handler runs, but toString() / rect still carry the real
+    // selection data. The rect size is the honest guard against click-only
+    // (zero-width) ranges.
+    if (text.length < s.minSelectionChars || snapshot.rangeCount === 0) {
+      console.log("[check] fail ②", {
+        text: JSON.stringify(text),
+        len: text.length,
+        min: s.minSelectionChars,
+        rangeCount: snapshot.rangeCount,
+      });
       hide();
       return;
     }
-    if (editableArea(sel.anchorNode)) {
+    if (editableArea(snapshot.anchorNode)) {
+      console.log("[check] fail ③ editableArea");
       hide();
       return;
     }
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    const rect = snapshot.rect;
     if (!rect || (rect.width === 0 && rect.height === 0 && rect.top === 0)) {
+      console.log("[check] fail ④ bad rect", rect);
       hide();
       return;
     }
+    console.log("[check] PASS → show()");
     show(rect);
   }
 
-  ctx.addEventListener(document, "mouseup", (e: MouseEvent) => {
-    const path = e.composedPath();
-    if (path.includes(bar)) return; // interacting with the toolbar itself
-    setTimeout(check, 10);
+  // mouseup alone is not enough: some sites (bilibili, weibo) collapse the
+  // selection in their own mouseup handler *before* our delayed check runs,
+  // so we only ever see isCollapsed=true. Worse: their Range becomes invalid
+  // (getBoundingClientRect() returns 0x0) even mid-drag, because React
+  // virtualization swaps text nodes. And pointermove snapshots overwrite
+  // each other via debounce, so only the final (post-collapse) one survives.
+  //
+  // Fix: the FIRST snapshot captured during drag — the one with the real,
+  // unmolested selection — is what we keep. Debounce only gates the DOM
+  // work (show/hide toolbar), never the data. For rect, fall back to the
+  // anchor element's rect when the Range's own rect is zero (a common
+  // artifact of React re-renders on virtualized lists).
+  let checkTimer: ReturnType<typeof setTimeout> | null = null;
+  let dragActive = false;
+  /** Best snapshot captured so far during this drag; reset on pointerdown. */
+  let dragSnapshot: ReturnType<typeof captureSelection> | null = null;
+
+  function captureSelection() {
+    const sel = document.getSelection();
+    const text = sel?.toString().trim() ?? "";
+    let rect: DOMRect | null = null;
+    try {
+      rect = sel && sel.rangeCount > 0 ? sel.getRangeAt(0).getBoundingClientRect() : null;
+      // Range.getBoundingClientRect() returns 0x0 on sites that swap nodes
+      // mid-drag (bilibili virtualized comments). Fall back to the anchor
+      // element's rect — good enough for placing the toolbar near the text.
+      if ((!rect || (rect.width === 0 && rect.height === 0)) && sel?.anchorNode) {
+        const anchorEl =
+          sel.anchorNode instanceof Element ? sel.anchorNode : sel.anchorNode.parentElement;
+        rect = anchorEl?.getBoundingClientRect?.() ?? rect;
+      }
+    } catch {
+      rect = null;
+    }
+    return {
+      text,
+      anchorNode: sel?.anchorNode ?? null,
+      rangeCount: sel?.rangeCount ?? 0,
+      rect,
+    };
+  }
+  function scheduleCheck(snap: ReturnType<typeof captureSelection>) {
+    if (checkTimer) clearTimeout(checkTimer);
+    checkTimer = setTimeout(() => {
+      check(snap);
+    }, 30);
+  }
+  ctx.addEventListener(document, "selectionchange", () => {
+    scheduleCheck(captureSelection());
+  });
+  ctx.addEventListener(document, "pointerdown", () => {
+    dragActive = true;
+    dragSnapshot = null;
+  });
+  ctx.addEventListener(document, "pointermove", () => {
+    if (!dragActive) return;
+    const snap = captureSelection();
+    // Keep the FIRST good snapshot from the drag — it's the one before any
+    // site handler could collapse or corrupt the selection.
+    if (!dragSnapshot || snap.text.length > dragSnapshot.text.length) {
+      dragSnapshot = snap;
+    }
+    scheduleCheck(dragSnapshot);
+  });
+  ctx.addEventListener(document, "pointerup", (e: PointerEvent) => {
+    dragActive = false;
+    const path = e.composedPath() as Node[];
+    if (path.includes(bar)) return;
+    // Use the best drag snapshot we captured; fall back to a fresh one.
+    const snap = dragSnapshot ?? captureSelection();
+    scheduleCheck(snap);
+    dragSnapshot = null;
   });
   ctx.addEventListener(
     document,
