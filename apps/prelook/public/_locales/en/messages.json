@@ -8,6 +8,12 @@
   "menu_sidebar": {
     "message": "Open in Sidebar"
   },
+  "menu_disableSite": {
+    "message": "Disable Prelook on this site"
+  },
+  "menu_enableSite": {
+    "message": "Enable Prelook on this site"
+  },
   "preview_openTab": {
     "message": "Open in new tab"
   },

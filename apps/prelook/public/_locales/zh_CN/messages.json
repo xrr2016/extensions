@@ -8,6 +8,12 @@
   "menu_sidebar": {
     "message": "在侧边栏打开"
   },
+  "menu_disableSite": {
+    "message": "在此网站禁用 Prelook"
+  },
+  "menu_enableSite": {
+    "message": "在此网站启用 Prelook"
+  },
   "preview_openTab": {
     "message": "在新标签页打开"
   },

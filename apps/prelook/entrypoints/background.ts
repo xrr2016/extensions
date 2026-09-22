@@ -1,5 +1,5 @@
 import { translate } from "@/utils/i18n";
-import { DEFAULT_SETTINGS, settingsItem } from "@/utils/storage";
+import { DEFAULT_SETTINGS, clampSettings, isSiteDisabled, settingsItem } from "@/utils/storage";
 import { stripTracking } from "@/utils/tracking";
 
 interface FetchPreviewResult {
@@ -125,6 +125,7 @@ async function fetchPreview(url: string, hostOrigin: string): Promise<FetchPrevi
 const MENU_ROOT = "prelook-root";
 const MENU_POPUP = "prelook-open-popup";
 const MENU_SIDEBAR = "prelook-open-sidebar";
+const MENU_TOGGLE_SITE = "prelook-toggle-site";
 
 /** Rebuilds must never overlap: startup and onInstalled can fire in the same
  *  install tick, and two interleaved removeAll/create sequences make the second
@@ -154,6 +155,13 @@ async function setupContextMenus() {
     parentId: MENU_ROOT,
     title: t("menu.sidebar"),
     contexts: ["link"],
+  });
+  // Top-level item so it shows on any right-click — on links (`link`) and on
+  // the page itself (`page`).
+  browser.contextMenus.create({
+    id: MENU_TOGGLE_SITE,
+    title: t("menu.disableSite"),
+    contexts: ["page", "link"],
   });
 }
 
@@ -189,7 +197,54 @@ export default defineBackground(() => {
   void rebuildContextMenus();
   browser.runtime.onInstalled.addListener(() => void rebuildContextMenus());
 
+  // Keep a synchronous copy of disabledSites so onShown (Chrome) can decide
+  // the menu title *before* the popup renders — that event does not wait for
+  // promises, so awaiting settingsItem.getValue() would always be one tick late.
+  let cachedDisabledSites: string[] = [];
+  const syncCache = (stored: Partial<typeof DEFAULT_SETTINGS> | undefined) => {
+    cachedDisabledSites = clampSettings({ ...DEFAULT_SETTINGS, ...stored }).disabledSites;
+  };
+  void settingsItem.getValue().then(syncCache);
+  void settingsItem.watch(syncCache);
+
   browser.contextMenus.onClicked.addListener((info, tab) => {
+    // Toggle-site works on both page and link contexts; everything below is link-only.
+    if (info.menuItemId === MENU_TOGGLE_SITE) {
+      const url = tab?.url;
+      if (!url || !/^https?:/i.test(url)) return;
+      let hostname: string;
+      try {
+        hostname = new URL(url).hostname;
+      } catch {
+        return;
+      }
+      const wasDisabled = isSiteDisabled(cachedDisabledSites, hostname);
+      const set = new Set(cachedDisabledSites);
+      if (wasDisabled) set.delete(hostname);
+      else set.add(hostname);
+      const nextDisabled = [...set];
+      // Update the local cache immediately so a fast second click / onShown
+      // sees the new state before the storage write resolves.
+      cachedDisabledSites = nextDisabled;
+      // Read the full settings blob first so only disabledSites is overwritten.
+      void settingsItem
+        .getValue()
+        .then((stored) =>
+          settingsItem.setValue({
+            ...DEFAULT_SETTINGS,
+            ...stored,
+            disabledSites: nextDisabled,
+          }),
+        )
+        .then(() =>
+          browser.contextMenus
+            .update(MENU_TOGGLE_SITE, {
+              title: translate(wasDisabled ? "menu.disableSite" : "menu.enableSite"),
+            })
+            .catch(() => undefined),
+        );
+      return;
+    }
     const sidebar = info.menuItemId === MENU_SIDEBAR;
     if (!sidebar && info.menuItemId !== MENU_POPUP) return;
     const url = info.linkUrl;
@@ -197,6 +252,42 @@ export default defineBackground(() => {
     // The content script owns the preview UI; it resolves the anchor itself.
     void browser.tabs
       .sendMessage(tab.id, { type: "prelook:preview", url, sidebar })
+      .catch(() => undefined);
+  });
+
+  // Chrome-only: refresh the menu item title every time the context menu opens,
+  // so it reads "Enable" vs. "Disable" based on the *current* tab. Firefox has
+  // no onShown event — it keeps whatever title setupContextMenus() last wrote.
+  // cachedDisabledSites is read synchronously on purpose: onShown does not wait
+  // for async handlers, so an awaited storage read would land one tick too late.
+  // update() alone only takes effect on the *next* menu open; refresh() makes
+  // Chrome repaint the menu that is currently open.
+  type ContextMenusWithOnShown = typeof browser.contextMenus & {
+    onShown?: {
+      addListener: (
+        fn: (
+          info: { menuIds: Array<string | number> },
+          tab?: { id?: number; url?: string },
+        ) => void,
+      ) => void;
+    };
+    refresh?: () => Promise<void>;
+  };
+  const menus = browser.contextMenus as ContextMenusWithOnShown;
+  menus.onShown?.addListener((_info, tab) => {
+    if (!tab?.url) return;
+    let hostname: string;
+    try {
+      hostname = new URL(tab.url).hostname;
+    } catch {
+      return;
+    }
+    const disabled = isSiteDisabled(cachedDisabledSites, hostname);
+    void menus
+      .update(MENU_TOGGLE_SITE, {
+        title: translate(disabled ? "menu.enableSite" : "menu.disableSite"),
+      })
+      .then(() => menus.refresh?.())
       .catch(() => undefined);
   });
 
