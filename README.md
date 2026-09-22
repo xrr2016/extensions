@@ -1,7 +1,7 @@
 # 浏览器插件
 
 - **[Prelook](apps/prelook/)** — 悬停链接即预览，不必再点开
-- **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页
+- **[Prelook 官网](apps/prelook-landing/)** — 纯静态落地页（Vite 开发服务器，零构建部署）
 
 ## Prelook
 
@@ -21,7 +21,7 @@
 > - `apps/prelook/entrypoints/` — 扩展入口（background / content / popup 设置页）
 > - `apps/prelook/utils/` — 预览窗、划词、阅读模式提取、i18n、存储
 > - `apps/prelook/assets/locales/` — 界面词条（zh-CN / en）
-> - `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages）
+> - `apps/prelook-landing/` — 产品官网（纯静态 HTML/CSS/JS，可直接部署 GitHub Pages；`pnpm landing:prelook` 用 Vite 起开发服务器，改样式不刷新页面）
 
 ## 开发
 
@@ -33,7 +33,7 @@ pnpm dev:prelook:doubao   # 豆包浏览器开发模式（路径见 wxt.config.t
 pnpm build:prelook        # 生产构建（pnpm build 聚合全部子包）
 pnpm compile:prelook      # 类型检查（pnpm compile 聚合）
 pnpm zip:prelook          # 打包上架 zip
-pnpm landing:prelook      # 官网本地预览 http://127.0.0.1:4173
+pnpm landing:prelook      # 官网开发服务器 http://127.0.0.1:4173（CSS 热更新，改 js/html 整页刷新）
 ```
 
 ## 赞助
