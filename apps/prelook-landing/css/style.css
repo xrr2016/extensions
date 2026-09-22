@@ -517,7 +517,7 @@ body::after {
   margin-inline: auto;
 }
 
-/* 安装入口就在 hero 里，按参考稿做成两组卡片：商店安装三颗、离线包两颗。
+/* 安装入口就在 hero 里，按参考稿做成两组卡片：商店安装三颗、手动下载一颗。
    卡片自带主题令牌（--bg-primary / --border），深浅主题自动跟随。 */
 .install-grid {
   display: flex;
@@ -573,9 +573,15 @@ body::after {
   width: 48px;
   height: 48px;
   flex: none;
-  /* 离线包的线性下载图标取主题色，与参考稿的蓝色箭头一致 */
+  /* 图标取主题色，与参考稿的蓝色箭头一致 */
   color: var(--primary);
   stroke-width: 2;
+}
+
+/* GitHub mark 是实心 fill 形，上面那条 stroke-width 对它毫无意义，
+   但一旦哪天有人给它补上描边就会糊住轮廓，所以显式归零。 */
+.install-github-icon {
+  stroke-width: 0;
 }
 
 /* 页尾色带（#get）还在用的按钮式安装入口 */
