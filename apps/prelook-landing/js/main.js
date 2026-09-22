@@ -128,8 +128,11 @@
       "nav.menu": "Menu",
       "a11y.skip": "Skip to content",
 
-      "hero.title1": "Hover to preview, ",
-      "hero.title2": "no wasted clicks",
+      // 与 zh-CN 那两条逐字对齐："极速预览，无需等待"。
+      // title1 结尾的逗号 + 空格不能省：拼接后是 "Fast preview, no waiting"，
+      // 少了这个空格两段会粘成 "preview,no"。中文那边同理用的是全角「，」。
+      "hero.title1": "Fast preview, ",
+      "hero.title2": "no waiting",
       "hero.desc":
         "The instant your cursor lands on a link, its page is already loading — preview first, decide after.",
 
