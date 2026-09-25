@@ -467,7 +467,7 @@ body::after {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 128px 0 72px;
+  padding: 180px 0 320px;
   overflow: hidden;
 }
 
@@ -741,6 +741,7 @@ section {
 /* 排在 faq（--bg-primary）之后，翻回 --bg-secondary 保持交替。 */
 .sponsor {
   background: var(--bg-secondary);
+  padding: 128px 0;
 }
 
 .sponsor-grid {
@@ -1286,7 +1287,7 @@ html[data-theme="dark"] .sponsor-qr {
   }
 
   .hero {
-    padding-top: 108px;
+    padding-top: 132px;
   }
 
   .features-grid {
