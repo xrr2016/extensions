@@ -1,27 +1,27 @@
-# Extensions — 浏览器插件 monorepo
+# Extensions — 浏览器插件
 
 多浏览器插件工作区（**pnpm workspace**，根包名 `extensions`）。`apps/` 下按「每个产品两个目录」扁平排列：插件本体 + 产品落地页。
 
-| 目录 | 说明 |
-| --- | --- |
-| [`apps/prelook/`](apps/prelook/) | **Prelook** — 悬停链接预览扩展（Chrome / Edge MV3、Firefox MV2），WXT 0.21 + Vue 3 |
-| [`apps/prelook-landing/`](apps/prelook-landing/) | **Prelook 产品官网** — 纯静态落地页（零构建、整目录部署） |
+| 目录                                             | 说明                                                                               |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| [`apps/prelook/`](apps/prelook/)                 | **Prelook** — 悬停链接预览扩展（Chrome / Edge MV3、Firefox MV2），WXT 0.21 + Vue 3 |
+| [`apps/prelook-landing/`](apps/prelook-landing/) | **Prelook 产品官网** — 纯静态落地页（零构建、整目录部署）                          |
 
 ---
 
 ## 技术栈
 
-| 领域 | 选型 | 版本 |
-| --- | --- | --- |
-| 包管理 | pnpm（workspace） | 12 |
-| 插件框架 | WXT | ^0.21.3 |
-| UI | Vue | ^3.5.29 |
-| 构建 / 开发服务器 | Vite | ^8.1（落地页 ^8.3） |
-| 语言 | TypeScript（`vue-tsc` 类型检查） | ^5.9.3 |
-| 浏览器目标 | Chrome / Edge（MV3）、Firefox（MV2，web-ext） | ^10.5.0 |
-| 图标生成 | `@wxt-dev/auto-icons` | ^1.1.2 |
-| 分析（可选） | `@wxt-dev/analytics` | ^0.5.6 |
-| 质量工具 | `oxlint` / `oxfmt`、release-it | ^1.83 / ^0.68 |
+| 领域              | 选型                                          | 版本                |
+| ----------------- | --------------------------------------------- | ------------------- |
+| 包管理            | pnpm（workspace）                             | 12                  |
+| 插件框架          | WXT                                           | ^0.21.3             |
+| UI                | Vue                                           | ^3.5.29             |
+| 构建 / 开发服务器 | Vite                                          | ^8.1（落地页 ^8.3） |
+| 语言              | TypeScript（`vue-tsc` 类型检查）              | ^5.9.3              |
+| 浏览器目标        | Chrome / Edge（MV3）、Firefox（MV2，web-ext） | ^10.5.0             |
+| 图标生成          | `@wxt-dev/auto-icons`                         | ^1.1.2              |
+| 分析（可选）      | `@wxt-dev/analytics`                          | ^0.5.6              |
+| 质量工具          | `oxlint` / `oxfmt`、release-it                | ^1.83 / ^0.68       |
 
 落地页运行期**零依赖**：纯 HTML/CSS/JS，Vite 只作开发服务器（`appType: 'mpa'`），不产生构建产物——`index.html` / `privacy.html` + `css/` `js/` `assets/` 原样即部署物。
 
@@ -41,11 +41,11 @@ flowchart LR
     C[sidepanel<br/>设置面板] -->|local:prelook_settings<br/>chrome.storage.local| A
 ```
 
-| 消息 | 方向 | 作用 |
-| --- | --- | --- |
-| `prelook:fetch` | content → background | 抓取目标页并判定 `canEmbed`（响应头 XFO / CSP），返回标题/图标/HTML 供 iframe 或阅读模式渲染 |
-| `prelook:openTab` | content/preview → background | 在新标签页打开（支持后台打开） |
-| `prelook:preview` | background → content | 右键菜单「在预览窗/侧边栏打开」触发 |
+| 消息              | 方向                         | 作用                                                                                         |
+| ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `prelook:fetch`   | content → background         | 抓取目标页并判定 `canEmbed`（响应头 XFO / CSP），返回标题/图标/HTML 供 iframe 或阅读模式渲染 |
+| `prelook:openTab` | content/preview → background | 在新标签页打开（支持后台打开）                                                               |
+| `prelook:preview` | background → content         | 右键菜单「在预览窗/侧边栏打开」触发                                                          |
 
 ### 一次悬停预览的数据流
 
@@ -164,8 +164,8 @@ node -e "const a=Object.keys(require('./apps/prelook/public/_locales/zh_CN/messa
 
 Prelook 收入来源只有赞助（无付费版本）：
 
+- Ko-Fi — <https://ko-fi.com/coldstoneboy>
 - 爱发电 — <https://ifdian.net/a/coldstoneboy>
-- Patreon — <https://patreon.com/coldstoneboy>
 
 入口在设置面板底部（`SponsorSection.vue`）与落地页 `#sponsor` 段 + 页脚。
 
@@ -173,4 +173,4 @@ Prelook 收入来源只有赞助（无付费版本）：
 
 ## License
 
-本仓库目前**未声明开源许可证**（根目录无 LICENSE 文件，`package.json` 标记为私有）。
+本仓库采用 **Apache License 2.0**（[LICENSE](LICENSE)）。详见 <https://www.apache.org/licenses/LICENSE-2.0>。
