@@ -778,9 +778,7 @@ section {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
-  background: #e6ebfa;
   border-radius: 1.5rem;
-  padding: var(--spacing-lg);
   min-width: 260px;
 }
 
@@ -788,42 +786,15 @@ section {
 .sponsor-qr {
   background: #fff;
   border-radius: 1.25rem;
-  padding: 1rem;
   box-shadow: var(--shadow-md);
 }
 
 .sponsor-qr img {
   display: block;
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   object-fit: contain;
   border-radius: var(--radius-md);
-}
-
-/* 底部平台标签：图标 + 文字横排。 */
-.sponsor-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.sponsor-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sponsor-icon.wechat {
-  color: #07c160;
-}
-
-.sponsor-icon.alipay {
-  color: #1677ff;
 }
 
 /* Ko-fi 官方徽章图整张就是按钮：容器只负责居中、悬停抬起和阴影。
@@ -831,8 +802,7 @@ section {
    border-radius 让阴影贴合形状。 */
 .kofi-btn {
   display: block;
-  width: fit-content;
-  margin: var(--spacing-lg) auto 0;
+  width: 300px;
   border-radius: 12px;
   transition:
     transform 0.15s ease,
@@ -842,8 +812,9 @@ section {
 
 .kofi-btn img {
   display: block;
-  height: 56px;
-  width: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 12px;
 }
 
@@ -1026,7 +997,7 @@ html[data-theme="dark"] .sponsor-qr {
   background: #1f2333;
 }
 
-.art-bar > i {
+.art-bar>i {
   flex: none;
   width: 7px;
   height: 7px;
@@ -1087,12 +1058,15 @@ html[data-theme="dark"] .sponsor-qr {
 .art-line.w60 {
   width: 60%;
 }
+
 .art-line.w70 {
   width: 70%;
 }
+
 .art-line.w80 {
   width: 80%;
 }
+
 .art-line.w85 {
   width: 85%;
 }
@@ -1144,14 +1118,16 @@ html[data-theme="dark"] .sponsor-qr {
   color: var(--text-tertiary);
 }
 
-/* 四栏等宽平铺，而不是靠 gap 撑开的 flex——栏数变了也不用重算间距 */
+/* 四栏等宽平铺，而不是靠 gap 撑开的 flex——栏数变了也不用重算间距。
+   两栏顶对齐、内部左对齐，链接才不会各自错位排成阶梯。 */
 .footer-links {
   width: 300px;
   margin-left: auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-lg);
-  place-items: end;
+  align-items: start;
+  justify-items: start;
 }
 
 .footer-column h4 {
@@ -1226,15 +1202,18 @@ html[data-theme="dark"] .sponsor-qr {
     color 0.2s ease;
   box-shadow: var(--shadow-md);
 }
+
 .to-top.is-visible {
   opacity: 1;
   pointer-events: auto;
 }
+
 .to-top:hover {
   color: var(--primary);
   border-color: var(--primary);
   transform: translateY(-2px);
 }
+
 .to-top svg {
   width: 20px;
   height: 20px;
@@ -1288,6 +1267,7 @@ html[data-theme="dark"] .sponsor-qr {
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1370,6 +1350,7 @@ html[data-theme="dark"] .sponsor-qr {
 
 /* ---------- 减少动态效果 ---------- */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

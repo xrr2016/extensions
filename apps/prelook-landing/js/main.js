@@ -23,7 +23,7 @@
       // 安装入口：hero 卡片组 + 页尾色带按钮组
       "install.storeLabel": "安装浏览器插件",
       "install.manualLabel": "手动下载",
-      "install.manualCard": "GitHub 下载",
+      "install.manualCard": "手动下载",
       "install.chrome": "Chrome 安装",
       "install.edge": "Edge 安装",
       "install.firefox": "Firefox 安装",
@@ -90,8 +90,6 @@
       "sponsor.title": "赞助支持",
       "sponsor.subtitle":
         "Prelook 完全免费、无账号、无服务器。如果它帮到了你，欢迎扫码赞助，支持后续开发。",
-      "sponsor.wechat": "微信支付",
-      "sponsor.alipay": "支付宝",
 
       "faq.title": "常见问题",
       "faq.subtitle": "还有疑问？先看这几条。",
@@ -143,7 +141,7 @@
       // Install entries: hero card groups + closing band buttons
       "install.storeLabel": "Install the extension",
       "install.manualLabel": "Manual download",
-      "install.manualCard": "Download from GitHub",
+      "install.manualCard": "Manual download",
       "install.chrome": "Install for Chrome",
       "install.edge": "Install for Edge",
       "install.firefox": "Install for Firefox",
@@ -218,8 +216,7 @@
       "sponsor.title": "Support the project",
       "sponsor.subtitle":
         "Prelook is completely free — no account, no server. If it helps you, scan a QR code to keep development going.",
-      "sponsor.wechat": "WeChat Pay",
-      "sponsor.alipay": "Alipay",
+
 
       "faq.title": "FAQ",
       "faq.subtitle": "Still curious? Start here.",
