@@ -1,30 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1200" height="440" viewBox="0 0 1200 440"
      role="img" aria-labelledby="ft-title ft-desc">
-  <title id="ft-title">Prelook 核心能力</title>
-  <desc id="ft-desc">悬停预览、阅读模式兜底、划词搜索与 AI、链接预热、多窗口比对、链接保护。</desc>
+  <title id="ft-title">Prelook core capabilities</title>
+  <desc id="ft-desc">Hover-preview, reader-mode fallback, selection search with AI and translate, link prewarming, multi-window compare, and link protection.</desc>
 
   <rect width="1200" height="440" rx="26" fill="#0e1116"/>
 
   <rect x="48" y="50" width="10" height="10" rx="2" fill="#7d6cff"/>
   <text x="68" y="61" font-size="15" letter-spacing="1.5" fill="#9aa4b4"
-        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">CAPABILITIES · 核心能力</text>
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">CAPABILITIES · CORE FEATURES</text>
 
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif"
      stroke-linecap="round" stroke-linejoin="round">
 
-    <!-- Tile 1 -->
     <g>
       <rect x="48" y="96" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="70" y="114" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
       <rect x="78" y="118" width="12" height="17" rx="2.5" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
       <circle cx="88" cy="134" r="6" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
       <line x1="92" y1="139" x2="95" y2="142" stroke="#7d6cff" stroke-width="2.5"/>
-      <text x="70" y="172" font-size="21" font-weight="600" fill="#eef1f7">悬停即预览</text>
-      <text x="70" y="198" font-size="18" fill="#9aa4b4">链接上就地浮出目标页</text>
+      <text x="70" y="172" font-size="21" font-weight="600" fill="#eef1f7">Hover-preview</text>
+      <text x="70" y="198" font-size="18" fill="#9aa4b4">Target page under the link</text>
     </g>
 
-    <!-- Tile 2 -->
     <g>
       <rect x="422" y="96" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="444" y="114" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
@@ -32,48 +30,44 @@
       <line x1="455" y1="125" x2="463" y2="125" stroke="#7d6cff" stroke-width="2"/>
       <line x1="455" y1="129" x2="463" y2="129" stroke="#7d6cff" stroke-width="2"/>
       <line x1="455" y1="133" x2="460" y2="133" stroke="#7d6cff" stroke-width="2"/>
-      <text x="444" y="172" font-size="21" font-weight="600" fill="#eef1f7">阅读模式兜底</text>
-      <text x="444" y="198" font-size="18" fill="#9aa4b4">禁嵌站点自动提取正文</text>
+      <text x="444" y="172" font-size="21" font-weight="600" fill="#eef1f7">Reader-mode fallback</text>
+      <text x="444" y="198" font-size="18" fill="#9aa4b4">Auto-extract for blocked sites</text>
     </g>
 
-    <!-- Tile 3 -->
     <g>
       <rect x="796" y="96" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="818" y="114" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
       <path d="M 838 118 l 1.6 3.2 l 3.2 1.6 l -3.2 1.6 l -1.6 3.2 l -1.6 -3.2 l -3.2 -1.6 l 3.2 -1.6 Z" fill="#7d6cff"/>
       <rect x="822" y="128" width="22" height="9" rx="4.5" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
       <path d="M 840 131 l 2.5 1.8 l -2.5 1.8" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
-      <text x="818" y="172" font-size="21" font-weight="600" fill="#eef1f7">划词 · AI · 翻译</text>
-      <text x="818" y="198" font-size="18" fill="#9aa4b4">Web / AI / 翻译，一条工具条</text>
+      <text x="818" y="172" font-size="21" font-weight="600" fill="#eef1f7">Selection · AI · Translate</text>
+      <text x="818" y="198" font-size="18" fill="#9aa4b4">Web / AI / translate, one toolbar</text>
     </g>
 
-    <!-- Tile 4 -->
     <g>
       <rect x="48" y="262" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="70" y="280" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
       <path d="M 88 282 L 79 297 h 5 L 82 309 L 94 293 h -6 Z" fill="#7d6cff"/>
-      <text x="70" y="338" font-size="21" font-weight="600" fill="#eef1f7">链接预热</text>
-      <text x="70" y="364" font-size="18" fill="#9aa4b4">Speculation Rules 预取预渲染</text>
+      <text x="70" y="338" font-size="21" font-weight="600" fill="#eef1f7">Link prewarming</text>
+      <text x="70" y="364" font-size="18" fill="#9aa4b4">Speculation Rules prefetch</text>
     </g>
 
-    <!-- Tile 5 -->
     <g>
       <rect x="422" y="262" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="444" y="280" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
       <rect x="451" y="286" width="15" height="15" rx="2.5" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
       <rect x="460" y="293" width="15" height="15" rx="2.5" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
-      <text x="444" y="338" font-size="21" font-weight="600" fill="#eef1f7">多窗口比对</text>
-      <text x="444" y="364" font-size="18" fill="#9aa4b4">最多 6 窗并排</text>
+      <text x="444" y="338" font-size="21" font-weight="600" fill="#eef1f7">Multi-window compare</text>
+      <text x="444" y="364" font-size="18" fill="#9aa4b4">Up to 6 windows side by side</text>
     </g>
 
-    <!-- Tile 6 -->
     <g>
       <rect x="796" y="262" width="354" height="150" rx="14" fill="#161b23" stroke="#2a3140" stroke-width="1.5"/>
       <rect x="818" y="280" width="34" height="34" rx="10" fill="#7d6cff" fill-opacity="0.12"/>
       <path d="M 835 283 L 845 287 v 7 c 0 6 -4 10 -10 12 c -6 -2 -10 -6 -10 -12 v -7 Z" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
       <path d="M 830 293 l 3 3 l 5 -6" fill="none" stroke="#7d6cff" stroke-width="2.5"/>
-      <text x="818" y="338" font-size="21" font-weight="600" fill="#eef1f7">链接保护</text>
-      <text x="818" y="364" font-size="18" fill="#9aa4b4">剥跟踪参数 + 本地风险提示</text>
+      <text x="818" y="338" font-size="21" font-weight="600" fill="#eef1f7">Link protection</text>
+      <text x="818" y="364" font-size="18" fill="#9aa4b4">Strip tracking + risk hints</text>
     </g>
   </g>
 </svg>
