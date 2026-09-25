@@ -354,6 +354,32 @@ body::after {
   height: 22px;
 }
 
+/* GitHub 仓库图标链接：与 theme/lang 开关同款尺寸与反馈，一直可见不随菜单折叠 */
+.nav-icon-link {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.nav-icon-link:hover {
+  background: var(--bg-tertiary);
+  color: var(--primary);
+}
+
+.nav-icon-link svg {
+  width: 20px;
+  height: 20px;
+  /* GitHub mark 是实心 fill 形，显式归零描边，避免哪天被补上轮廓 */
+  stroke-width: 0;
+}
+
 .theme-toggle svg {
   width: 20px;
   height: 20px;
