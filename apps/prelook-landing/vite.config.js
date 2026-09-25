@@ -25,9 +25,9 @@ export default defineConfig({
  * media 文件的全量响应也声明 `Accept-Ranges: bytes`。
  *
  * Vite 只在 **206** 上写这个头（分段响应确实是它自己处理的），200 的全量响应不写——
- * 而 Safari 的播放器只要服务端不声明支持 Range 就拒绝播放 hero 那段 `assets/demo.mp4`
- * （AGENTS.md「hero 视频要求服务端支持 Range」记的就是这件事）。
- * 这里在静态中间件之前按扩展名补上这个头，不碰 Vite 自己的分段逻辑。
+ * 而 Safari 的播放器只要服务端不声明支持 Range 就拒绝播放这类媒体。
+ * 这里在静态中间件之前按扩展名补上这个头，不碰 Vite 自己的分段逻辑；
+ * 当前页面已无内嵌视频（hero 的 demo.mp4 已删除），此插件保留作通用兜底。
  */
 function acceptRangesForMedia() {
   const MEDIA_RE = /\.(mp4|webm|ogv|ogg|mp3|m4a|wav)$/i;
