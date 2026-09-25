@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prelook 落地页 SEO 审计</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; background: #f6f7f9; color: #1a1d23; line-height: 1.55; padding: 24px 16px; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .meta { color: #667; font-size: 13px; margin-bottom: 20px; }
+  .score-band { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .score-pill { background: #fff; border: 1px solid #e3e6ea; border-radius: 10px; padding: 10px 14px; font-size: 13px; flex: 1 1 auto; min-width: 150px; }
+  .score-pill b { display: block; font-size: 18px; }
+  .pill-hi { color: #c0392b; } .pill-mid { color: #b9770e; } .pill-ok { color: #1e8449; }
+  .card { background: #fff; border: 1px solid #e3e6ea; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .pillar { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed #eef0f3; font-size: 14px; }
+  .pillar:last-child { border-bottom: none; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .g { background: #1e8449; } .y { background: #b9770e; } .r { background: #c0392b; }
+  .pillar .name { font-weight: 600; width: 96px; flex: none; }
+  .pillar .note { color: #555; font-size: 13px; }
+  .sev { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 6px; padding: 1px 7px; margin-right: 8px; vertical-align: 1px; }
+  .sev.hi { background: #fbeae9; color: #c0392b; } .sev.mid { background: #fdf3e0; color: #b9770e; } .sev.low { background: #eef2f6; color: #5b6b7b; }
+  .finding { padding: 8px 0; border-bottom: 1px dashed #eef0f3; font-size: 14px; }
+  .finding:last-child { border-bottom: none; }
+  .finding .t { font-weight: 600; }
+  .finding .fx { color: #555; font-size: 13px; margin-top: 2px; }
+  .finding .fx b { color: #333; }
+  ol.quick { padding-left: 20px; }
+  ol.quick li { font-size: 14px; padding: 3px 0; }
+  .note-foot { font-size: 12.5px; color: #667; margin-top: 4px; }
+  .tag { display: inline-block; font-size: 11px; background: #eef2f6; color: #5b6b7b; border-radius: 6px; padding: 1px 7px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Prelook 落地页 SEO 审计</h1>
+  <div class="meta">域名 prelook.coldstoneboy.cn · 审计日期 2026-09-25 · 页面 2（index.html + privacy.html）· 来源：本地源码核验</div>
+
+  <div class="score-band">
+    <div class="score-pill">总体健康度 <b class="pill-ok">良好</b><span style="color:#667">基础扎实，无索引阻断级问题</span></div>
+    <div class="score-pill">高优先发现 <b class="pill-hi">3 项</b><span style="color:#667">schema / canonical / OG</span></div>
+    <div class="score-pill">快速见效项 <b class="pill-mid">5 项</b><span style="color:#667">当天可改完</span></div>
+  </div>
+
+  <div class="card">
+    <h2>五大支柱健康度</h2>
+    <div class="pillar"><span class="dot g"></span><span class="name">抓取与索引</span><span class="note">robots.txt 放行 + sitemap-index 引用完整，两页均已列入；缺 canonical</span></div>
+    <div class="pillar"><span class="dot g"></span><span class="name">技术基础</span><span class="note">纯静态、css 27KB / js 22KB、响应式 + viewport 齐备；服务端项需上线后验证</span></div>
+    <div class="pillar"><span class="dot y"></span><span class="name">页面优化</span><span class="note">Title/H1/alt 优秀；缺结构化数据、canonical、OG 完整性</span></div>
+    <div class="pillar"><span class="dot y"></span><span class="name">内容质量</span><span class="note">FAQ 有真实价值；「十二项能力」与页内 9 张卡不符，英文内容对爬虫不可见</span></div>
+    <div class="pillar"><span class="dot g"></span><span class="name">权威与链接</span><span class="note">ICP 备案、隐私政策、GitHub 联系齐全；外部信号无法本地验证</span></div>
+  </div>
+
+  <div class="card">
+    <h2>发现清单</h2>
+
+    <div class="finding"><span class="sev hi">高</span><span class="t">无任何结构化数据（JSON-LD）</span>
+      <div class="fx">源码与 main.js 中均无 <b>application/ld+json</b>。FAQ 区 5 组问答可做 <b>FAQPage</b> 富结果，扩展产品可加 <b>SoftwareApplication</b> + <b>WebSite/Organization</b>（sameAs 指向 GitHub）。影响：错失富结果展示机会。</div></div>
+
+    <div class="finding"><span class="sev hi">高</span><span class="t">首页与隐私页均缺 canonical 标签</span>
+      <div class="fx">两页 <b>&lt;head&gt;</b> 无 <b>&lt;link rel="canonical"&gt;</b>。首页应自引用 <b>https://prelook.coldstoneboy.cn/</b>（不用 /index.html），隐私页指向自身；避免 http/https、www 变体并存时权重分散。</div></div>
+
+    <div class="finding"><span class="sev hi">高</span><span class="t">og:image 为相对路径，缺 og:url / twitter:card</span>
+      <div class="fx">og:image 是 <b>./assets/logo.webp</b>，社交抓取器需要绝对 URL：<b>https://prelook.coldstoneboy.cn/assets/logo.webp</b>；并补 og:url、og:site_name 与 twitter:card 三件套，否则分享到微信/推特/Telegram 可能无图无卡。</div></div>
+
+    <div class="finding"><span class="sev mid">中</span><span class="t">中英双语共用同一 URL，英文内容对搜索引擎不可见</span>
+      <div class="fx">html lang="zh-CN"，英文词条只在 main.js 的 I18N/TITLES 里，需 localStorage 切换；Googlebot 无 localStorage，只能索引到中文版。无 hreflang。若英文是目标市场，应拆 <b>/en/</b> 独立 URL + hreflang；否则维持中文默认并明确不冲英文 SERP。</div></div>
+
+    <div class="finding"><span class="sev mid">中</span><span class="t">文案宣称「十二项能力」，页面只渲染 9 张功能卡</span>
+      <div class="fx">meta description 与 features.subtitle 都写「十二项」，但 HTML 仅有 9 张卡（侧边栏 / AI 搜索 / 主题外观 三条词条在词典中无对应卡片）。补齐 3 张卡，或把文案改为实际数量，避免描述与内容不一致。</div></div>
+
+    <div class="finding"><span class="sev mid">中</span><span class="t">meta description 不随语言切换</span>
+      <div class="fx">title 会随 applyLang 换成英文（TITLES），description 始终是中文。切到英文时 SERP 片段语言与页面不一致；建议 description 也走双语映射。另：静态 H1「不必点开」与词典「无需等待」不一致，JS 一跑就被覆盖，建议两处对齐。</div></div>
+
+    <div class="finding"><span class="sev mid">中</span><span class="t">二维码 / Ko-fi 图片缺宽高属性（CLS 风险）</span>
+      <div class="fx">weixin.jpg、zhifubao.jpg、kofi.jpg 三个 &lt;img&gt; 无 width/height 或 CSS 定尺寸，虽已 lazy 加载，仍可能在图片到达后引起布局偏移。补上尺寸或给 .sponsor-qr 定高。</div></div>
+
+    <div class="finding"><span class="sev low">低</span><span class="t">死资源 4 个（未被页面引用）</span>
+      <div class="fx">demo.mp4（809KB）、demo-poster.webp、icon.png、logo.old.webp 不在 index/privacy 中引用。不影响爬取，但建议清理或归档，避免部署体积与仓库噪音。</div></div>
+
+    <div class="finding"><span class="sev low">低</span><span class="t">无 preconnect / dns-prefetch 到外部域</span>
+      <div class="fx">ko-fi.com、github.com、商店域名均为外部跳转，可在 &lt;head&gt; 加 2-3 条 preconnect，微优化首跳延迟。</div></div>
+
+    <div class="finding"><span class="sev low">低</span><span class="t">favicon 无 apple-touch-icon；keywords meta 可清理</span>
+      <div class="fx">webp favicon 现代浏览器可识别；iOS 分享需要 apple-touch-icon.png。keywords 已被 Google 忽略，留着无害，删了更干净。</div></div>
+  </div>
+
+  <div class="card">
+    <h2>快速行动清单（按性价比排序）</h2>
+    <ol class="quick">
+      <li>两页加自引用 canonical（首页用根路径）</li>
+      <li>og:image 改绝对 URL + 补 og:url / og:site_name / twitter:card</li>
+      <li>首页加 FAQPage JSON-LD（5 组问答）＋ WebSite + SoftwareApplication</li>
+      <li>二维码/ko-fi 图片补宽高，消除 CLS 隐患</li>
+      <li>对齐「十二项」文案与页内卡片数；description 双语化</li>
+    </ol>
+    <p class="note-foot">长期建议：若冲英文流量则拆 /en/ + hreflang；部署后跑 PageSpeed Insights 与 Search Console 验证 CWV 与收录；sitemap lastmod 随内容更新。</p>
+  </div>
+
+  <div class="note-foot">
+    <span class="tag">验证边界</span>本审计基于本地源码核验（index.html / privacy.html / robots.txt / sitemap*.xml / main.js / privacy.js）。服务端层面（TTFB、缓存头、CDN、HSTS、404 处理、真实 CWV）与搜索引擎收录状态（site: 查询、GSC）无法从本地文件判断，需部署上线后验证。
+  </div>
+</div>
+</body>
+</html>

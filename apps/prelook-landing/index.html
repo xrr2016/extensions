@@ -30,6 +30,7 @@
       })();
     </script>
     <meta
+      id="metaDescription"
       name="description"
       content="Prelook：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。"
     />
@@ -37,7 +38,12 @@
       name="keywords"
       content="Prelook,链接预览,悬停预览,浏览器扩展,阅读模式,划词搜索,链接预热,Speculation Rules,Chrome扩展,Edge扩展,Firefox扩展"
     />
-    <link rel="icon" type="image/webp" href="./assets/logo.webp" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link rel="icon" href="./assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
+    <link rel="canonical" href="https://prelook.coldstoneboy.cn/" />
+    <link rel="preconnect" href="https://ko-fi.com" crossorigin />
+    <link rel="preconnect" href="https://github.com" />
     <!-- 移动端浏览器地址栏颜色跟主题走：首帧由下面的内联脚本按解析出的主题写入 -->
     <meta name="theme-color" id="metaThemeColor" content="#f8f9fb" />
     <link rel="stylesheet" href="./css/style.css" />
@@ -47,7 +53,99 @@
       content="悬停链接即预览，禁嵌站点自动转阅读模式。全部本地运行，免费且无需账号。"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="./assets/logo.webp" />
+    <meta property="og:url" content="https://prelook.coldstoneboy.cn/" />
+    <meta property="og:site_name" content="Prelook" />
+    <meta
+      property="og:image"
+      content="https://prelook.coldstoneboy.cn/assets/logo.webp"
+    />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Prelook — 悬停链接即预览，不必再点开" />
+    <meta
+      name="twitter:description"
+      content="悬停链接即预览，禁嵌站点自动转阅读模式。全部本地运行，免费且无需账号。"
+    />
+    <meta
+      name="twitter:image"
+      content="https://prelook.coldstoneboy.cn/assets/logo.webp"
+    />
+    <!-- 结构化数据：站点 / 软件应用 / FAQ 富结果 -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://prelook.coldstoneboy.cn/#website",
+            "url": "https://prelook.coldstoneboy.cn/",
+            "name": "Prelook",
+            "inLanguage": "zh-CN",
+            "description": "悬停链接即预览的浏览器扩展，全部本地运行，免费且无需账号。"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://prelook.coldstoneboy.cn/#software",
+            "name": "Prelook",
+            "url": "https://prelook.coldstoneboy.cn/",
+            "applicationCategory": "BrowserExtension",
+            "operatingSystem": "Chrome, Edge, Firefox",
+            "description": "悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比。",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "CNY"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "预览窗口是空白的怎么办？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "部分网站禁止被内嵌，Prelook 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "我的数据会被上传吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Prelook 收费吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "预览为什么这么快？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Prelook 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬间就开始预取（甚至预渲染）目标页，预览窗打开时加载的是已经到本地的内容。这一切由浏览器自己调度，扩展不搭建任何中转服务器。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "会不会拖慢浏览器？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "不会常驻开销。预热只在指针停留在链接上时触发，指针离开就取消；「性能」里还提供节电模式，可以在用电池时自动关掉预热与背景模糊。"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <!-- 键盘用户跳过导航：Tab 一下即可直达正文 -->
@@ -158,7 +256,7 @@
         <div class="hero-content">
           <h1 class="hero-title">
             <span data-i18n="hero.title1">极速预览，</span
-            ><span class="gradient-text" data-i18n="hero.title2">不必点开</span>
+            ><span class="gradient-text" data-i18n="hero.title2">无需等待</span>
           </h1>
 
           <p class="hero-description" data-i18n="hero.desc">
@@ -452,6 +550,71 @@
               <span class="tag" data-i18n="f.privacy.g2">无服务器</span>
             </div>
           </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                <line x1="15" y1="4" x2="15" y2="20"></line>
+              </svg>
+            </div>
+            <h3 data-i18n="f.sidebar.t">侧边栏模式</h3>
+            <p data-i18n="f.sidebar.d">预览窗通高贴边，侧栏堆叠不遮挡正文。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.sidebar.g1">通高停靠</span>
+              <span class="tag" data-i18n="f.sidebar.g2">左右任选</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"
+                ></path>
+              </svg>
+            </div>
+            <h3 data-i18n="f.ai.t">AI 搜索</h3>
+            <p data-i18n="f.ai.d">DeepSeek / 豆包 / Kimi / Perplexity，选完即问。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.ai.g1">4 家引擎</span>
+              <span class="tag" data-i18n="f.ai.g2">选中即问</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1.1.9-2 2-2h2.5A4.5 4.5 0 0 0 22 11c0-5-4.5-9-10-9z"
+                ></path>
+                <circle cx="7.5" cy="10.5" r="1"></circle>
+                <circle cx="12" cy="7.5" r="1"></circle>
+                <circle cx="16.5" cy="10.5" r="1"></circle>
+              </svg>
+            </div>
+            <h3 data-i18n="f.theme.t">主题与外观</h3>
+            <p data-i18n="f.theme.d">深浅色、主题色、窗口配色、位置尺寸与背景模糊随心调。</p>
+            <div class="feature-tags">
+              <span class="tag" data-i18n="f.theme.g1">深浅色</span>
+              <span class="tag" data-i18n="f.theme.g2">窗口配色</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -521,6 +684,8 @@
               <img
                 src="./assets/weixin.jpg"
                 alt="微信支付收款码"
+                width="1242"
+                height="1470"
                 loading="lazy"
                 decoding="async"
               />
@@ -541,6 +706,8 @@
               <img
                 src="./assets/zhifubao.jpg"
                 alt="支付宝收款码"
+                width="900"
+                height="1350"
                 loading="lazy"
                 decoding="async"
               />
@@ -567,6 +734,8 @@
           <img
             src="./assets/kofi.jpg"
             alt="Support me on Ko-fi"
+            width="1200"
+            height="600"
             loading="lazy"
             decoding="async"
           />

@@ -8,14 +8,14 @@
   <!-- 首页：规范地址用根路径，不用 /index.html -->
   <url>
     <loc>https://prelook.coldstoneboy.cn/</loc>
-    <lastmod>2026-09-20</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <!-- 隐私政策页（Chrome Web Store 审核所需，站点常驻页） -->
   <url>
     <loc>https://prelook.coldstoneboy.cn/privacy.html</loc>
-    <lastmod>2026-09-20</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

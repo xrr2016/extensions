@@ -135,6 +135,12 @@
     en: "Prelook Privacy Policy",
   };
 
+  var DESCRIPTIONS = {
+    "zh-CN":
+      "Prelook 隐私政策：扩展不收集任何个人信息，无账号、无服务器，所有设置与处理均在本机完成。",
+    en: "Prelook Privacy Policy: the extension collects no personal information — no accounts, no servers; all settings and processing stay on your device.",
+  };
+
   var LANG_KEY = "prelook-landing-lang";
   var THEME_KEY = "prelook-landing-theme";
   var LANGS = ["zh-CN", "en"];
@@ -179,6 +185,9 @@
       langBtn.setAttribute("lang", current === "zh-CN" ? "en" : "zh-CN");
     }
     document.title = TITLES[current];
+    var desc = document.getElementById("metaDescription");
+    if (desc && DESCRIPTIONS[current])
+      desc.setAttribute("content", DESCRIPTIONS[current]);
     writeStore(LANG_KEY, current);
   }
 

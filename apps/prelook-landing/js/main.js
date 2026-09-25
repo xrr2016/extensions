@@ -251,6 +251,12 @@
     en: "Prelook — Preview any link without leaving the page",
   };
 
+  var DESCRIPTIONS = {
+    "zh-CN":
+      "Prelook：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。",
+    en: "Prelook: hover any link to preview it instantly — prefetch on hover, reader mode for embed-blocked sites, selection search, AI search, multi-window compare. Twelve features, all local, free, no account.",
+  };
+
   var LANG_KEY = "prelook-landing-lang";
   var THEME_KEY = "prelook-landing-theme";
   var LANGS = ["zh-CN", "en"];
@@ -300,6 +306,9 @@
       langBtn.setAttribute("lang", current === "zh-CN" ? "en" : "zh-CN");
     }
     document.title = TITLES[current];
+    var desc = document.getElementById("metaDescription");
+    if (desc && DESCRIPTIONS[current])
+      desc.setAttribute("content", DESCRIPTIONS[current]);
     writeStore(LANG_KEY, current);
   }
 
