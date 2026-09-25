@@ -18,9 +18,37 @@ export default defineConfig({
     port: 4173,
     strictPort: true,
   },
-  plugins: [acceptRangesForMedia()],
+  plugins: [acceptRangesForMedia(), serveMarkdownNegotiation()],
 });
 
+/**
+ * Agent 友好的 Markdown 内容协商（dev-only）。
+ *
+ * 当请求带 `Accept: text/markdown`（Claude Code / Cursor / OpenCode 的取文方式）时，
+ * 把 `.html` 请求（含首页 `/`）改写成同名 `.md` 变体，让 Agent 拿到 markdown 而不是 HTML。
+ * 这里只是把 `req.url` 改掉，随后交给 Vite 的静态中间件去 serve 对应 `.md` 文件，
+ * 不碰响应体本身。**只作用于 dev 服务器**；线上由部署层（nginx / Caddy）做同样的事，
+ * 见 `deploy-agent-content-negotiation.md`。命名约定：每个 `.html` 页面配一个同名 `.md`。
+ */
+function serveMarkdownNegotiation() {
+  return {
+    name: "prelook-landing:markdown-content-negotiation",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const accept = req.headers.accept || "";
+        if (!accept.includes("text/markdown")) return next();
+        const url = req.url || "";
+        const [path] = url.split(/[?#]/);
+        let md;
+        if (path === "/") md = "/index.md";
+        else if (path.endsWith(".html")) md = path.slice(0, -5) + ".md";
+        if (md) req.url = url.replace(path, md);
+        next();
+      });
+    },
+  };
+}
 /**
  * media 文件的全量响应也声明 `Accept-Ranges: bytes`。
  *

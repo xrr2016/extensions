@@ -1,0 +1,9 @@
+# Prelook
+
+> Prelook 是悬停链接即预览的浏览器扩展（Chrome / Edge / Firefox）：悬停瞬间即开始预取目标页，链接预热秒开，禁嵌站点自动转阅读模式；划词搜索、AI 搜索、多窗口对比等能力全部本地运行，免费且无需账号。本站为其产品官网。
+
+## 站点页面
+
+- [Prelook 首页](https://prelook.coldstoneboy.cn/): 产品介绍、功能特性、常见问题与各浏览器安装入口
+- [Prelook 隐私政策](https://prelook.coldstoneboy.cn/privacy.html): 扩展与官网的数据处理说明（不收集任何个人信息）
+

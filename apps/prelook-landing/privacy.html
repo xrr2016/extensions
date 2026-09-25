@@ -111,6 +111,17 @@
     </style>
   </head>
   <body>
+    <!-- Agent 指令（视觉隐藏）：告知 LLM/Agent 本页存在机器可读索引与 markdown 变体，
+         只对读屏/爬虫可见，不影响页面布局 -->
+    <div
+      class="agent-directive"
+      style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap"
+    >
+      本站为 Agent 提供机器可读索引：<a href="./llms.txt">llms.txt</a>。页面提供
+      markdown 版本：<a href="./index.md">index.md</a>、<a href="./privacy.md"
+        >privacy.md</a
+      >。
+    </div>
     <!-- 键盘用户跳过导航：Tab 一下即可直达正文 -->
     <a class="skip-link" href="#main" data-i18n="a11y.skip">跳到主要内容</a>
 
