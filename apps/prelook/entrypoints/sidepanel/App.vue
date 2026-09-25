@@ -19,15 +19,19 @@ import {
   WINDOW_PX_MIN,
   WINDOW_THEMES,
   clampSettings,
+  clearHistory,
+  historyItem,
+  removeHistoryEntry,
   settingsItem,
   type PrelookSettings,
+  type PreviewHistoryEntry,
   type SizeUnit,
 } from "@/utils/storage";
 import { watchTheme } from "@/utils/theme";
 import { computed, onMounted, onUnmounted, ref, toRaw, watch } from "vue";
 
 // Sections live in tabs so the panel never turns into one endless scroll.
-const TABS = ["preview", "search", "settings"] as const;
+const TABS = ["preview", "search", "history", "settings"] as const;
 type TabId = (typeof TABS)[number];
 const activeTab = ref<TabId>("preview");
 
@@ -35,6 +39,11 @@ const loaded = ref(false);
 const settings = ref<PrelookSettings>({ ...DEFAULT_SETTINGS });
 const newSite = ref("");
 const version = browser.runtime.getManifest().version;
+
+// Preview history lives in its own storage key (max 100, newest first). The
+// panel watches it, so a preview opened in a page shows up without reopening.
+const history = ref<PreviewHistoryEntry[]>([]);
+let historyDispose: (() => void) | null = null;
 
 // Labels come straight from `browser.i18n`: the panel's language is the
 // browser's UI language and cannot change while it is open.
@@ -161,7 +170,10 @@ watch(
     );
   },
 );
-onUnmounted(() => themeDispose?.());
+onUnmounted(() => {
+  themeDispose?.();
+  historyDispose?.();
+});
 // Window theme cards: each one is a miniature of the preview window, tinted with
 // the preset's accent (see WINDOW_THEMES in utils/storage). The "custom" card
 // shows the separately stored `windowColor`, since a preset no longer writes
@@ -185,6 +197,10 @@ async function load() {
         applyTheme(theme);
       },
     );
+    history.value = await historyItem.getValue();
+    historyDispose = historyItem.watch((list) => {
+      history.value = list ?? [];
+    });
   } catch (err) {
     // Without this the UI silently shows defaults and never persists, which is
     // how a missing "storage" permission presents itself.
@@ -249,6 +265,29 @@ function removeSite(site: string) {
 
 function resetAll() {
   settings.value = { ...DEFAULT_SETTINGS };
+}
+
+// History row timestamps: recent-first, relative for anything within a day so
+// the list reads like a timeline, then a plain date for older entries.
+function relTime(ts: number): string {
+  const min = Math.floor((Date.now() - ts) / 60_000);
+  if (min < 1) return t("history.justNow");
+  if (min < 60) return t("history.minutesAgo", { n: min });
+  const hours = Math.floor(min / 60);
+  if (hours < 24) return t("history.hoursAgo", { n: hours });
+  return new Date(ts).toLocaleDateString();
+}
+
+function openHistoryEntry(url: string) {
+  void browser.tabs.create({ url });
+}
+
+function onRemoveHistory(url: string) {
+  void removeHistoryEntry(url);
+}
+
+function onClearHistory() {
+  void clearHistory();
 }
 </script>
 
@@ -585,6 +624,50 @@ function resetAll() {
             <ToggleSwitch v-model="settings.detectLinks" />
           </label>
           <p class="hint muted">{{ t("selection.detectLinksHint") }}</p>
+        </section>
+      </div>
+
+      <!-- 预览历史 -->
+      <div
+        v-else-if="activeTab === 'history'"
+        id="panel-history"
+        role="tabpanel"
+        aria-labelledby="tab-history"
+      >
+        <section>
+          <div class="row history-head">
+            <h2 class="row-label">{{ t("panel.section.history") }}</h2>
+            <button v-if="history.length" class="history-clear" @click="onClearHistory">
+              {{ t("history.clear") }}
+            </button>
+          </div>
+          <p v-if="!history.length" class="hint muted">{{ t("history.empty") }}</p>
+          <div v-else class="history-list" role="list">
+            <div
+              v-for="e in history"
+              :key="e.url"
+              class="history-row"
+              role="listitem"
+              tabindex="0"
+              @click="openHistoryEntry(e.url)"
+              @keydown.enter="openHistoryEntry(e.url)"
+            >
+              <img v-if="e.favicon" class="history-icon" :src="e.favicon" alt="" />
+              <span v-else class="history-icon history-icon-empty"></span>
+              <span class="history-main">
+                <span class="history-title">{{ e.title }}</span>
+                <span class="history-url">{{ e.url }}</span>
+              </span>
+              <span class="history-time">{{ relTime(e.time) }}</span>
+              <button
+                class="history-remove"
+                :aria-label="t('history.remove')"
+                @click.stop="onRemoveHistory(e.url)"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
         </section>
       </div>
 

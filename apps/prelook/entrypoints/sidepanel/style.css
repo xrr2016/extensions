@@ -443,6 +443,121 @@ h2 {
   scale: 0.96;
 }
 
+/* Preview history: rows of title + url + relative time, newest first. The row
+   itself is the click target (opens a real tab), so it gets hover/focus feedback
+   like the other interactive cells in the panel. */
+.history-head {
+  margin-bottom: 2px;
+}
+
+.history-head .row-label {
+  margin: 0;
+}
+
+.history-clear {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--tp-accent);
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: background 0.15s ease-out;
+}
+
+.history-clear:hover {
+  background: color-mix(in srgb, var(--tp-accent) 10%, transparent);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease-out;
+}
+
+.history-row+.history-row {
+  border-top: 1px solid #eceff2;
+}
+
+.history-row:hover,
+.history-row:focus-visible {
+  background: #f0f3f7;
+}
+
+.history-row:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -2px;
+}
+
+.history-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.history-icon-empty {
+  background: #e8ebef;
+}
+
+.history-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.history-title {
+  font-size: 12.5px;
+  color: #1f2328;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.history-url {
+  font-size: 11px;
+  color: #8c959f;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.history-time {
+  flex: none;
+  font-size: 11px;
+  color: #8c959f;
+}
+
+.history-remove {
+  flex: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: #8c959f;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: color 0.15s ease-out, background 0.15s ease-out;
+}
+
+.history-remove:hover {
+  color: #cf222e;
+  background: #fbe4e6;
+}
+
 /* Appearance picker: big cards, the selected one filled with the accent. */
 .theme-cards {
   display: grid;
@@ -616,6 +731,28 @@ html[data-theme="dark"] .row-inline input::placeholder {
 html[data-theme="dark"] .site {
   background: #22262b;
   color: #c8cdd4;
+}
+
+html[data-theme="dark"] .history-row+.history-row {
+  border-top-color: #2a2f36;
+}
+
+html[data-theme="dark"] .history-row:hover,
+html[data-theme="dark"] .history-row:focus-visible {
+  background: #22262b;
+}
+
+html[data-theme="dark"] .history-title {
+  color: #e6e8eb;
+}
+
+html[data-theme="dark"] .history-icon-empty {
+  background: #2a2f36;
+}
+
+html[data-theme="dark"] .history-remove:hover {
+  color: #ff8078;
+  background: #372628;
 }
 
 html[data-theme="dark"] .hint.muted,

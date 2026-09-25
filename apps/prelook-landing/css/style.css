@@ -475,29 +475,7 @@ body::after {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-}
-
-.gradient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-}
-
-.orb-1 {
-  width: 460px;
-  height: 460px;
-  background: rgba(79, 107, 246, 0.3);
-  top: -150px;
-  right: -60px;
-}
-
-.orb-2 {
-  width: 380px;
-  height: 380px;
-  background: rgba(139, 92, 246, 0.24);
-  bottom: -140px;
-  left: -90px;
+  background: var(--bg-primary);
 }
 
 .grid-pattern {

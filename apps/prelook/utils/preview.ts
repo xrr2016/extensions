@@ -3,10 +3,12 @@ import type { I18n } from "@/utils/i18n";
 import type { PowerState } from "@/utils/power";
 import type { RiskReason } from "@/utils/safety";
 import {
-  WINDOW_THEMES,
-  clampSettings,
-  type PrelookSettings,
-  type WindowThemePreset,
+    WINDOW_THEMES,
+    clampSettings,
+    recordHistory,
+    updateHistoryMeta,
+    type PrelookSettings,
+    type WindowThemePreset,
 } from "@/utils/storage";
 
 export interface AnchorInfo {
@@ -732,6 +734,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       win.faviconEl.classList.remove("tp-hide");
       win.faviconEl.onerror = () => win.faviconEl.classList.add("tp-hide");
     }
+    // The history entry was written when the window opened with just the
+    // hostname; upgrade it now that the real title/icon are known.
+    if (reply?.title || reply?.favicon) {
+      void updateHistoryMeta(win.url, reply.title, reply.favicon);
+    }
     if (reply && !reply.canEmbed) {
       // Google Translate answers with `X-Frame-Options: SAMEORIGIN`, so a
       // translation window has to say "this site refuses to be framed" and offer
@@ -973,6 +980,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     windows.push(win);
     place(win);
     syncOverlay();
+    // Remember the opening for the panel's history tab (newest first, deduped
+    // by URL). Re-focusing an existing window is not a new preview, so only
+    // this creation path records.
+    void recordHistory({ url: info.url, title: safeHostname(info.url), time: Date.now() });
     // Two frames: let the transparent state land before arming the fade.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => root.classList.add("tp-in"));

@@ -277,6 +277,77 @@ export const settingsItem = storage.defineItem<PrelookSettings>("local:prelook_s
   defaultValue: DEFAULT_SETTINGS,
 });
 
+/** One preview opening, remembered for the panel's history tab. */
+export interface PreviewHistoryEntry {
+  url: string;
+  /** Page title once the fetch replies; the hostname until then */
+  title: string;
+  favicon?: string;
+  /** When the preview window opened (epoch ms) */
+  time: number;
+}
+
+/** Newest-first cap for the preview history list. */
+export const HISTORY_MAX = 100;
+
+export const historyItem = storage.defineItem<PreviewHistoryEntry[]>("local:prelook_history", {
+  defaultValue: [],
+});
+
+/**
+ * Put an entry at the top, dropping an older entry for the same URL so a link
+ * previewed twice reads as one line at its newest position. Best-effort: a
+ * storage failure must never break the preview that triggered it.
+ */
+export async function recordHistory(entry: PreviewHistoryEntry): Promise<void> {
+  try {
+    const list = await historyItem.getValue();
+    await historyItem.setValue(
+      [entry, ...list.filter((e) => e.url !== entry.url)].slice(0, HISTORY_MAX),
+    );
+  } catch {
+    /* history is disposable */
+  }
+}
+
+/** Patch in the metadata only the fetch reply knows (title, favicon). */
+export async function updateHistoryMeta(
+  url: string,
+  title?: string,
+  favicon?: string,
+): Promise<void> {
+  if (!title && !favicon) return;
+  try {
+    const list = await historyItem.getValue();
+    const entry = list.find((e) => e.url === url);
+    if (!entry) return;
+    if (title) entry.title = title;
+    if (favicon) entry.favicon = favicon;
+    await historyItem.setValue(list);
+  } catch {
+    /* same as above */
+  }
+}
+
+/** Drop one entry (the history tab's per-row ✕). */
+export async function removeHistoryEntry(url: string): Promise<void> {
+  try {
+    const list = await historyItem.getValue();
+    await historyItem.setValue(list.filter((e) => e.url !== url));
+  } catch {
+    /* same as above */
+  }
+}
+
+/** Drop every entry (the history tab's clear button). */
+export async function clearHistory(): Promise<void> {
+  try {
+    await historyItem.setValue([]);
+  } catch {
+    /* same as above */
+  }
+}
+
 /**
  * Backdrop blur used to be configured in pixels (0-20), so `blurPx` is converted
  * once (x5) into the percentage. Callers merge `DEFAULT_SETTINGS` in first, which

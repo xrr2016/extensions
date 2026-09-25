@@ -89,6 +89,30 @@
   "panel_tab_settings": {
     "message": "Settings"
   },
+  "panel_tab_history": {
+    "message": "History"
+  },
+  "panel_section_history": {
+    "message": "Preview history"
+  },
+  "history_empty": {
+    "message": "No previews yet — links you preview will show up here"
+  },
+  "history_clear": {
+    "message": "Clear all"
+  },
+  "history_remove": {
+    "message": "Remove this entry"
+  },
+  "history_justNow": {
+    "message": "Just now"
+  },
+  "history_minutesAgo": {
+    "message": "$1 min ago"
+  },
+  "history_hoursAgo": {
+    "message": "$1 h ago"
+  },
   "panel_enabled": {
     "message": "Enable Preview"
   },
