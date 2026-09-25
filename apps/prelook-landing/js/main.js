@@ -280,8 +280,12 @@
 
   /* ---------- 语言 ---------- */
   var savedLang = readStore(LANG_KEY);
+  // 用户手动选过（localStorage 有值）优先；否则按浏览器语言：
+  // 中文浏览器 → 中文，其他 → 英文。检测结果由 <head> 内联脚本写入
+  // window.__prelookDetectedLang。
+  var detected = window.__prelookDetectedLang === "en" ? "en" : "zh-CN";
   var current =
-    savedLang && LANGS.indexOf(savedLang) >= 0 ? savedLang : "zh-CN";
+    savedLang && LANGS.indexOf(savedLang) >= 0 ? savedLang : detected;
 
   var langBtn = document.getElementById("langToggle");
 

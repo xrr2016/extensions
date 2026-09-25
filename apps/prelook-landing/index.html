@@ -24,6 +24,26 @@
         }
       })();
     </script>
+    <!-- 语言初始化：首帧就把 <html lang> 落到正确语言，避免无障碍/SEO 读到默认中文。
+         用户手动选过（localStorage 有值）优先，否则按浏览器语言：中文浏览器 → zh-CN，其余 → en。
+         检测结果写入 window.__prelookDetectedLang，供 main.js 作为默认语言。 -->
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem("prelook-landing-lang");
+          var lang = s === "zh-CN" || s === "en" ? s : null;
+          if (!lang) {
+            var nl = (navigator.language || "en").toLowerCase();
+            lang = nl.indexOf("zh") === 0 ? "zh-CN" : "en";
+          }
+          document.documentElement.lang = lang;
+          window.__prelookDetectedLang = lang;
+        } catch (e) {
+          document.documentElement.lang = "zh-CN";
+          window.__prelookDetectedLang = "zh-CN";
+        }
+      })();
+    </script>
     <meta
       id="metaDescription"
       name="description"
