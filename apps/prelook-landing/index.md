@@ -45,7 +45,7 @@ Prelook 使用浏览器原生的 Speculation Rules API：你悬停链接的瞬�
 - [Chrome 安装](https://chromewebstore.google.com/detail/bakhoimjnmigalolahgmbeflgifobeho)
 - [Edge 安装](https://microsoftedge.microsoft.com/addons/detail/cfaoggmjcpfmmklonlgjbjgihnenfmmk)
 - [Firefox 安装](https://addons.mozilla.org/zh-CN/firefox/addon/prelook/)
-- [离线包（Chrome / Edge）](https://prelook.s3.bitiful.net/prelook-1.5.0-chrome.zip)
+- [离线包（Chrome / Edge）](https://prelook.s3.bitiful.net/prelook-1.6.0-chrome.zip)
 - [离线包（Firefox）](https://prelook.s3.bitiful.net/prelook-1.5.0-firefox.zip)
 
 装完即用，不用注册，也不用登录。三个浏览器，同一份代码。
