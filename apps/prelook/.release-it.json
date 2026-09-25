@@ -1,19 +1,19 @@
 {
-    "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
-    "git": {
-        "tagName": "prelook-v${version}"
-    },
-    "npm": false,
-    "github": {
-        "draft": true,
-        "release": false
-    },
-    "hooks": {
-        "after:bump": "npx auto-changelog -p"
-    },
-    "plugins": {
-        "@release-it/bumper": {
-            "out": "package.json"
-        }
+  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "git": {
+    "tagName": "prelook-v${version}"
+  },
+  "npm": false,
+  "github": {
+    "draft": true,
+    "release": false
+  },
+  "hooks": {
+    "after:bump": "pnpx auto-changelog -p"
+  },
+  "plugins": {
+    "@release-it/bumper": {
+      "out": "package.json"
     }
+  }
 }

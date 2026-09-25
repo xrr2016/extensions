@@ -3,7 +3,7 @@
   "description": "悬停链接即预览，不必再点开",
   "private": true,
   "license": "Apache-2.0",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
