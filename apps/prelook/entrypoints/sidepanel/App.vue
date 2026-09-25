@@ -34,6 +34,7 @@ const activeTab = ref<TabId>("preview");
 const loaded = ref(false);
 const settings = ref<PrelookSettings>({ ...DEFAULT_SETTINGS });
 const newSite = ref("");
+const version = browser.runtime.getManifest().version;
 
 // Labels come straight from `browser.i18n`: the panel's language is the
 // browser's UI language and cannot change while it is open.
@@ -709,5 +710,6 @@ function resetAll() {
          `margin-top: auto` (in the component's scoped styles) so a short tab has
          no empty gap. -->
     <SponsorSection />
+    <p class="hint muted panel-version">v{{ version }}</p>
   </main>
 </template>

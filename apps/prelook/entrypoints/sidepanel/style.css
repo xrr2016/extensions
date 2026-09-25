@@ -57,9 +57,11 @@ body {
   overflow-x: auto;
   scrollbar-width: none;
 }
+
 .tabs::-webkit-scrollbar {
   display: none;
 }
+
 /* Classic text tabs, stretched edge to edge: each chip takes an equal quarter
    of the bar and reserves a 2px bottom slot so activating never shifts
    layout; the active one fills it with the accent. The underline must stay
@@ -79,9 +81,11 @@ body {
   white-space: nowrap;
   color: #57606a;
 }
+
 .tabs .chip:hover {
   color: var(--tp-accent);
 }
+
 .tabs .chip.on {
   /* Must re-clear the pill background: the generic `.chip.on` fill sits later
      in this file at equal specificity. */
@@ -93,6 +97,7 @@ body {
 .tabs-content {
   margin-bottom: 12px;
 }
+
 main {
   /* Fill the rest of the column: no hardcoded header height — the topbar's
      rendered height varies with platform fonts and a fixed calc() drifts. */
@@ -105,6 +110,7 @@ main {
   padding-bottom: 0;
   overflow-y: auto;
 }
+
 section {
   background: #fff;
   border-radius: 12px;
@@ -112,11 +118,13 @@ section {
   margin-bottom: 10px;
   border: 1px solid #eceff2;
 }
+
 h2 {
   font-size: 12.5px;
   color: var(--tp-accent);
   margin-bottom: 8px;
 }
+
 .row {
   display: flex;
   align-items: center;
@@ -127,7 +135,7 @@ h2 {
 
 /* Size rows: a fixed label column so the unit group and both sliders share
    the same left edge instead of following each label's own width. */
-.row.sz > span {
+.row.sz>span {
   min-width: 88px;
 }
 
@@ -136,11 +144,13 @@ h2 {
   gap: 6px;
   align-items: baseline;
 }
+
 .row b {
   color: #57606a;
   font-weight: 500;
   font-size: 12px;
 }
+
 .switch-row {
   cursor: pointer;
 }
@@ -151,10 +161,12 @@ h2 {
   gap: 6px 14px;
   margin: 6px 0;
 }
+
 /* The RadioGroup carries its own margin; don't double it inside this wrapper. */
 .seg .tp-seg {
   margin: 0;
 }
+
 /* Position picker: 3×3 visual grid + sidebar full-width row. */
 .pos-grid {
   display: flex;
@@ -162,11 +174,13 @@ h2 {
   gap: 6px;
   margin: 8px 0 2px;
 }
+
 .pos-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
 }
+
 .pos-cell {
   padding: 8px 4px;
   border-radius: 8px;
@@ -182,30 +196,37 @@ h2 {
     background 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .pos-cell:active {
   scale: 0.96;
 }
+
 .pos-cell:hover {
   border-color: var(--tp-accent);
 }
+
 .pos-cell.on {
   border-color: var(--tp-accent);
   background: color-mix(in srgb, var(--tp-accent) 10%, #fff);
   color: var(--tp-accent);
   font-weight: 600;
 }
+
 .pos-sidebar {
   grid-column: 1 / -1;
 }
+
 .grid3 label {
   display: flex;
   gap: 5px;
   align-items: center;
   cursor: pointer;
 }
+
 .grid3 input {
   accent-color: var(--tp-accent);
 }
+
 .grid3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -220,6 +241,7 @@ h2 {
   gap: 8px;
   margin: 8px 0 2px;
 }
+
 .win-themes label {
   position: relative;
   display: block;
@@ -233,16 +255,20 @@ h2 {
     box-shadow 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .win-themes label:active {
   scale: 0.96;
 }
+
 .win-themes label:hover {
   border-color: var(--card-accent);
 }
+
 .win-themes label.on {
   border-color: var(--card-accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-accent) 30%, transparent);
 }
+
 .win-themes input {
   position: absolute;
   inset: 0;
@@ -252,6 +278,7 @@ h2 {
   opacity: 0;
   cursor: pointer;
 }
+
 .mini {
   display: block;
   border-radius: 4px;
@@ -260,29 +287,36 @@ h2 {
   background: color-mix(in srgb, var(--card-accent) 7%, #fff);
   border: 1px solid color-mix(in srgb, var(--card-accent) 18%, transparent);
 }
+
 .win-themes label.dark .mini {
   background: #1e2432;
   border-color: color-mix(in srgb, var(--card-accent) 45%, transparent);
 }
+
 .mini i {
   display: block;
   height: 4px;
   border-radius: 2px;
   background: var(--card-accent);
 }
+
 .mini-head {
   margin-bottom: 3px;
 }
+
 .mini-head {
   opacity: 1;
 }
+
 .mini-line {
   opacity: 0.55;
 }
+
 .mini-line.short {
   width: 62%;
   margin-top: 3px;
 }
+
 .mini-pen {
   position: absolute;
   right: 8px;
@@ -296,11 +330,13 @@ h2 {
   margin: 8px 0 4px;
   color: #57606a;
 }
+
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
+
 .chip {
   border: 1px solid #d8dee4;
   background: #fff;
@@ -315,9 +351,11 @@ h2 {
     color 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .chip:active {
   scale: 0.96;
 }
+
 .chip.on {
   background: var(--tp-accent);
   border-color: var(--tp-accent);
@@ -329,6 +367,7 @@ h2 {
   color: #57606a;
   margin: 4px 0;
 }
+
 .hint.muted {
   color: #8c959f;
 }
@@ -339,6 +378,7 @@ h2 {
   gap: 6px;
   margin-bottom: 8px;
 }
+
 .site {
   display: inline-flex;
   align-items: center;
@@ -348,16 +388,19 @@ h2 {
   padding: 2px 4px 2px 10px;
   font-size: 12px;
 }
+
 .site button {
   border: 0;
   background: none;
   cursor: pointer;
   color: #8c959f;
 }
+
 .row-inline {
   display: flex;
   gap: 6px;
 }
+
 .row-inline input {
   flex: 1;
   min-width: 0;
@@ -372,14 +415,17 @@ h2 {
     border-color 0.12s ease,
     box-shadow 0.12s ease;
 }
+
 .row-inline input::placeholder {
   color: #9aa3ad;
 }
+
 .row-inline input:focus {
   outline: none;
   border-color: var(--tp-accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-accent) 15%, transparent);
 }
+
 .row-inline button {
   border: 1px solid #d8dee4;
   background: #fff;
@@ -392,6 +438,7 @@ h2 {
     border-color 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .row-inline button:active {
   scale: 0.96;
 }
@@ -403,6 +450,7 @@ h2 {
   gap: 8px;
   margin: 8px 0 2px;
 }
+
 .theme-cards label {
   position: relative;
   display: flex;
@@ -422,22 +470,27 @@ h2 {
     color 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .theme-cards label:active {
   scale: 0.96;
 }
+
 .theme-cards label:hover {
   border-color: var(--tp-accent);
   color: var(--tp-accent);
 }
+
 .theme-cards label.on {
   background: var(--tp-accent);
   border-color: var(--tp-accent);
   color: #fff;
 }
+
 .theme-cards svg {
   width: 20px;
   height: 20px;
 }
+
 .theme-cards input {
   position: absolute;
   inset: 0;
@@ -466,10 +519,12 @@ h2 {
     border-color 0.15s ease-out,
     scale 0.15s ease-out;
 }
+
 .btn-reset:hover {
   background: #fbe4e6;
   border-color: #e79aa1;
 }
+
 .btn-reset:active {
   scale: 0.98;
 }
@@ -479,19 +534,23 @@ h2 {
 html[data-theme="dark"] {
   color-scheme: dark;
 }
+
 html[data-theme="dark"],
 html[data-theme="dark"] body {
   background: #15171a;
   color: #e6e8eb;
 }
+
 html[data-theme="dark"] .topbar {
   background: #1b1e22;
   border-bottom-color: #2a2f36;
 }
+
 html[data-theme="dark"] section {
   background: #1b1e22;
   border-color: #2a2f36;
 }
+
 html[data-theme="dark"] .theme-cards label,
 html[data-theme="dark"] .chip,
 html[data-theme="dark"] .row-inline button {
@@ -499,19 +558,23 @@ html[data-theme="dark"] .row-inline button {
   border-color: #333941;
   color: #c8cdd4;
 }
+
 html[data-theme="dark"] .pos-cell {
   background: #22262b;
   border-color: #333941;
   color: #c8cdd4;
 }
+
 html[data-theme="dark"] .pos-cell.on {
   background: color-mix(in srgb, var(--tp-accent) 22%, #22262b);
   border-color: var(--tp-accent);
   color: var(--tp-accent);
 }
+
 html[data-theme="dark"] .picker {
   color-scheme: dark;
 }
+
 /* Must out-specify the dark card/button rules above, or the selected option
    loses its accent fill in dark mode. */
 html[data-theme="dark"] .theme-cards label.on,
@@ -520,43 +583,52 @@ html[data-theme="dark"] .chip.on {
   border-color: var(--tp-accent);
   color: #fff;
 }
+
 /* Tab-style tabs stay text-only in dark mode too; these must come after (and
    out-specify) the generic dark .chip rules above. */
 html[data-theme="dark"] .tabs {
   border-bottom-color: #333941;
 }
+
 html[data-theme="dark"] .tabs .chip {
   background: transparent;
   border-color: transparent;
   color: #8c959f;
 }
+
 html[data-theme="dark"] .tabs .chip.on {
   background: transparent;
   border-bottom: 2px solid var(--tp-accent);
   color: var(--tp-accent);
 }
+
 html[data-theme="dark"] .row-inline input,
 html[data-theme="dark"] .redeem input {
   background: #22262b;
   border-color: #333941;
   color: #e6e8eb;
 }
+
 html[data-theme="dark"] .row-inline input::placeholder {
   color: #6b7280;
 }
+
 html[data-theme="dark"] .site {
   background: #22262b;
   color: #c8cdd4;
 }
+
 html[data-theme="dark"] .hint.muted,
 html[data-theme="dark"] .row b,
 html[data-theme="dark"] .hint,
 html[data-theme="dark"] .row-label {
   color: #9aa3ad;
 }
+
 html[data-theme="dark"] .swatch.active {
   border-color: #e6e8eb;
 }
+
 /* Out-specifies the plain `.btn-reset:hover` above (which the dark block's own
    `html[data-theme="dark"] .btn-reset` would otherwise win against). */
 html[data-theme="dark"] .btn-reset {
@@ -564,7 +636,13 @@ html[data-theme="dark"] .btn-reset {
   border-color: #5a3233;
   background: #2a2124;
 }
+
 html[data-theme="dark"] .btn-reset:hover {
   background: #372628;
   border-color: #7a4243;
+}
+
+.panel-version {
+  text-align: center;
+  margin: 10px 0 16px;
 }
