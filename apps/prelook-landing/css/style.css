@@ -216,11 +216,21 @@ body::after {
   background: rgba(248, 249, 251, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color 0.35s var(--ease-out-expo),
+    box-shadow 0.35s var(--ease-out-expo);
 }
 
 [data-theme="dark"] .navbar {
   background: rgba(17, 19, 24, 0.82);
+}
+
+/* 滚动边缘：顶部导航与 hero 同底无缝融合，滚到内容上才浮现一条细边 + 极淡投影。
+   —— 用"随滚动出现的边缘"代替常驻硬分隔线（Apple 材质原则）。 */
+.navbar.is-scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
 }
 
 .nav-container {
@@ -489,6 +499,15 @@ body::after {
   -webkit-mask-image: radial-gradient(70% 60% at 50% 40%, #000 20%, transparent 100%);
 }
 
+/* 顶部一道极淡主色辉光：给纯色 hero 一点纵向深度，深浅主题共用 --primary-light 都成立 */
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(58% 46% at 50% 0%, var(--primary-light) 0%, transparent 72%);
+}
+
 .hero-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -573,6 +592,11 @@ body::after {
   color: var(--primary);
 }
 
+/* 按下即回缩：反馈落在 pointer-down 而不是松手时才出现 —— 不移动就无感 */
+.install-card:active {
+  transform: translateY(0) scale(0.97);
+}
+
 .install-card-icon {
   width: 48px;
   height: 48px;
@@ -637,6 +661,7 @@ section {
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 700;
   margin-bottom: var(--spacing-xs);
+  letter-spacing: -0.02em; /* 大号展示文本收紧字距（Apple 光学字距） */
   text-wrap: balance;
 }
 
@@ -674,6 +699,11 @@ section {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   border-color: var(--primary);
+}
+
+/* 按下微回缩，反馈即时落在 pointer-down */
+.feature-card:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 .feature-card.featured {
@@ -869,6 +899,16 @@ html[data-theme="dark"] .sponsor-qr {
   margin-top: 0.75rem;
   font-size: 0.9375rem;
   color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.28s var(--ease-out-expo),
+    transform 0.28s var(--ease-out-expo);
+}
+
+.faq details[open] p {
+  opacity: 1;
+  transform: none;
 }
 
 /* ---------- 收尾 CTA（满幅色带） ---------- */
@@ -1169,7 +1209,9 @@ html[data-theme="dark"] .sponsor-qr {
   height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--text-secondary);
   cursor: pointer;
   opacity: 0;
@@ -1324,6 +1366,30 @@ html[data-theme="dark"] .sponsor-qr {
   .install-card {
     min-width: 7rem;
     padding: 1.25rem 1rem 1rem;
+  }
+}
+
+/* ---------- 减少透明与高对比（Apple 无障碍信号） ---------- */
+@media (prefers-reduced-transparency: reduce) {
+  .navbar,
+  .to-top {
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .navbar {
+    background: var(--bg-primary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .install-card,
+  .feature-card,
+  .faq details {
+    border-color: var(--text-tertiary);
   }
 }
 

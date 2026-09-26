@@ -401,7 +401,10 @@
   );
   var spySections = navLinks
     .map(function (link) {
-      return document.querySelector(link.getAttribute("href"));
+      var href = link.getAttribute("href");
+      // 只有 # 锚点才参与滚动高亮；外链（如隐私政策的绝对 URL）不是选择器，直接跳过
+      if (!href || href.charAt(0) !== "#") return null;
+      return document.querySelector(href);
     })
     .filter(Boolean);
 
@@ -447,6 +450,7 @@
         updateActiveNav();
         sweepReveals();
         updateToTop();
+        updateNavState();
         spyTicking = false;
       });
     },
@@ -455,6 +459,7 @@
   window.addEventListener("resize", function () {
     updateActiveNav();
     sweepReveals();
+    updateNavState();
   });
   updateActiveNav();
 
@@ -470,6 +475,16 @@
     });
     updateToTop();
   }
+
+  /* ---------- 导航滚动边缘 ----------
+     顶部导航与 hero 同底无缝（无边框）；滚过首屏（>8px）才浮现分隔线。
+     与 CSS 的 .navbar.is-scrolled 配对。 */
+  var navbarEl = document.querySelector(".navbar");
+  function updateNavState() {
+    if (!navbarEl) return;
+    navbarEl.classList.toggle("is-scrolled", window.scrollY > 8);
+  }
+  updateNavState();
 
   /* ---------- 滚动入场 ---------- */
   var revealTargets = []
