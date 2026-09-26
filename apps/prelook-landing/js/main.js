@@ -35,7 +35,7 @@
       "cta.sub": "装完即用，不用注册，也不用登录。",
 
       "features.title": "沉浸式浏览，不必来回切换",
-      "features.subtitle": "十二项能力，全部本地运行，不上传任何数据",
+      "features.subtitle": "九项能力，全部本地运行，不上传任何数据",
 
       "f.preview.tag": "核心",
       "f.preview.t": "链接预览",
@@ -54,18 +54,10 @@
       "f.multi.d": "最多同时打开 6 个预览窗，左右对比阅读。",
       "f.multi.g1": "最多 6 窗",
       "f.multi.g2": "并排对比",
-      "f.sidebar.t": "侧边栏模式",
-      "f.sidebar.d": "预览窗通高贴边，侧栏堆叠不遮挡正文。",
-      "f.sidebar.g1": "通高停靠",
-      "f.sidebar.g2": "左右任选",
       "f.search.t": "划词搜索",
       "f.search.d": "选中文字，一键 Google / Bing / 百度 / DuckDuckGo。",
       "f.search.g1": "4 大引擎",
       "f.search.g2": "选中即搜",
-      "f.ai.t": "AI 搜索",
-      "f.ai.d": "DeepSeek / 豆包 / Kimi / Perplexity，选完即问。",
-      "f.ai.g1": "4 家引擎",
-      "f.ai.g2": "选中即问",
       "f.track.t": "追踪参数清理",
       "f.track.d": "自动剥掉 utm、fbclid 等追踪参数，还原中转壳里的真实地址。",
       "f.track.g1": "剥离 utm",
@@ -78,10 +70,6 @@
       "f.trigger.d": "悬停、Alt+悬停、长按、拖动，按习惯任选。",
       "f.trigger.g1": "Alt 组合",
       "f.trigger.g2": "长按拖动",
-      "f.theme.t": "主题与外观",
-      "f.theme.d": "深浅色、主题色、窗口配色、位置尺寸与背景模糊随心调。",
-      "f.theme.g1": "深浅色",
-      "f.theme.g2": "窗口配色",
       "f.privacy.t": "隐私本地化",
       "f.privacy.d": "无账号、无服务器，数据不出本机。",
       "f.privacy.g1": "无账号",
@@ -153,7 +141,7 @@
       "cta.sub": "Install and go — no sign-up, no login.",
 
       "features.title": "Immersive browsing, without the back-and-forth",
-      "features.subtitle": "Twelve features, all local — nothing is uploaded",
+      "features.subtitle": "Nine features, all local — nothing is uploaded",
 
       "f.preview.tag": "Core",
       "f.preview.t": "Link preview",
@@ -175,19 +163,11 @@
       "f.multi.d": "Open up to 6 previews side by side for comparison reading.",
       "f.multi.g1": "Up to 6 windows",
       "f.multi.g2": "Side by side",
-      "f.sidebar.t": "Sidebar mode",
-      "f.sidebar.d": "Dock previews full height to either edge, stacked.",
-      "f.sidebar.g1": "Full-height dock",
-      "f.sidebar.g2": "Left or right",
       "f.search.t": "Selection search",
       "f.search.d":
         "Select text — Google / Bing / Baidu / DuckDuckGo in one click.",
       "f.search.g1": "4 engines",
       "f.search.g2": "Search on select",
-      "f.ai.t": "AI search",
-      "f.ai.d": "DeepSeek / Doubao / Kimi / Perplexity, ask right away.",
-      "f.ai.g1": "4 engines",
-      "f.ai.g2": "Ask on select",
       "f.track.t": "Tracking cleanup",
       "f.track.d":
         "Strips utm, fbclid and friends, and unwraps redirect shells back to the real address.",
@@ -203,11 +183,6 @@
         "Hover, Alt+hover, long-press or drag — pick what feels natural.",
       "f.trigger.g1": "Alt combos",
       "f.trigger.g2": "Long-press and drag",
-      "f.theme.t": "Themes and appearance",
-      "f.theme.d":
-        "Light or dark, accent color, window palettes, position, size and backdrop blur.",
-      "f.theme.g1": "Light and dark",
-      "f.theme.g2": "Window palettes",
       "f.privacy.t": "Privacy-first",
       "f.privacy.d": "No account, no server — data never leaves your device.",
       "f.privacy.g1": "No account",
@@ -254,8 +229,8 @@
 
   var DESCRIPTIONS = {
     "zh-CN":
-      "Prelook：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、AI 搜索、多窗口对比，十二项能力全部本地运行，免费且无需账号。",
-    en: "Prelook: hover any link to preview it instantly — prefetch on hover, reader mode for embed-blocked sites, selection search, AI search, multi-window compare. Twelve features, all local, free, no account.",
+      "Prelook：悬停链接即预览，链接预热秒开，禁嵌站点自动转阅读模式。划词搜索、多窗口对比，九项能力全部本地运行，免费且无需账号。",
+    en: "Prelook: hover any link to preview it instantly — prefetch on hover, reader mode for embed-blocked sites, selection search, multi-window compare. Nine features, all local, free, no account.",
   };
 
   var LANG_KEY = "prelook-landing-lang";
