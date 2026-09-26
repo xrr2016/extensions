@@ -98,7 +98,7 @@
         "部分网站禁止被内嵌，Prelook 会自动切换为阅读模式；若两者都失败，窗口会提供「在新标签页打开」按钮。",
       "faq.q2": "我的数据会被上传吗？",
       "faq.a2":
-        "不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。",
+        "扩展不会。所有预览与设置都发生在本机浏览器内，Prelook 没有账号体系，也不设任何服务器。另请注意：本官网页面使用了 Google 网站统计来记录访问情况，详见隐私政策。",
       "faq.q3": "Prelook 收费吗？",
       "faq.a3":
         "完全免费，没有 Pro 版本、没有内购，也没有需要解锁的功能——包括多窗口预览在内全部开放。项目靠赞助维持，赞助纯粹出于自愿。",
@@ -225,7 +225,7 @@
         "Some sites forbid embedding; Prelook switches to reader mode automatically. If both fail, the window offers an open-in-new-tab button.",
       "faq.q2": "Is my data uploaded?",
       "faq.a2":
-        "No. Previews and settings live entirely in your browser — no accounts, no servers.",
+        "Not from the Extension. Previews and settings live entirely in your browser — no accounts, no servers. Note that this website itself uses Google Analytics to record page visits; see the privacy policy.",
       "faq.q3": "Does Prelook cost anything?",
       "faq.a3":
         "It is completely free: no Pro tier, no in-app purchases, no locked features — multi-window previews included. The project runs on sponsorships, which are purely optional.",

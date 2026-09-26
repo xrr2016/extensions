@@ -5,5 +5,5 @@
 ## 站点页面
 
 - [Prelook 首页](https://prelook.coldstoneboy.cn/index.md): 产品介绍、功能特性、常见问题与各浏览器安装入口
-- [Prelook 隐私政策](https://prelook.coldstoneboy.cn/privacy.md): 扩展与官网的数据处理说明（不收集任何个人信息）
+- [Prelook 隐私政策](https://prelook.coldstoneboy.cn/privacy.md): 扩展与官网的数据处理说明（扩展不收集任何个人信息；官网使用 Google 网站统计）
 

@@ -2,7 +2,7 @@
 
 # Prelook 隐私政策
 
-生效日期：2026 年 9 月 20 日
+生效日期：2026 年 9 月 26 日
 
 感谢你使用 Prelook。本政策说明 Prelook 浏览器扩展（下称「扩展」）以及 Prelook 官网（下称「网站」）如何处理你的数据。
 
@@ -35,6 +35,8 @@
 划词搜索、AI 搜索与翻译在你主动触发时，会将你选中的文字发送给你选择的第三方服务。这些服务分别适用其各自的隐私政策：Google（policies.google.com/privacy）、Microsoft Bing（privacy.microsoft.com）、DuckDuckGo（duckduckgo.com/privacy），以及 DeepSeek、豆包、Kimi、Perplexity 各服务官网的隐私政策。
 
 扩展本身不向这些服务之外的任何第三方披露你的数据。
+
+网站（仅指本站，不包括扩展）使用 Google 网站统计（Google Analytics，GA4）来了解页面的访问情况。Google 会在你的浏览器中设置 Cookie，并将访问数据（如你所在的大致地区、浏览器与设备类型、访问了哪些页面）上报至 Google 服务器，适用 Google 的隐私政策（policies.google.com/privacy）。扩展本身不向 Google 上报任何统计数据。
 
 ## 5. 权限说明
 
