@@ -201,7 +201,10 @@
     "message": "Pick the preview window palette"
   },
   "windowTheme_auto": {
-    "message": "Match the page's theme colour (falls back to your custom colour)"
+    "message": "Match the page's theme colour"
+  },
+  "windowTheme_autoHint": {
+    "message": "Falls back to your custom colour when the page has none"
   },
   "windowTheme_gray": {
     "message": "Grey"

@@ -45,14 +45,16 @@ export interface WindowThemePreset {
   ink?: string;
 }
 
+/**
+ * Order is the panel's order: the first entries are the colour swatches, and
+ * `auto` sits last because it has no swatch of its own — the panel renders it as
+ * a button below the grid. `WINDOW_THEMES[0]` is also the unknown-id fallback in
+ * `preview.ts`, which is why `silver` (the default theme) has to stay first.
+ */
 export const WINDOW_THEMES: WindowThemePreset[] = [
   // Neighbours in this list have to stay tellable apart on sight: the two
   // neutrals differ mainly in lightness (silver reads light-cool, gray dark),
   // and purple is pushed towards violet so it never reads as "blue again".
-  // "auto" comes first: it paints itself from the page rather than from `accent`,
-  // which only carries the fallback colour used when nothing can be extracted
-  // (see utils/pageAccent.ts) — the same silver the default theme picks.
-  { id: "auto", accent: "#94a3b8", kind: "tint" },
   { id: "silver", accent: "#94a3b8", kind: "tint" },
   { id: "blue", accent: "#4f6bf6", kind: "tint" },
   { id: "gray", accent: "#475569", kind: "tint" },
@@ -68,6 +70,10 @@ export const WINDOW_THEMES: WindowThemePreset[] = [
   // legible there.
   { id: "midnight", accent: "#818cf8", kind: "dark", surface: "#1e2432", ink: "#e7eaf0" },
   { id: "custom", accent: "#4f6bf6", kind: "tint" },
+  // `accent` here is not a colour the user picks but the fallback used when the
+  // page yields nothing (see utils/pageAccent.ts) — the same silver `windowColor`
+  // defaults to, so "auto with no colour found" looks like the default theme.
+  { id: "auto", accent: "#94a3b8", kind: "tint" },
 ];
 
 export interface SearchEngine {

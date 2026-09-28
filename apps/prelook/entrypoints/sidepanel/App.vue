@@ -177,17 +177,18 @@ onUnmounted(() => {
 // Window theme cards: each one is a miniature of the preview window, tinted with
 // the preset's accent (see WINDOW_THEMES in utils/storage). The "custom" card
 // shows the separately stored `windowColor`, since a preset no longer writes
-// into the plugin's own accent (`themeColor`). "auto" has no colour of its own —
-// it takes the page's, so its swatch previews the fallback it uses when nothing
-// can be read from the page.
-const WINDOW_THEME_CARDS = WINDOW_THEMES;
+// into the plugin's own accent (`themeColor`).
+//
+// "auto" is filtered out and rendered as a button under the grid: it has no
+// colour of its own to preview, and as a 13th swatch it would break the 4-column
+// rows into a stub. It is still a radio in the same `windowTheme` group, so the
+// single-choice semantics and arrow-key navigation survive.
+const WINDOW_THEME_CARDS = WINDOW_THEMES.filter((p) => p.id !== "auto");
 
+/** The swatch tint for a card. Only "custom" needs an override: its colour comes
+ *  from the user's picker rather than the preset. */
 function cardAccent(p: (typeof WINDOW_THEMES)[number]): string {
-  if (p.id === "custom") return settings.value.windowColor;
-  // Under auto the fallback *is* the custom colour, so dragging that picker
-  // live-tints the auto card too — it shows what you get when a page has none.
-  if (p.id === "auto") return settings.value.windowColor;
-  return p.accent;
+  return p.id === "custom" ? settings.value.windowColor : p.accent;
 }
 
 function onCustomColor(value: string) {
@@ -500,23 +501,6 @@ function onClearHistory() {
                 <i class="mini-line short"></i>
               </span>
               <svg
-                v-if="p.id === 'auto'"
-                class="mini-badge"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M11 3.5 12.7 8.2 17.4 9.9 12.7 11.6 11 16.3 9.3 11.6 4.6 9.9 9.3 8.2z" />
-                <path
-                  d="M17.8 14.6 18.6 17 21 17.8 18.6 18.6 17.8 21 17 18.6 14.6 17.8 17 17z"
-                  stroke-width="1.4"
-                />
-              </svg>
-              <svg
                 v-if="p.id === 'custom'"
                 class="mini-pen"
                 viewBox="0 0 24 24"
@@ -529,6 +513,33 @@ function onClearHistory() {
               </svg>
             </label>
           </div>
+          <!-- 自动跟随网页主题色 -->
+          <label class="auto-theme" :class="{ on: settings.windowTheme === 'auto' }">
+            <input
+              v-model="settings.windowTheme"
+              type="radio"
+              name="windowTheme"
+              value="auto"
+            />
+            <svg
+              class="auto-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M11 3.5 12.7 8.2 17.4 9.9 12.7 11.6 11 16.3 9.3 11.6 4.6 9.9 9.3 8.2z" />
+              <path
+                d="M17.8 14.6 18.6 17 21 17.8 18.6 18.6 17.8 21 17 18.6 14.6 17.8 17 17z"
+                stroke-width="1.4"
+              />
+            </svg>
+            <span>{{ t("windowTheme.auto") }}</span>
+          </label>
+          <p class="hint muted auto-hint">{{ t("windowTheme.autoHint") }}</p>
         </section>
 
         <!-- 预览窗数量 -->
