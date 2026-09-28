@@ -339,16 +339,10 @@
     "message": "赞助支持"
   },
   "sponsor_hint": {
-    "message": "Prelook 完全免费。如果它帮到了你，欢迎扫码赞助支持后续开发。"
+    "message": "Prelook 完全免费。如果它帮到了你，欢迎赞助支持后续开发。"
   },
-  "sponsor_wechat": {
-    "message": "微信支付"
-  },
-  "sponsor_alipay": {
-    "message": "支付宝"
-  },
-  "sponsor_qrMissing": {
-    "message": "二维码待添加"
+  "sponsor_afdian": {
+    "message": "爱发电赞助页"
   },
   "sponsor_kofi": {
     "message": "在 Ko-fi 上支持我"
