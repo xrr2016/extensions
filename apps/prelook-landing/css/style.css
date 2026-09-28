@@ -661,7 +661,8 @@ section {
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 700;
   margin-bottom: var(--spacing-xs);
-  letter-spacing: -0.02em; /* 大号展示文本收紧字距（Apple 光学字距） */
+  letter-spacing: -0.02em;
+  /* 大号展示文本收紧字距（Apple 光学字距） */
   text-wrap: balance;
 }
 
@@ -776,9 +777,9 @@ section {
 
 .sponsor-grid {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: var(--spacing-xl);
-  flex-wrap: wrap;
 }
 
 /* 外层卡片：柔和淡紫底色，大号圆角。 */
@@ -791,18 +792,18 @@ section {
   min-width: 260px;
 }
 
-/* 内层白底二维码卡片：扫码需要浅色背景，不跟随主题变深。 */
-.sponsor-qr {
-  background: #fff;
+/* 爱发电嵌入卡片：白底大圆角，iframe 尺寸按 leaflet 页内容高度给足，
+   内部的“更多”链接也落在卡片里，不再需要扫码那样的浅色强制。 */
+.sponsor-afdian {
   border-radius: 1.25rem;
   box-shadow: var(--shadow-md);
 }
 
-.sponsor-qr img {
+.sponsor-afdian iframe {
   display: block;
-  width: 300px;
-  height: 300px;
-  object-fit: contain;
+  width: 500px;
+  height: 200px;
+  border: none;
   border-radius: var(--radius-md);
 }
 
@@ -811,7 +812,7 @@ section {
    border-radius 让阴影贴合形状。 */
 .kofi-btn {
   display: block;
-  width: 300px;
+  width: 500px;
   border-radius: 12px;
   transition:
     transform 0.15s ease,
@@ -841,7 +842,7 @@ html[data-theme="dark"] .sponsor-tile {
   background: #232b45;
 }
 
-html[data-theme="dark"] .sponsor-qr {
+html[data-theme="dark"] .sponsor-afdian {
   background: #fff;
 }
 
@@ -929,17 +930,6 @@ html[data-theme="dark"] .sponsor-qr {
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
   align-items: center;
   gap: var(--spacing-2xl);
-}
-
-.cta-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-size: 0.8125rem;
-  font-weight: 500;
 }
 
 .cta-title {
@@ -1371,6 +1361,7 @@ html[data-theme="dark"] .sponsor-qr {
 
 /* ---------- 减少透明与高对比（Apple 无障碍信号） ---------- */
 @media (prefers-reduced-transparency: reduce) {
+
   .navbar,
   .to-top {
     background: var(--bg-secondary);

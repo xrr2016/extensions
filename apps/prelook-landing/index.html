@@ -595,7 +595,7 @@
       </div>
     </section>
 
-    <!-- 赞助区：两张收款码并排，Ko-fi 按钮居中。 -->
+    <!-- 赞助区：爱发电嵌入组件与 Ko-fi 徽章并排。 -->
     <section id="sponsor" class="sponsor">
       <div class="container">
         <div class="section-header">
@@ -604,28 +604,19 @@
         </div>
 
         <div class="sponsor-grid">
+          <!-- 爱发电嵌入组件：leaflet 是爱发电官方的嵌入页，不发送 X-Frame-Options，
+               可以直接 iframe 进来；收款码（微信/支付宝）已随旧方案一并移除。 -->
           <div class="sponsor-tile">
-            <div class="sponsor-qr">
-              <img
-                src="./assets/weixin.jpg"
-                alt="微信支付收款码"
-                width="1242"
-                height="1470"
+            <div class="sponsor-afdian">
+              <iframe
+                src="https://afdian.com/leaflet?slug=coldstoneboy"
+                title="爱发电赞助页"
+                aria-label="爱发电赞助页"
+                data-i18n-aria="sponsor.afdian"
+                scrolling="no"
+                frameborder="0"
                 loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-          <div class="sponsor-tile">
-            <div class="sponsor-qr">
-              <img
-                src="./assets/zhifubao.jpg"
-                alt="支付宝收款码"
-                width="900"
-                height="1350"
-                loading="lazy"
-                decoding="async"
-              />
+              ></iframe>
             </div>
           </div>
 
@@ -656,7 +647,6 @@
     <section id="get" class="cta-band">
       <div class="container cta-inner">
         <div class="cta-copy">
-          <span class="cta-badge" data-i18n="cta.badge">三个浏览器，同一份代码</span>
           <h2 class="cta-title" data-i18n="cta.title">现在就用起来</h2>
           <p class="cta-sub" data-i18n="cta.sub">装完即用，不用注册，也不用登录。</p>
 

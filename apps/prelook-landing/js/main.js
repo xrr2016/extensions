@@ -30,7 +30,6 @@
       "install.zipChrome": "离线包（Chrome / Edge）",
       "install.zipFirefox": "离线包（Firefox）",
 
-      "cta.badge": "三个浏览器，同一份代码",
       "cta.title": "现在就用起来",
       "cta.sub": "装完即用，不用注册，也不用登录。",
 
@@ -77,7 +76,8 @@
 
       "sponsor.title": "赞助支持",
       "sponsor.subtitle":
-        "Prelook 完全免费、无账号、无服务器。如果它帮到了你，欢迎扫码赞助，支持后续开发。",
+        "Prelook 完全免费、无账号、无服务器。如果它帮到了你，欢迎在爱发电赞助，支持后续开发。",
+      "sponsor.afdian": "爱发电赞助页",
 
       "faq.title": "常见问题",
       "faq.subtitle": "还有疑问？先看这几条。",
@@ -136,7 +136,6 @@
       "install.zipChrome": "Offline (Chrome / Edge)",
       "install.zipFirefox": "Offline (Firefox)",
 
-      "cta.badge": "Three browsers, one codebase",
       "cta.title": "Get it running today",
       "cta.sub": "Install and go — no sign-up, no login.",
 
@@ -190,7 +189,8 @@
 
       "sponsor.title": "Support the project",
       "sponsor.subtitle":
-        "Prelook is completely free — no account, no server. If it helps you, scan a QR code to keep development going.",
+        "Prelook is completely free — no account, no server. If it helps you, sponsor me on Afdian to keep development going.",
+      "sponsor.afdian": "Afdian sponsor page",
 
 
       "faq.title": "FAQ",
