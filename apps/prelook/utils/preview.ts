@@ -1,6 +1,7 @@
 import { extractReaderContent, renderReaderInto } from "@/utils/extract";
 import type { I18n } from "@/utils/i18n";
 import type { PowerState } from "@/utils/power";
+import { extractHostAccent, extractPageAccent, type AccentScope } from "@/utils/pageAccent";
 import type { RiskReason } from "@/utils/safety";
 import {
     WINDOW_THEMES,
@@ -63,6 +64,12 @@ interface WindowInstance {
   risk?: RiskReason;
   /** Pointer is inside this window — drives the backdrop focus effect */
   hovered: boolean;
+  /**
+   * Accent resolved for "auto" window theme, or `null` while it has not been
+   * worked out yet. Only ever read while `windowTheme === "auto"`; a manual
+   * theme ignores it so switching back to auto mid-session stays cheap.
+   */
+  autoAccent?: string | null;
   /** Pinned windows survive pointer release and are never evicted */
   pinned: boolean;
   pinBtnEl: HTMLButtonElement;
@@ -395,19 +402,65 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     return WINDOW_THEMES.find((w) => w.id === s.windowTheme) ?? WINDOW_THEMES[0]!;
   }
 
-  /** The accent colour that paints the preview window chrome — shared with
+  /** The accent that paints the preview window chrome — shared with
    *  the link highlight outline and the hover progress bar so they all read as
-   *  one visual family regardless of whether the user picked a preset or a
-   *  custom `windowColor`. */
-  function windowAccent(s: PrelookSettings): string {
+   *  one visual family regardless of whether the user picked a preset, a custom
+   *  `windowColor`, or let the page decide ("auto").
+   *
+   *  `win` is optional because the highlight frame and the countdown bar are not
+   *  windows: they sit on the hovered link, so under "auto" they take the host
+   *  page's colour rather than the colour of some other page being previewed. */
+  function windowAccent(s: PrelookSettings, win?: WindowInstance): string {
     const preset = windowPreset(s);
+    if (preset.id === "auto") return win?.autoAccent ?? autoAccentFor(s, win);
     return preset.id === "custom" ? s.windowColor : preset.accent;
+  }
+
+  /** A window's own content once it has arrived: an iframe document when the
+   *  target turned out to be embeddable (so the real page, styles included), or
+   *  the fetched HTML parsed without running it when the window shows reader
+   *  mode / an error card instead. `null` while neither is available. */
+  function autoSource(win: WindowInstance): AccentScope | null {
+    if (win.closed) return null;
+    const frame = win.iframe;
+    // Cross-origin frames throw out of `contentDocument`; caught below.
+    if (frame) {
+      try {
+        const doc = frame.contentDocument;
+        if (doc?.body) return doc;
+      } catch {
+        /* opaque origin — use the fetched markup instead */
+      }
+    }
+    const html = win.fetchResult?.html;
+    if (!html) return null;
+    try {
+      return new DOMParser().parseFromString(html, "text/html");
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Work out (and remember, for a window) the accent used by "auto": the page's
+   * own colour first, then the page Prelook is standing on, then `windowColor`
+   * as the honest last resort. Cached per window because reading computed styles
+   * costs a style flush, and the answer must not wobble every time an unrelated
+   * setting is tweaked.
+   */
+  function autoAccentFor(s: PrelookSettings, win?: WindowInstance): string {
+    if (!win) return extractHostAccent() ?? s.windowColor;
+    if (win.autoAccent === undefined) {
+      const source = autoSource(win);
+      win.autoAccent = (source ? extractPageAccent(source) : null) ?? extractHostAccent();
+    }
+    return win.autoAccent ?? s.windowColor;
   }
 
   /** "tint" presets mix the accent into the app theme's base surface (so dark
    *  mode still works); "dark" presets bring their own surface and ink. */
-  function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset, customColor: string) {
-    root.style.setProperty("--tp-accent", preset.id === "custom" ? customColor : preset.accent);
+  function applyWindowTheme(root: HTMLElement, preset: WindowThemePreset, accent: string) {
+    root.style.setProperty("--tp-accent", accent);
     if (preset.kind === "dark") {
       root.style.setProperty("--tp-surface", preset.surface ?? "#1e2432");
       root.style.setProperty("--tp-ink", preset.ink ?? "#e7eaf0");
@@ -426,12 +479,14 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     overlay.style.setProperty("--tp-blur", `${(strength * MAX_BLUR_PX).toFixed(2)}px`);
     overlay.style.setProperty("--tp-dim", `${(strength * MAX_DIM).toFixed(3)}`);
     overlay.style.setProperty("--tp-accent", s.themeColor);
-    const accent = windowAccent(s);
-    highlight.style.setProperty("--tp-accent", accent);
+    // The highlight frame and the countdown bar hug the hovered link on the host
+    // page, so they use that page's colour — never one another window's.
+    const chromeAccent = windowAccent(s);
+    highlight.style.setProperty("--tp-accent", chromeAccent);
     highlight.classList.toggle("tp-dashed", s.highlightStyle === "dashed");
-    progressBar.style.setProperty("--tp-accent", accent);
+    progressBar.style.setProperty("--tp-accent", chromeAccent);
     for (const win of windows) {
-      applyWindowTheme(win.root, windowPreset(s), s.windowColor);
+      applyWindowTheme(win.root, windowPreset(s), windowAccent(s, win));
       win.root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
       win.root.style.setProperty("--tp-h", cssSize(s, s.sizeUnit === "px" ? s.heightPx : s.height));
       win.root.classList.toggle("tp-nofrost", frostDisabled());
@@ -675,7 +730,22 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         clearTimeout(win.loadTimer);
         win.loadTimer = undefined;
       }
+      // The real page is in now, styles and all — the best source there is for
+      // "auto". Re-solve unconditionally: the window may have been painted from
+      // the host page or from fetched markup until this moment.
+      refreshAutoAccent(win);
     });
+  }
+
+  /** Recompute a window's cached "auto" accent and repaint with it. A no-op under
+   *  every manual theme, so nothing here costs a user who never picked auto. */
+  function refreshAutoAccent(win: WindowInstance) {
+    const s = settings();
+    if (windowPreset(s).id !== "auto") return;
+    const source = autoSource(win);
+    win.autoAccent =
+      (source ? extractPageAccent(source) : null) ?? extractHostAccent() ?? null;
+    applyWindowTheme(win.root, windowPreset(s), windowAccent(s, win));
   }
 
   function fallbackToReader(win: WindowInstance) {
@@ -690,6 +760,8 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.readerBadge.textContent = deps.i18n.t("preview.readerBadge");
     win.readerBadge.classList.add("tp-show");
     win.iframe = undefined;
+    // Reader mode has no frame to read, so the accent comes from the markup.
+    refreshAutoAccent(win);
   }
 
   /** `messageKey` lets a window explain *why* nothing rendered; the action is
@@ -739,6 +811,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     if (reply?.title || reply?.favicon) {
       void updateHistoryMeta(win.url, reply.title, reply.favicon);
     }
+    // Under "auto", tint the window from the fetched markup right away: the
+    // skeleton is on screen for a second or two and reading it as the target's
+    // colour costs nothing extra now that the HTML is in hand.
+    if (reply?.html) refreshAutoAccent(win);
     if (reply && !reply.canEmbed) {
       // Google Translate answers with `X-Frame-Options: SAMEORIGIN`, so a
       // translation window has to say "this site refuses to be framed" and offer
@@ -787,7 +863,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     // chrome (see the mousedown handler below).
     root.tabIndex = -1;
     root.style.zIndex = String(++zIndex);
-    applyWindowTheme(root, windowPreset(s), s.windowColor);
+    applyWindowTheme(root, windowPreset(s), windowAccent(s));
     root.style.setProperty("--tp-w", cssSize(s, s.sizeUnit === "px" ? s.widthPx : s.width));
     root.style.setProperty("--tp-h", cssSize(s, s.sizeUnit === "px" ? s.heightPx : s.height));
     root.classList.toggle("tp-nofrost", frostDisabled());
@@ -852,6 +928,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       // already open: pinning everything on a settings change could hit the
       // window cap and stop new previews from opening.
       risk: info.risk,
+      // `undefined` = "not worked out yet"; left unset so the first paint of the
+      // window (skeleton) uses the host page's colour and the real content can
+      // still refine it once the frame or the fetched HTML has arrived.
+      autoAccent: undefined,
       pinned: settings().autoPin,
       pinBtnEl: pinBtn,
       reloadBtnEl: reloadBtn,

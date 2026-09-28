@@ -200,6 +200,9 @@
   "windowTheme_hint": {
     "message": "选择预览窗的配色"
   },
+  "windowTheme_auto": {
+    "message": "跟随网页主题色（提取不到时用自定义颜色）"
+  },
   "windowTheme_gray": {
     "message": "灰白"
   },

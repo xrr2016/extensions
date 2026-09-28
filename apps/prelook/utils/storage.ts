@@ -17,6 +17,7 @@ export type ThemeMode = "system" | "light" | "dark";
 export type PowerMode = "auto" | "on" | "max" | "off";
 export type HighlightStyle = "solid" | "dashed";
 export type WindowTheme =
+  | "auto"
   | "gray"
   | "midnight"
   | "silver"
@@ -48,6 +49,10 @@ export const WINDOW_THEMES: WindowThemePreset[] = [
   // Neighbours in this list have to stay tellable apart on sight: the two
   // neutrals differ mainly in lightness (silver reads light-cool, gray dark),
   // and purple is pushed towards violet so it never reads as "blue again".
+  // "auto" comes first: it paints itself from the page rather than from `accent`,
+  // which only carries the fallback colour used when nothing can be extracted
+  // (see utils/pageAccent.ts) — the same silver the default theme picks.
+  { id: "auto", accent: "#94a3b8", kind: "tint" },
   { id: "silver", accent: "#94a3b8", kind: "tint" },
   { id: "blue", accent: "#4f6bf6", kind: "tint" },
   { id: "gray", accent: "#475569", kind: "tint" },
@@ -206,7 +211,9 @@ export interface PrelookSettings {
   autoPin: boolean;
   /** Extension appearance: the settings panel and every in-page shadow UI */
   theme: ThemeMode;
-  /** Preview window look: a preset tint, or "custom" driven by `windowColor` */
+  /** Preview window look: a preset tint, "auto" (the page's own colour, falling
+   *  back to `windowColor` when none can be read), or "custom" driven by
+   *  `windowColor` */
   windowTheme: WindowTheme;
   /** Strip marketing/analytics parameters from links Prelook opens */
   stripTracking: boolean;

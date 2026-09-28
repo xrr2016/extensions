@@ -177,8 +177,18 @@ onUnmounted(() => {
 // Window theme cards: each one is a miniature of the preview window, tinted with
 // the preset's accent (see WINDOW_THEMES in utils/storage). The "custom" card
 // shows the separately stored `windowColor`, since a preset no longer writes
-// into the plugin's own accent (`themeColor`).
+// into the plugin's own accent (`themeColor`). "auto" has no colour of its own —
+// it takes the page's, so its swatch previews the fallback it uses when nothing
+// can be read from the page.
 const WINDOW_THEME_CARDS = WINDOW_THEMES;
+
+function cardAccent(p: (typeof WINDOW_THEMES)[number]): string {
+  if (p.id === "custom") return settings.value.windowColor;
+  // Under auto the fallback *is* the custom colour, so dragging that picker
+  // live-tints the auto card too — it shows what you get when a page has none.
+  if (p.id === "auto") return settings.value.windowColor;
+  return p.accent;
+}
 
 function onCustomColor(value: string) {
   settings.value.windowColor = value;
@@ -467,7 +477,7 @@ function onClearHistory() {
               v-for="p in WINDOW_THEME_CARDS"
               :key="p.id"
               :class="{ on: settings.windowTheme === p.id, dark: p.kind === 'dark' }"
-              :style="{ '--card-accent': p.id === 'custom' ? settings.windowColor : p.accent }"
+              :style="{ '--card-accent': cardAccent(p) }"
               :title="t(`windowTheme.${p.id}`)"
             >
               <input
@@ -489,6 +499,23 @@ function onClearHistory() {
                 <i class="mini-line"></i>
                 <i class="mini-line short"></i>
               </span>
+              <svg
+                v-if="p.id === 'auto'"
+                class="mini-badge"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M11 3.5 12.7 8.2 17.4 9.9 12.7 11.6 11 16.3 9.3 11.6 4.6 9.9 9.3 8.2z" />
+                <path
+                  d="M17.8 14.6 18.6 17 21 17.8 18.6 18.6 17.8 21 17 18.6 14.6 17.8 17 17z"
+                  stroke-width="1.4"
+                />
+              </svg>
               <svg
                 v-if="p.id === 'custom'"
                 class="mini-pen"

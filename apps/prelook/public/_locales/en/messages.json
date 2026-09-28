@@ -200,6 +200,9 @@
   "windowTheme_hint": {
     "message": "Pick the preview window palette"
   },
+  "windowTheme_auto": {
+    "message": "Match the page's theme colour (falls back to your custom colour)"
+  },
   "windowTheme_gray": {
     "message": "Grey"
   },

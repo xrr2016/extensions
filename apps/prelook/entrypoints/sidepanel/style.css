@@ -326,6 +326,16 @@ h2 {
   color: color-mix(in srgb, var(--tp-accent) 70%, #fff);
 }
 
+/* "auto" badge: a sparkle, marking "the page decides" rather than a colour. */
+.mini-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  width: 14px;
+  height: 14px;
+  color: var(--card-accent);
+}
+
 .row-label {
   margin: 8px 0 4px;
   color: #57606a;
