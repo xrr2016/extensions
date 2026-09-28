@@ -441,7 +441,7 @@
     "message": "禁用当前站点"
   },
   "extDescription": {
-    "message": "悬停链接即预览，不必再点开 — 链接预热秒开、阅读模式、划词搜索、风险提示"
+    "message": "极速预览，无需等待 — 链接预热秒开、阅读模式、划词搜索、风险提示"
   },
   "panel_title": {
     "message": "Prelook 设置"

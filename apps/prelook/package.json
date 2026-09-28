@@ -1,9 +1,9 @@
 {
   "name": "@extensions/prelook",
-  "description": "悬停链接即预览，不必再点开",
-  "private": true,
-  "license": "Apache-2.0",
   "version": "1.7.0",
+  "private": true,
+  "description": "极速预览，无需等待",
+  "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

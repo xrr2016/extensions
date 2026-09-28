@@ -17,8 +17,7 @@
 
       "hero.title1": "极速预览，",
       "hero.title2": "无需等待",
-      "hero.desc":
-        "鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。",
+      "hero.desc": "鼠标停在链接上的瞬间，目标页已经开始加载——先预览，再决定要不要打开。",
 
       // 安装入口：hero 卡片组 + 页尾色带按钮组
       "install.storeLabel": "安装浏览器插件",
@@ -144,18 +143,15 @@
 
       "f.preview.tag": "Core",
       "f.preview.t": "Link preview",
-      "f.preview.d":
-        "Hover any link to peek its content; you decide whether to open it.",
+      "f.preview.d": "Hover any link to peek its content; you decide whether to open it.",
       "f.preview.g1": "Peek on hover",
       "f.preview.g2": "Decide after",
       "f.warm.t": "Link warm-up",
-      "f.warm.d":
-        "Hovered links are prefetched via Speculation Rules for instant previews.",
+      "f.warm.d": "Hovered links are prefetched via Speculation Rules for instant previews.",
       "f.warm.g1": "Speculation Rules",
       "f.warm.g2": "Native prefetch",
       "f.reader.t": "Reader mode",
-      "f.reader.d":
-        "Sites that block embedding are shown as clean article views.",
+      "f.reader.d": "Sites that block embedding are shown as clean article views.",
       "f.reader.g1": "Embed fallback",
       "f.reader.g2": "Article extraction",
       "f.multi.t": "Multi-window preview",
@@ -163,8 +159,7 @@
       "f.multi.g1": "Up to 6 windows",
       "f.multi.g2": "Side by side",
       "f.search.t": "Selection search",
-      "f.search.d":
-        "Select text — Google / Bing / Baidu / DuckDuckGo in one click.",
+      "f.search.d": "Select text — Google / Bing / Baidu / DuckDuckGo in one click.",
       "f.search.g1": "4 engines",
       "f.search.g2": "Search on select",
       "f.track.t": "Tracking cleanup",
@@ -178,8 +173,7 @@
       "f.safety.g1": "Look-alike domains",
       "f.safety.g2": "Text mismatch",
       "f.trigger.t": "Four trigger modes",
-      "f.trigger.d":
-        "Hover, Alt+hover, long-press or drag — pick what feels natural.",
+      "f.trigger.d": "Hover, Alt+hover, long-press or drag — pick what feels natural.",
       "f.trigger.g1": "Alt combos",
       "f.trigger.g2": "Long-press and drag",
       "f.privacy.t": "Privacy-first",
@@ -191,7 +185,6 @@
       "sponsor.subtitle":
         "Prelook is completely free — no account, no server. If it helps you, sponsor me on Afdian to keep development going.",
       "sponsor.afdian": "Afdian sponsor page",
-
 
       "faq.title": "FAQ",
       "faq.subtitle": "Still curious? Start here.",
@@ -223,7 +216,7 @@
   };
 
   var TITLES = {
-    "zh-CN": "Prelook — 悬停链接即预览，不必再点开",
+    "zh-CN": "Prelook — 极速预览，无需等待",
     en: "Prelook — Preview any link without leaving the page",
   };
 
@@ -259,8 +252,7 @@
   // 中文浏览器 → 中文，其他 → 英文。检测结果由 <head> 内联脚本写入
   // window.__prelookDetectedLang。
   var detected = window.__prelookDetectedLang === "en" ? "en" : "zh-CN";
-  var current =
-    savedLang && LANGS.indexOf(savedLang) >= 0 ? savedLang : detected;
+  var current = savedLang && LANGS.indexOf(savedLang) >= 0 ? savedLang : detected;
 
   var langBtn = document.getElementById("langToggle");
 
@@ -287,8 +279,7 @@
     }
     document.title = TITLES[current];
     var desc = document.getElementById("metaDescription");
-    if (desc && DESCRIPTIONS[current])
-      desc.setAttribute("content", DESCRIPTIONS[current]);
+    if (desc && DESCRIPTIONS[current]) desc.setAttribute("content", DESCRIPTIONS[current]);
     writeStore(LANG_KEY, current);
   }
 
@@ -303,9 +294,7 @@
   /* ---------- 主题 ---------- */
   var root = document.documentElement;
   var themeBtn = document.getElementById("themeToggle");
-  var media = window.matchMedia
-    ? window.matchMedia("(prefers-color-scheme: dark)")
-    : null;
+  var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
   function chosenTheme() {
     var stored = readStore(THEME_KEY);
@@ -319,11 +308,7 @@
   // 移动端地址栏颜色跟主题走（<head> 内联脚本负责首帧，这里负责后续切换）
   var metaTheme = document.getElementById("metaThemeColor");
   function applyMetaTheme(theme) {
-    if (metaTheme)
-      metaTheme.setAttribute(
-        "content",
-        theme === "dark" ? "#111318" : "#f8f9fb",
-      );
+    if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#111318" : "#f8f9fb");
   }
 
   // aria-pressed 表达当前是否处于深色状态
@@ -356,8 +341,7 @@
         syncThemeButton();
       }
     };
-    if (media.addEventListener)
-      media.addEventListener("change", onSystemChange);
+    if (media.addEventListener) media.addEventListener("change", onSystemChange);
     else if (media.addListener) media.addListener(onSystemChange);
   }
 
@@ -378,11 +362,7 @@
     });
     // 点面板外、按 Esc、点任一链接、窗口拉宽，都收起菜单
     document.addEventListener("click", function (event) {
-      if (
-        navMenu.classList.contains("open") &&
-        !event.target.closest(".navbar")
-      )
-        closeNavMenu();
+      if (navMenu.classList.contains("open") && !event.target.closest(".navbar")) closeNavMenu();
     });
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape") closeNavMenu();
@@ -396,9 +376,7 @@
   }
 
   /* ---------- 滚动高亮当前区块 ---------- */
-  var navLinks = Array.prototype.slice.call(
-    document.querySelectorAll(".nav-menu .nav-link"),
-  );
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-menu .nav-link"));
   var spySections = navLinks
     .map(function (link) {
       var href = link.getAttribute("href");
@@ -424,12 +402,9 @@
     // 先确认页面真的能滚——加载途中文档还没被撑高时，"0 + 视口高 >= 文档高"
     // 会成立，于是最后一项（现在是「安装」）会在首屏被误点亮，且要等到下一次
     // 成功的滚动更新才纠正。
-    var canScroll =
-      document.documentElement.scrollHeight > window.innerHeight + 4;
+    var canScroll = document.documentElement.scrollHeight > window.innerHeight + 4;
     var isAtBottom =
-      canScroll &&
-      window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 2;
+      canScroll && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
     if (isAtBottom) activeId = spySections[spySections.length - 1].id;
 
     navLinks.forEach(function (link) {
@@ -488,36 +463,15 @@
 
   /* ---------- 滚动入场 ---------- */
   var revealTargets = []
-    .concat(
-      Array.prototype.slice.call(document.querySelectorAll(".section-header")),
-    )
-    .concat(
-      Array.prototype.slice.call(
-        document.querySelectorAll(".features-grid .feature-card"),
-      ),
-    )
-    .concat(
-      Array.prototype.slice.call(
-        document.querySelectorAll(".sponsor-grid .sponsor-tile"),
-      ),
-    )
-    .concat(
-      Array.prototype.slice.call(
-        document.querySelectorAll(".faq-list details"),
-      ),
-    )
-    .concat(
-      Array.prototype.slice.call(
-        document.querySelectorAll(".cta-copy, .cta-art"),
-      ),
-    )
-    .concat(
-      Array.prototype.slice.call(document.querySelectorAll(".footer-content")),
-    );
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".section-header")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".features-grid .feature-card")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".sponsor-grid .sponsor-tile")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".faq-list details")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".cta-copy, .cta-art")))
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".footer-content")));
 
   var reduceMotion =
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var revealObserver = null;
   var pendingReveals = [];
@@ -545,14 +499,9 @@
     [".features-grid", ".sponsor-grid"].forEach(function (sel) {
       var group = document.querySelector(sel);
       if (!group) return;
-      Array.prototype.slice
-        .call(group.children)
-        .forEach(function (child, index) {
-          child.style.setProperty(
-            "--reveal-delay",
-            Math.min(index, 5) * 70 + "ms",
-          );
-        });
+      Array.prototype.slice.call(group.children).forEach(function (child, index) {
+        child.style.setProperty("--reveal-delay", Math.min(index, 5) * 70 + "ms");
+      });
     });
 
     revealTargets.forEach(function (el) {

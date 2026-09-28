@@ -32,3 +32,5 @@ web-ext.config.ts
 .tmp-*
 
 .pnpm-store/*
+
+prelook-video/*
