@@ -338,8 +338,8 @@
   "panel_section_sponsor": {
     "message": "赞助支持"
   },
-  "sponsor_hint": {
-    "message": "Prelook 完全免费。如果它帮到了你，欢迎赞助支持后续开发。"
+  "sponsor_githubStar": {
+    "message": "如果 Prelook 帮到了你，请在 GitHub 点个 Star，这对我们意义重大 👉"
   },
   "sponsor_afdian": {
     "message": "爱发电赞助页"
