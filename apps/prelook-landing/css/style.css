@@ -792,11 +792,27 @@ section {
   min-width: 260px;
 }
 
-/* 爱发电嵌入卡片：白底大圆角，iframe 尺寸按 leaflet 页内容高度给足，
-   内部的“更多”链接也落在卡片里，不再需要扫码那样的浅色强制。 */
+/* 爱发电嵌入卡片：白底大圆角，iframe 尺寸按 leaflet 页内容高度给足。
+   整张卡片是一个链接，与 Ko-fi 徽章同款交互：悬停抬起 1px + 阴影加深、按下回落。
+   iframe 设了 pointer-events:none —— 否则指针落在 iframe 上时，hover/active
+   全被 iframe 文档吃掉，父页面既收不到悬停、点击也跳不出去。
+   顺带 iframe 内部本来就没有可点的东西（leaflet 只是张展示卡）。 */
 .sponsor-afdian {
+  display: block;
   border-radius: 1.25rem;
   box-shadow: var(--shadow-md);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.sponsor-afdian:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.3);
+}
+
+.sponsor-afdian:active {
+  transform: translateY(0);
 }
 
 .sponsor-afdian iframe {
@@ -805,6 +821,7 @@ section {
   height: 200px;
   border: none;
   border-radius: var(--radius-md);
+  pointer-events: none;
 }
 
 /* Ko-fi 官方徽章图整张就是按钮：容器只负责居中、悬停抬起和阴影。

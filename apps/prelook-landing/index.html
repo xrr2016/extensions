@@ -607,17 +607,27 @@
           <!-- 爱发电嵌入组件：leaflet 是爱发电官方的嵌入页，不发送 X-Frame-Options，
                可以直接 iframe 进来；收款码（微信/支付宝）已随旧方案一并移除。 -->
           <div class="sponsor-tile">
-            <div class="sponsor-afdian">
+            <!-- 与 Ko-fi 徽章同款交互：整张卡片是链接，悬停抬起、按下回落。
+                 iframe 本身 pointer-events:none，点击由覆盖层承接到这里，
+                 跳爱发电主页在新标签页打开（leaflet 嵌入页没有可点的东西）。 -->
+            <a
+              class="sponsor-afdian"
+              href="https://afdian.com/a/coldstoneboy"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="爱发电赞助页"
+              data-i18n-aria="sponsor.afdian"
+            >
               <iframe
                 src="https://afdian.com/leaflet?slug=coldstoneboy"
                 title="爱发电赞助页"
-                aria-label="爱发电赞助页"
-                data-i18n-aria="sponsor.afdian"
+                aria-hidden="true"
+                tabindex="-1"
                 scrolling="no"
                 frameborder="0"
                 loading="lazy"
               ></iframe>
-            </div>
+            </a>
           </div>
 
           <div class="sponsor-tile">
