@@ -8,10 +8,10 @@
 
 **extensions** 是一个浏览器插件 monorepo（pnpm workspace），按「每个产品两个目录」组织：插件本体 + 产品落地页。
 
-| 目录 | 产品 |
-| --- | --- |
-| [`apps/prelook/`](apps/prelook/) | **Prelook** — 悬停链接预览扩展（Chrome / Edge MV3、Firefox MV2） |
-| [`apps/prelook-landing/`](apps/prelook-landing/) | **Prelook 产品官网** — 纯静态落地页（零构建、整目录部署） |
+| 目录                                             | 产品                                                             |
+| ------------------------------------------------ | ---------------------------------------------------------------- |
+| [`apps/prelook/`](apps/prelook/)                 | **Prelook** — 悬停链接预览扩展（Chrome / Edge MV3、Firefox MV2） |
+| [`apps/prelook-landing/`](apps/prelook-landing/) | **Prelook 产品官网** — 纯静态落地页（零构建、整目录部署）        |
 
 **Prelook** 把「先点开、再返回」变成「悬停即见」：鼠标停在任意链接上，预览窗就地浮出目标页面；不必点开、不必离开当前页。全部功能免费，无账号、无服务器、无付费版本。
 
@@ -59,17 +59,17 @@ pnpm landing:prelook       # 官网开发服务器 http://127.0.0.1:4173（CSS �
 
 ## 技术栈
 
-| 领域 | 选型 | 版本 |
-| --- | --- | --- |
-| 包管理 | pnpm（workspace） | 12 |
-| 插件框架 | WXT | ^0.21.3 |
-| UI | Vue | ^3.5.29 |
-| 构建 / 开发服务器 | Vite | ^8.1（落地页 ^8.3） |
-| 语言 | TypeScript（`vue-tsc` 类型检查） | ^5.9.3 |
-| 浏览器目标 | Chrome / Edge（MV3）、Firefox（MV2，web-ext） | ^10.5.0 |
-| 图标生成 | `@wxt-dev/auto-icons` | ^1.1.2 |
-| 分析（可选） | `@wxt-dev/analytics` | ^0.5.6 |
-| 质量工具 | `oxlint` / `oxfmt`、release-it | ^1.83 / ^0.68 |
+| 领域              | 选型                                          | 版本                |
+| ----------------- | --------------------------------------------- | ------------------- |
+| 包管理            | pnpm（workspace）                             | 12                  |
+| 插件框架          | WXT                                           | ^0.21.3             |
+| UI                | Vue                                           | ^3.5.29             |
+| 构建 / 开发服务器 | Vite                                          | ^8.1（落地页 ^8.3） |
+| 语言              | TypeScript（`vue-tsc` 类型检查）              | ^5.9.3              |
+| 浏览器目标        | Chrome / Edge（MV3）、Firefox（MV2，web-ext） | ^10.5.0             |
+| 图标生成          | `@wxt-dev/auto-icons`                         | ^1.1.2              |
+| 分析（可选）      | `@wxt-dev/analytics`                          | ^0.5.6              |
+| 质量工具          | `oxlint` / `oxfmt`、release-it                | ^1.83 / ^0.68       |
 
 落地页运行期**零依赖**：纯 HTML/CSS/JS，Vite 只作开发服务器（`appType: 'mpa'`），不产生构建产物——`index.html` / `privacy.html` + `css/` `js/` `assets/` 原样即部署物。
 
@@ -108,7 +108,6 @@ apps/
 
 ## 编码约定（关键约定）
 
-- **`tp-` 前缀是曾用名 TabPeek 的缩写，刻意保留**（预览窗的 CSS 变量/类名/host 属性共 200 多处，全在 shadow DOM 内、用户看不见）。外部可见标识符才随改名走：包名、存储键 `local:prelook_settings`、消息前缀 `prelook:`、host 标签 `prelook-ui` 等。
 - **i18n**：词条在 `public/_locales/zh_CN/messages.json` 与 `en/messages.json`，经 `browser.i18n` 读取。调用点写扁平点号 key，`_locales` 里键为下划线形式（`preview.close` → `preview_close`），改任一边都要同步；zh_CN 与 en 必须同时补齐。语言跟随浏览器 UI，运行时不可切换。
 - **设置与存储**：`settingsItem = local:prelook_settings`。新增设置项要同时改 `PrelookSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在设置面板加控件、两个 locale 补词条。所有读取设置的地方都要过 `clampSettings`；延迟类设置存储恒为毫秒，面板再换算成秒。
 - **manifest**：权限/名称只改各 app 的 `wxt.config.ts`；`.output/`、`.wxt/` 是生成物，不要编辑。`storage` / `browser` 是 WXT 自动导入的全局，直接裸用。

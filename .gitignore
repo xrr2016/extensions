@@ -34,3 +34,4 @@ web-ext.config.ts
 .pnpm-store/*
 
 prelook-video/*
+punk-assets/*
