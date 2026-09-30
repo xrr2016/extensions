@@ -251,7 +251,10 @@ const STYLE = `
 .tp-skeleton i:nth-child(3) { width: 80%; }
 .tp-skeleton i:nth-child(4) { width: 85%; }
 @keyframes tp-shimmer { to { background-position: -200% 0; } }
-.tp-reader { position: absolute; inset: 0; overflow: auto; padding: 22px 26px; font-size: 15px; line-height: 1.75; color: #24292f; }
+/* Scrolling the reader must never chain to the page behind the window: at its
+   bounds the wheel gesture stops here (see the root's wheel handler for the
+   non-scrollable parts of the window). */
+.tp-reader { position: absolute; inset: 0; overflow: auto; overscroll-behavior: contain; padding: 22px 26px; font-size: 15px; line-height: 1.75; color: #24292f; }
 .tp-reader h1.tp-r-title { font-size: 21px; line-height: 1.4; margin-bottom: 14px; }
 .tp-reader p { margin: 0 0 12px; }
 .tp-reader img { max-width: 100%; height: auto; border-radius: 8px; margin: 6px 0; }
@@ -941,6 +944,22 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     };
     syncHeaderButtons(win);
 
+    // Scrolling inside a preview must not disturb the host page: the wheel
+    // default would scroll the document under the window (and with
+    // closeOnScroll, dismiss the very window being read). The reader pane is
+    // the only scrollable part we own and contains its own bounds via
+    // `overscroll-behavior`; everywhere else in the window the gesture is
+    // swallowed. Wheel events over the iframe go to the framed document itself
+    // and never reach this listener.
+    root.addEventListener(
+      "wheel",
+      (e) => {
+        const target = e.target as Element | null;
+        if (target?.closest?.(".tp-reader")) return;
+        e.preventDefault();
+      },
+      { passive: false },
+    );
     root.addEventListener("mousedown", () => {
       root.style.zIndex = String(++zIndex);
       // Key events from a focused cross-origin iframe never reach the host
