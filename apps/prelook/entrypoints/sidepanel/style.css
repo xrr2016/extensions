@@ -366,7 +366,6 @@ h2 {
    over the hover border rather than tie with it. */
 .auto-theme.on {
   border-color: var(--tp-accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tp-accent) 30%, transparent);
   color: var(--tp-accent);
 }
 
