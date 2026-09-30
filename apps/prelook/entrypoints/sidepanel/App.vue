@@ -672,13 +672,22 @@ function onClearHistory() {
         aria-labelledby="tab-history"
       >
         <section>
+          <label class="row switch-row">
+            <span>{{ t("history.enabled") }}</span>
+            <ToggleSwitch v-model="settings.historyEnabled" />
+          </label>
+        </section>
+
+        <section>
           <div class="row history-head">
             <h2 class="row-label">{{ t("panel.section.history") }}</h2>
             <button v-if="history.length" class="history-clear" @click="onClearHistory">
               {{ t("history.clear") }}
             </button>
           </div>
-          <p v-if="!history.length" class="hint muted">{{ t("history.empty") }}</p>
+          <p v-if="!history.length" class="hint muted">
+            {{ settings.historyEnabled ? t("history.empty") : t("history.disabled") }}
+          </p>
           <div v-else class="history-list" role="list">
             <div
               v-for="e in history"

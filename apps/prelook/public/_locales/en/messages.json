@@ -95,8 +95,14 @@
   "panel_section_history": {
     "message": "Preview history"
   },
+  "history_enabled": {
+    "message": "Record preview history"
+  },
   "history_empty": {
     "message": "No previews yet — links you preview will show up here"
+  },
+  "history_disabled": {
+    "message": "Recording is off — previews you open are not saved"
   },
   "history_clear": {
     "message": "Clear all"

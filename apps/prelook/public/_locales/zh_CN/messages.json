@@ -92,8 +92,14 @@
   "panel_section_history": {
     "message": "预览历史"
   },
+  "history_enabled": {
+    "message": "记录预览历史"
+  },
   "history_empty": {
     "message": "还没有预览记录，悬停链接打开预览后会出现在这里"
+  },
+  "history_disabled": {
+    "message": "记录已关闭，新打开的预览不会被记录"
   },
   "history_clear": {
     "message": "清空"

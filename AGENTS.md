@@ -236,6 +236,7 @@ click 监听（window 捕获）里的 altClick 分支**仍在**，但角色变�
 ### 设置与存储
 
 - `settingsItem` = `local:prelook_settings`，定义在 `utils/storage.ts`。
+- **预览历史开关**（`historyEnabled`，默认 true，「历史」tab 顶部的开关）：门控在 `preview.ts` 的两个写入点——`open()` 里创建窗口时 `recordHistory`（读的是开窗那刻的 `s.historyEnabled`），以及 `loadFlow` 里补标题/图标的 `updateHistoryMeta`（读 `settings().historyEnabled`，关掉就没有条目可补）。关掉只是**不再记录**，已有的 `local:prelook_history` 列表原样保留、历史 tab 照常能看能删能清空；`App.vue` 空列表文案按开关切换 `history.empty`（没记录）/ `history.disabled`（已关闭）。
 - 新增设置项要同时改三处：`PrelookSettings` + `DEFAULT_SETTINGS` + `clampSettings`，并在 sidepanel `App.vue` 的对应 tab 里加控件、两个 `_locales/*/messages.json` 补词条（键名用下划线形式，见「新增界面文案」）。
 - 两个颜色设置各有归属，别混：`themeColor` = 插件 UI 的强调色（「设置」tab 的「主题色」），`windowColor` = 弹窗主题选 `custom` 时的窗口强调色（那张铅笔卡里的取色器）。两者都用 `<input type="color">` 编辑（值恒为 `#rrggbb`），`clampSettings` 里只做 `|| DEFAULT_SETTINGS.x` 兜底、不做格式校验。**没有任何代码把其中一个写成另一个**——这是刻意的，改「弹窗主题」不该把整个插件换色。
 - `clampSettings` 的边界：`hoverDelayMs` 100–2000（默认 500）、`longPressMs` 200–2000（600）、`width` / `height` 百分比 20–100（默认 40 / 55）、`widthPx` / `heightPx` 像素 200–2000（默认 640 / 480，随 `sizeUnit` 生效）、`blurStrength` 0–100（百分比，默认 0 关闭）、`minSelectionChars` 1–20、`maxWindows` 1–6（默认 3）。**所有读取设置的地方都要过 `clampSettings`**，content 与 sidepanel 都这么做。

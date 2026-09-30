@@ -251,6 +251,8 @@ export interface PrelookSettings {
   maxWindows: number;
   /** Speculation Rules: warm the hovered link before the preview opens */
   speculationMode: SpeculationMode;
+  /** Remember opened previews for the panel's history tab */
+  historyEnabled: boolean;
   /** How much of Prelook's own work is given up to save power */
   powerSaver: PowerMode;
   /** Skip preview fades and the hover countdown bar's transition */
@@ -284,6 +286,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   detectLinks: true,
   maxWindows: 3,
   speculationMode: "prefetch",
+  historyEnabled: true,
   powerSaver: "auto",
   reduceMotion: false,
   highlightLinks: true,

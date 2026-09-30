@@ -810,8 +810,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       win.faviconEl.onerror = () => win.faviconEl.classList.add("tp-hide");
     }
     // The history entry was written when the window opened with just the
-    // hostname; upgrade it now that the real title/icon are known.
-    if (reply?.title || reply?.favicon) {
+    // hostname; upgrade it now that the real title/icon are known. Skipped with
+    // history off: there is no entry to upgrade.
+    if ((reply?.title || reply?.favicon) && settings().historyEnabled) {
       void updateHistoryMeta(win.url, reply.title, reply.favicon);
     }
     // Under "auto", tint the window from the fetched markup right away: the
@@ -1081,8 +1082,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     syncOverlay();
     // Remember the opening for the panel's history tab (newest first, deduped
     // by URL). Re-focusing an existing window is not a new preview, so only
-    // this creation path records.
-    void recordHistory({ url: info.url, title: safeHostname(info.url), time: Date.now() });
+    // this creation path records — and nothing records at all once the user
+    // turned history off.
+    if (s.historyEnabled) {
+      void recordHistory({ url: info.url, title: safeHostname(info.url), time: Date.now() });
+    }
     // Two frames: let the transparent state land before arming the fade.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => root.classList.add("tp-in"));
