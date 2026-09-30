@@ -7,6 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+.env
+
 node_modules
 .output
 # Raw screen recordings behind the landing hero video; only the encoded assets in

@@ -5,7 +5,7 @@ export default defineAppConfig({
     providers: [
       googleAnalytics4({
         apiSecret: import.meta.env.WXT_GA_API_SECRET,
-        measurementId: "...",
+        measurementId: "G-JM4BG6CP3W",
       }),
     ],
   },
