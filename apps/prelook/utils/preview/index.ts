@@ -80,8 +80,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     return deps.getPower().level === "off" ? settings().blurStrength : 0;
   }
 
-  /** The header's glass is a backdrop blur too, so it rides the same switch: with
-   *  the blur away the bar goes opaque rather than showing a page it cannot blur. */
+  /** The title bar is translucent glass over the preview content, so power
+   *  saving still flips it opaque — text should not sit on raw content when
+   *  the user asked to save GPU work (the blur is exactly that cost). */
   function frostDisabled(): boolean {
     return deps.getPower().level !== "off";
   }
@@ -726,6 +727,15 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
 
     const head = document.createElement("div");
     head.className = "tp-head";
+    // One liquid-glass title bar: the title group on the left doubles as the
+    // drag handle, the pin and the action buttons sit flush right (see
+    // .tp-head in CSS).
+    const headInfo = document.createElement("div");
+    headInfo.className = "tp-head-info";
+    const headPin = document.createElement("div");
+    headPin.className = "tp-head-pin";
+    const headActions = document.createElement("div");
+    headActions.className = "tp-head-actions";
     const favicon = document.createElement("img");
     favicon.className = "tp-favicon tp-hide";
     favicon.alt = "";
@@ -756,7 +766,10 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     closeBtn.dataset.act = "close";
     closeBtn.type = "button";
     closeBtn.innerHTML = CLOSE_ICON;
-    head.append(favicon, titleEl, riskBadge, readerBadge, pinBtn, reloadBtn, openBtn, closeBtn);
+    headInfo.append(favicon, titleEl, riskBadge, readerBadge);
+    headPin.append(pinBtn);
+    headActions.append(reloadBtn, openBtn, closeBtn);
+    head.append(headInfo, headPin, headActions);
 
     const grip = document.createElement("div");
     grip.className = "tp-resize";
@@ -865,25 +878,27 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       let origX = 0;
       let origY = 0;
       let dragging = false;
-      head.style.cursor = "grab";
-      head.addEventListener("pointerdown", (e) => {
-        if ((e.target as HTMLElement).closest("[data-act]")) return;
+      // The title group is the handle: it flex-grows to fill the bar's left
+      // side, so grabbing any empty stretch of the title bar moves the window,
+      // while the pin/action groups stay free for their buttons.
+      headInfo.style.cursor = "grab";
+      headInfo.addEventListener("pointerdown", (e) => {
         dragging = true;
         startX = e.clientX;
         startY = e.clientY;
         const rect = root.getBoundingClientRect();
         origX = rect.left;
         origY = rect.top;
-        head.setPointerCapture(e.pointerId);
+        headInfo.setPointerCapture(e.pointerId);
       });
-      head.addEventListener("pointermove", (e) => {
+      headInfo.addEventListener("pointermove", (e) => {
         if (!dragging) return;
         win.manualPosition = true;
         root.style.left = `${Math.max(0, origX + e.clientX - startX)}px`;
         root.style.top = `${Math.max(0, origY + e.clientY - startY)}px`;
         root.style.right = "auto";
       });
-      head.addEventListener("pointerup", () => {
+      headInfo.addEventListener("pointerup", () => {
         if (!dragging) return;
         dragging = false;
         // manualPosition is only set once the pointer actually moved, so a

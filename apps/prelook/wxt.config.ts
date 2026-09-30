@@ -54,6 +54,7 @@ export default defineConfig({
       firefox: ZEN_BINARY,
     },
     startUrls: [
+      "https://linux.sb/",
       "https://tieba.baidu.com/",
       "https://bbs.hupu.com/4860",
       "https://www.reddit.com/r/SideProject/",

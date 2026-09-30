@@ -15,10 +15,6 @@
   --tp-surface: #fff;
   --tp-line: color-mix(in srgb, var(--tp-ink) 12%, transparent);
   --tp-soft: color-mix(in srgb, var(--tp-ink) 7%, var(--tp-surface));
-  /* Opacity of the frosted header's fill. Below 100% the page behind the window
-     shows through it, which is what the blur has to sample; anything that
-     switches the blur off raises this to 100% instead. */
-  --tp-glass: 78%;
 }
 
 :host([data-tp-theme='dark']) {
@@ -59,17 +55,23 @@
   color: var(--tp-ink);
   border-radius: 14px;
   overflow: hidden;
-  /* Deliberately no background: an opaque root would sit between the header's
-     glass and the page, leaving the blur nothing to sample. The opaque surface
-     lives on .tp-body (and on the header's own fill), and overflow: hidden still
-     clips both to the rounded corners. */
+  /* No background on the root: the opaque surface lives on .tp-body, which
+     fills the whole window, and the title bar floats over it as glass — the
+     preview content scrolling under the bar is what it samples. overflow:
+     hidden still clips both to the rounded corners. */
+  background: none;
+  /* Glass fill opacity of the title bar. Below 100% the content shows
+     through — that see-through is the point; power saving raises it to 100%.
+     Declared here (not on :host) because the fill mixes with this window's
+     own --tp-surface, which a window theme preset overrides inline. */
+  --tp-glass: 72%;
   border: 1px solid var(--tp-line);
   box-shadow: 0 12px 40px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .12);
   /* Tencent console dialog motion (TDesign's tokens): a 200ms decelerating
      entrance zooming up from 92%, and a shorter accelerated exit. The resting
-     state is .tp-in, which must leave transform at none — a live transform
-     makes the window a backdrop root of its own, and the header's frosted blur
-     would then sample the window instead of the page behind it. */
+     state is .tp-in with transform back at none — a value left on the element
+     would keep it a promoted layer and a containing block for no reason once
+     the animation is done. */
   --tp-in-motion: .2s cubic-bezier(0, 0, .15, 1);
   --tp-out-motion: .16s cubic-bezier(.38, 0, .24, 1);
   /* Origin is set per window in place(): the window grows out of the link. */
@@ -102,37 +104,38 @@
   height: 100vh;
 }
 
-/* Floating capsule: lifted out of the flex column so the preview content runs
-   to the very top of the window and the bar hovers over it. The frosted fill
-   now blurs the *previewed page* behind the pill — which is what sells the
-   float. z-index beats .tp-body (also positioned) in the paint order. */
+/* One liquid-glass title bar across the top of the window: a full-width strip
+   that blurs and tints the preview content scrolling underneath it. Title
+   group on the left (it is also the drag handle), pin + actions flush right.
+   Known caveat, inherited from the entrance: while the window's scale
+   transform is live (first ~200ms) the window is its own backdrop root and
+   the blur samples the body instead of the page behind the glass — it
+   recovers the moment .tp-in lands transform back at none. */
 .tp-head {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  z-index: 3;
   display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 4px 0 8px;
-  border-radius: 999px;
-  /* Translucent fill (accent tint fading into the surface) over a blurred
-     sample of whatever sits behind the bar. */
+  align-items: stretch;
+  height: 24px;
+  /* Stacked glass: a top sheen fading into a bottom shade (both mixed toward
+     transparent so they read in light and dark alike), a faint accent tint,
+     and the see-through surface fill — over a real blur of the content. The
+     inset light line on the top edge gives the glass its thickness. */
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, transparent), transparent),
+    linear-gradient(180deg,
+      color-mix(in srgb, #fff 30%, transparent),
+      color-mix(in srgb, #fff 6%, transparent) 45%,
+      transparent 62%,
+      color-mix(in srgb, var(--tp-ink) 8%, transparent)),
+    linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 10%, transparent), transparent 55%),
     color-mix(in srgb, var(--tp-surface) var(--tp-glass), transparent);
-  backdrop-filter: blur(14px) saturate(1.5);
-  /* The drop shadow does the floating; the 1px ring keeps the edge readable
-     over both light and dark preview content (it replaces the old border). */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .14), 0 0 0 1px var(--tp-line);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border-bottom: 1px solid var(--tp-line);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent);
   user-select: none;
 }
 
-/* Power saving switches the page blur off, so the bar must not keep looking
-   through to a page it can no longer blur — same for engines without
-   backdrop-filter support. Both cases fall back to the opaque surface fill. */
+/* Power saving flips the glass opaque — text should not sit on raw preview
+   content when the user asked to save GPU work (blurring is exactly that
+   cost). Engines without backdrop sampling get the same fallback. */
 .tp-win.tp-nofrost .tp-head {
   --tp-glass: 100%;
   backdrop-filter: none;
@@ -143,6 +146,32 @@
     --tp-glass: 100%;
     backdrop-filter: none;
   }
+}
+
+/* The title group fills the leftover space and is the drag handle, so presses
+   anywhere on the empty bar move the window instead of falling through. */
+.tp-head-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 0 12px;
+  overflow: hidden;
+}
+
+/* Right cluster: the pin alone, then reload / open / close. The groups carry no
+   padding of their own so the buttons can run the full height of the bar. */
+.tp-head-pin {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+}
+
+.tp-head-actions {
+  flex: none;
+  display: flex;
+  align-items: stretch;
 }
 
 .tp-favicon {
@@ -159,8 +188,8 @@
 .tp-title {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 10px;
+  opacity: .8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -187,33 +216,42 @@
   cursor: help;
 }
 
+/* Flat title-bar buttons: slim full-height zones with no resting fill, like a
+   native window control. The bar's own rounded corners clip the outermost
+   one, so the group reads as part of the chrome rather than floating chips. */
 .tp-btn {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 100%;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--tp-ink) 68%, transparent);
+  color: color-mix(in srgb, var(--tp-ink) 72%, transparent);
   cursor: pointer;
+  transition: background .12s ease, color .12s ease;
 }
 
 /* Every header button is the same thin-stroke icon, so the bar reads as one set
    (mixing SVG with font glyphs put two weights and two baselines side by side). */
 .tp-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   display: block;
 }
 
-/* Hover and pinned fills mix toward transparent rather than the surface: they
-   sit on the frosted bar, where an opaque chip would break the glass. */
 .tp-btn:hover {
-  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent);
-  color: var(--tp-accent, #4f6bf6);
+  background: color-mix(in srgb, var(--tp-ink) 9%, transparent);
+  color: var(--tp-ink);
+}
+
+/* The close control reads as destructive on hover, the way every native title
+   bar does. */
+.tp-btn[data-act='close']:hover {
+  background: #e81123;
+  color: #fff;
 }
 
 .tp-pin svg {
@@ -221,8 +259,9 @@
   transition: transform .15s ease;
 }
 
+/* A pinned window keeps its control lit so the state is readable at a glance. */
 .tp-pin.tp-on {
-  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 26%, transparent);
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 16%, transparent);
   color: var(--tp-accent, #4f6bf6);
 }
 
@@ -272,8 +311,8 @@
 .tp-skeleton {
   position: absolute;
   inset: 0;
-  /* Top clears the floating capsule (8px offset + 30px bar + breathing room). */
-  padding: 50px 18px 18px;
+  /* Top clears the 34px glass bar so the first lines never sit under it. */
+  padding: 44px 18px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -319,9 +358,9 @@
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  /* Extra top padding keeps the article title clear of the floating capsule at
-     scroll-top; later text glides under the frosted pill, which is the point. */
-  padding: 58px 26px 22px;
+  /* Extra top padding keeps the article title clear of the glass bar at
+     scroll-top; later text glides under it, which is the point. */
+  padding: 46px 26px 22px;
   font-size: 15px;
   line-height: 1.75;
   color: #24292f;
@@ -382,8 +421,8 @@
   justify-content: center;
   gap: 10px;
   text-align: center;
-  /* Top clears the floating capsule even in a short window. */
-  padding: 46px 24px 24px;
+  /* Top clears the glass bar even in a short window. */
+  padding: 40px 24px 24px;
   font-size: 13px;
   color: color-mix(in srgb, var(--tp-ink) 62%, transparent);
 }
@@ -408,7 +447,8 @@
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 50px 22px 22px;
+  /* Top clears the 34px glass bar. */
+  padding: 44px 22px 22px;
   font-size: 14px;
   line-height: 1.7;
   color: var(--tp-ink);
@@ -542,6 +582,7 @@
 :host([data-tp-motion]) .tp-overlay,
 :host([data-tp-motion]) .tp-win,
 :host([data-tp-motion]) .tp-hl,
+:host([data-tp-motion]) .tp-btn,
 :host([data-tp-motion]) .tp-pin svg,
 :host([data-tp-motion]) .tp-resize {
   transition: none;
