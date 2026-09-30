@@ -1,0 +1,176 @@
+/** The whole shadow-UI stylesheet: windows, overlay, progress bar, notice toast,
+ *  link highlight, reader/error bodies. Injected into `createShadowRootUi` by
+ *  content.ts (as PREVIEW_STYLE, concatenated with SELECTION_STYLE). */
+export const PREVIEW_STYLE = `
+:host {
+  all: initial;
+  /* Window surface tokens. The app theme sets the defaults; a window theme
+     preset overrides them per window (inline, so it always wins). */
+  --tp-base: #fff;
+  --tp-ink: #1f2328;
+  --tp-surface: #fff;
+  --tp-line: color-mix(in srgb, var(--tp-ink) 12%, transparent);
+  --tp-soft: color-mix(in srgb, var(--tp-ink) 7%, var(--tp-surface));
+  /* Opacity of the frosted header's fill. Below 100% the page behind the window
+     shows through it, which is what the blur has to sample; anything that
+     switches the blur off raises this to 100% instead. */
+  --tp-glass: 78%;
+}
+:host([data-tp-theme='dark']) {
+  --tp-base: #1e2126;
+  --tp-ink: #e6e8eb;
+  --tp-surface: #1e2126;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+.tp-overlay {
+  position: fixed; inset: 0; z-index: 2147483640; pointer-events: none;
+  backdrop-filter: blur(var(--tp-blur, 0px));
+  background: rgba(0, 0, 0, var(--tp-dim, 0));
+  opacity: 0; transition: opacity .2s linear;
+}
+.tp-overlay.tp-on { opacity: 1; }
+.tp-win {
+  position: fixed; z-index: 2147483641; display: flex; flex-direction: column;
+  width: var(--tp-w, 40%); height: var(--tp-h, 55%);
+  color: var(--tp-ink); border-radius: 14px; overflow: hidden;
+  /* Deliberately no background: an opaque root would sit between the header's
+     glass and the page, leaving the blur nothing to sample. The opaque surface
+     lives on .tp-body (and on the header's own fill), and overflow: hidden still
+     clips both to the rounded corners. */
+  border: 1px solid var(--tp-line); box-shadow: 0 12px 40px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.12);
+  /* Tencent console dialog motion (TDesign's tokens): a 200ms decelerating
+     entrance zooming up from 92%, and a shorter accelerated exit. The resting
+     state is .tp-in, which must leave transform at none — a live transform
+     makes the window a backdrop root of its own, and the header's frosted blur
+     would then sample the window instead of the page behind it. */
+  --tp-in-motion: .2s cubic-bezier(0, 0, .15, 1);
+  --tp-out-motion: .16s cubic-bezier(.38, 0, .24, 1);
+  /* Origin is set per window in place(): the window grows out of the link. */
+  transform-origin: 50% 50%;
+  opacity: 0; transform: scale(.92);
+  transition: opacity var(--tp-in-motion), transform var(--tp-in-motion);
+}
+.tp-win.tp-in { opacity: 1; transform: none; }
+/* The root takes programmatic focus only to route Escape (tabindex="-1"),
+   never via the keyboard, so it must never render a focus ring. */
+.tp-win:focus { outline: none; }
+.tp-win.tp-out {
+  opacity: 0; transform: scale(.96); pointer-events: none;
+  transition: opacity var(--tp-out-motion), transform var(--tp-out-motion);
+}
+.tp-win.tp-sidebar { border-radius: 0; height: 100vh; }
+.tp-head {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  /* Frosted bar: a translucent fill (accent tint fading into the surface) over a
+     blurred sample of whatever is behind the window. */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, transparent), transparent),
+    color-mix(in srgb, var(--tp-surface) var(--tp-glass), transparent);
+  backdrop-filter: blur(14px) saturate(1.5);
+  border-bottom: 1px solid var(--tp-line); flex: none; user-select: none;
+}
+/* Power saving switches the page blur off, so the bar must not keep looking
+   through to a page it can no longer blur — same for engines without
+   backdrop-filter support. Both cases fall back to the opaque surface fill. */
+.tp-win.tp-nofrost .tp-head { --tp-glass: 100%; backdrop-filter: none; }
+@supports not (backdrop-filter: blur(2px)) {
+  .tp-head { --tp-glass: 100%; backdrop-filter: none; }
+}
+.tp-favicon { width: 16px; height: 16px; flex: none; border-radius: 3px; }
+.tp-favicon.tp-hide { display: none; }
+.tp-title { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tp-badge { display: none; flex: none; font-size: 11px; line-height: 1; padding: 3px 7px; border-radius: 999px; background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, #fff); color: var(--tp-accent, #4f6bf6); }
+.tp-badge.tp-show { display: inline-block; }
+.tp-risk {
+  background: color-mix(in srgb, #f59e0b 24%, var(--tp-surface));
+  color: color-mix(in srgb, #b45309 78%, var(--tp-ink));
+  cursor: help;
+}
+.tp-btn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: color-mix(in srgb, var(--tp-ink) 68%, transparent); cursor: pointer; }
+/* Every header button is the same thin-stroke icon, so the bar reads as one set
+   (mixing SVG with font glyphs put two weights and two baselines side by side). */
+.tp-btn svg { width: 15px; height: 15px; display: block; }
+/* Hover and pinned fills mix toward transparent rather than the surface: they
+   sit on the frosted bar, where an opaque chip would break the glass. */
+.tp-btn:hover { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent); color: var(--tp-accent, #4f6bf6); }
+.tp-pin svg { transform: rotate(45deg); transition: transform .15s ease; }
+.tp-pin.tp-on { background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 26%, transparent); color: var(--tp-accent, #4f6bf6); }
+.tp-pin.tp-on svg { transform: rotate(0deg); }
+.tp-resize {
+  position: absolute; right: 0; bottom: 0; width: 16px; height: 16px;
+  cursor: nwse-resize; opacity: .45; transition: opacity .15s ease;
+  background: linear-gradient(135deg, transparent 46%, #8c959f 46%, #8c959f 56%, transparent 56%,
+    transparent 68%, #8c959f 68%, #8c959f 78%, transparent 78%);
+}
+.tp-resize:hover { opacity: .9; }
+.tp-win.tp-sidebar .tp-resize { display: none; }
+.tp-win.tp-resizing { user-select: none; }
+.tp-body { position: relative; flex: 1; min-height: 0; background: var(--tp-surface); }
+.tp-body > iframe { width: 100%; height: 100%; border: 0; display: block; }
+.tp-skeleton { position: absolute; inset: 0; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.tp-skeleton i { display: block; height: 14px; border-radius: 6px; background: linear-gradient(90deg, var(--tp-soft) 25%, color-mix(in srgb, var(--tp-surface) 70%, var(--tp-soft)) 50%, var(--tp-soft) 75%); background-size: 200% 100%; animation: tp-shimmer 1.2s infinite; }
+.tp-skeleton i:first-child { height: 22px; width: 60%; }
+.tp-skeleton i:nth-child(2) { width: 90%; }
+.tp-skeleton i:nth-child(3) { width: 80%; }
+.tp-skeleton i:nth-child(4) { width: 85%; }
+@keyframes tp-shimmer { to { background-position: -200% 0; } }
+/* Scrolling the reader must never chain to the page behind the window: at its
+   bounds the wheel gesture stops here (see the root's wheel handler for the
+   non-scrollable parts of the window). */
+.tp-reader { position: absolute; inset: 0; overflow: auto; overscroll-behavior: contain; padding: 22px 26px; font-size: 15px; line-height: 1.75; color: #24292f; }
+.tp-reader h1.tp-r-title { font-size: 21px; line-height: 1.4; margin-bottom: 14px; }
+.tp-reader p { margin: 0 0 12px; }
+.tp-reader img { max-width: 100%; height: auto; border-radius: 8px; margin: 6px 0; }
+.tp-reader h2, .tp-reader h3, .tp-reader h4 { margin: 18px 0 8px; line-height: 1.45; }
+.tp-reader ul, .tp-reader ol { margin: 0 0 12px 22px; }
+.tp-reader a { color: var(--tp-accent, #4f6bf6); text-decoration: none; }
+.tp-reader a:hover { text-decoration: underline; }
+.tp-reader pre { background: var(--tp-soft); padding: 10px 12px; border-radius: 8px; overflow: auto; margin-bottom: 12px; }
+.tp-error { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 24px; font-size: 13px; color: color-mix(in srgb, var(--tp-ink) 62%, transparent); }
+.tp-error button { border: 0; border-radius: 8px; padding: 8px 14px; background: var(--tp-accent, #4f6bf6); color: #fff; font-size: 13px; cursor: pointer; }
+/* ---------- dark appearance ---------- */
+/* The resolved theme is written to the shadow host as data-tp-theme (see
+   content.ts), so both this file's UI and the selection toolbar follow it. */
+:host([data-tp-theme='dark']) { color-scheme: dark; }
+:host([data-tp-theme='dark']) .tp-notice { background: #e6e8eb; color: #15171a; }
+.tp-progress {
+  position: fixed; z-index: 2147483647; display: none;
+  width: 72px; height: 6px; border-radius: 999px; overflow: hidden;
+  background: rgba(255,255,255,.92); border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,.28);
+  /* Never hit-tested: while a hover counts down the bar sits next to the
+     pointer, and swallowing pointerover would cancel the hover itself. */
+  pointer-events: none;
+}
+.tp-progress.tp-show { display: block; }
+.tp-progress-fill { height: 100%; width: 0; border-radius: inherit; background: var(--tp-accent, #4f6bf6); }
+.tp-notice {
+  position: fixed; z-index: 2147483647; display: none;
+  max-width: 300px; padding: 7px 11px; border-radius: 9px;
+  background: #1f2328; color: #fff; font-size: 12px; line-height: 1.45;
+  box-shadow: 0 8px 26px rgba(0,0,0,.32);
+  /* Same reason as the progress bar: it must never swallow pointer events. */
+  pointer-events: none;
+}
+.tp-notice.tp-show { display: block; }
+.tp-hl {
+  position: fixed; z-index: 2147483640; opacity: 0; transition: opacity .12s ease;
+  border: 2px solid var(--tp-accent, #4f6bf6); border-radius: 4px;
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent);
+  /* Never hit-tested: it sits exactly on the hovered link. */
+  pointer-events: none;
+}
+.tp-hl.tp-dashed { border-style: dashed; }
+.tp-hl.tp-show { opacity: 1; }
+/* ---------- reduced motion ---------- */
+/* Set by content.ts (data-tp-motion) from the settings plus the OS preference.
+   Every transition in here is decorative, so one attribute kills them all; the
+   countdown bar's fill transition is armed in JS instead (see startProgress). */
+:host([data-tp-motion]) .tp-overlay,
+:host([data-tp-motion]) .tp-win,
+:host([data-tp-motion]) .tp-hl,
+:host([data-tp-motion]) .tp-pin svg,
+:host([data-tp-motion]) .tp-resize { transition: none; }
+:host([data-tp-motion]) .tp-skeleton i { animation: none; }
+`;

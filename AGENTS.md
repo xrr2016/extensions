@@ -50,7 +50,13 @@ apps/
     components/              # 跨入口复用的 Vue 组件（当前只有 SponsorSection.vue，sidepanel 用）
     utils/
       storage.ts             # 设置类型/默认值/夹取 + settingsItem + 引擎表
-      preview.ts             # 预览窗系统（DOM 手动构建 + STYLE 字符串 + 固定/倒计时条）
+      preview/                 # 预览窗系统（拆为目录，`@/utils/preview` 解析到 index.ts）：
+        index.ts               #   createPreviewSystem：窗口生命周期 + place/主题/加载流（DOM 手动构建）
+        types.ts               #   AnchorInfo / WindowInstance / PreviewSystem / PreviewDeps 等类型
+        constants.ts           #   超时/动效/尺寸等常量
+        icons.ts               #   头部四枚细描边图标（静态 SVG 串）
+        style.ts               #   PREVIEW_STYLE 整段 shadow-CSS
+        widgets.ts             #   三个指针浮层：倒计时条 / notice toast / 悬停高亮框
       selection.ts           # 划词搜索工具条
       extract.ts             # 阅读模式正文提取 + sanitize 白名单
       speculation.ts         # Speculation Rules 预热
@@ -283,7 +289,7 @@ node -e "const a=Object.keys(require('./apps/prelook/public/_locales/zh_CN/messa
 
 `.github/workflows/release.yml` 在 release published 时构建上架用的 zip：先校验 tag 与 `apps/prelook/package.json` 的 `version` 一致（`v` 前缀可有可无，不一致直接红——zip 文件名和 manifest 的 version 都来自 package.json，对不上就等于发布了一个版本错位的产物），再 `pnpm zip:prelook` + `pnpm zip:prelook:firefox`，产物同时传成 run artifact 并用 `gh release upload` 挂到该 release 上（`workflow_dispatch` 可手动跑，只出 artifact 不动 release）。注意 WXT 生成的 zip 名是 `<根包名><子包名>-<版本>-<浏览器>.zip`，即 `extensionsprelook-0.1.0-chrome.zip`；嫌难看在 `wxt.config.ts` 里配 `zip.name` 可以改（改之前先确认不会打乱既有上传流程）。
 
-悬停链路回归：改 `entrypoints/content.ts` / `utils/preview.ts` 后，先 `pnpm build:prelook`，再从**仓库根目录**起静态服务器打开 `apps/prelook/test/repro-hover.html`（页面里的 chrome mock 必须提供 `runtime.connect` 与 `storage.<area>.onChanged`：前者是 `@wxt-dev/analytics` 在入口启动时调用的，缺了会让整个 content script 在挂监听前就抛错，日志表现为 `host present: false`；后者是 `@wxt-dev/storage` 监听设置变化用的，注意是**按区域**的 `chrome.storage.local.onChanged`，不是 `chrome.storage.onChanged`）（mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
+悬停链路回归：改 `entrypoints/content.ts` / `utils/preview/` 后，先 `pnpm build:prelook`，再从**仓库根目录**起静态服务器打开 `apps/prelook/test/repro-hover.html`（页面里的 chrome mock 必须提供 `runtime.connect` 与 `storage.<area>.onChanged`：前者是 `@wxt-dev/analytics` 在入口启动时调用的，缺了会让整个 content script 在挂监听前就抛错，日志表现为 `host present: false`；后者是 `@wxt-dev/storage` 监听设置变化用的，注意是**按区域**的 `chrome.storage.local.onChanged`，不是 `chrome.storage.onChanged`）（mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
 
 > 注意：`pnpm landing:prelook` 的服务根是 `apps/prelook-landing`，用它访问复现页会 404。复现页必须从仓库根起服务（`npx serve .` 或任意等价方式），这样页面里的 `../.output/...` 相对路径才解析得到。`apps/prelook/test/demo/` 同理（它是落地页 hero 那段视频的录制台，见那里的 README）。
 
