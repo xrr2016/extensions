@@ -476,10 +476,6 @@
   border-style: dashed;
 }
 
-.tp-hl.tp-dotted {
-  border-style: dotted;
-}
-
 .tp-hl.tp-show {
   opacity: 1;
 }

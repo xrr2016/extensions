@@ -176,7 +176,6 @@ export function createHighlight(shadow: ShadowRoot): HighlightWidget {
     el.style.setProperty("--tp-hlr", `${radius}px`);
     borderWidth = width;
     el.classList.toggle("tp-dashed", style === "dashed");
-    el.classList.toggle("tp-dotted", style === "dotted");
   }
 
   return { link, place, applyVisual };

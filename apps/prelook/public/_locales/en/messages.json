@@ -161,9 +161,6 @@
   "highlightStyle_dashed": {
     "message": "Dashed"
   },
-  "highlightStyle_dotted": {
-    "message": "Dotted"
-  },
   "highlightWidth_label": {
     "message": "Border width"
   },

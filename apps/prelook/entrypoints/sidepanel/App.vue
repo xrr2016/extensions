@@ -99,7 +99,7 @@ const translateOptions = computed(() =>
 const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
 const highlightStyleOptions = computed(() =>
-  (["solid", "dashed", "dotted"] as const).map((s) => ({
+  (["solid", "dashed"] as const).map((s) => ({
     value: s,
     label: t(`highlightStyle.${s}`),
   })),

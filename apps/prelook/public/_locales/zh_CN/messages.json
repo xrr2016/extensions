@@ -158,9 +158,6 @@
   "highlightStyle_dashed": {
     "message": "虚线"
   },
-  "highlightStyle_dotted": {
-    "message": "点线"
-  },
   "highlightWidth_label": {
     "message": "边框粗细"
   },

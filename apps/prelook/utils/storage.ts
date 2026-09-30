@@ -22,7 +22,7 @@ export type SidebarSide = "left" | "right";
 export type SpeculationMode = "off" | "prefetch" | "prerender";
 export type ThemeMode = "system" | "light" | "dark";
 export type PowerMode = "auto" | "on" | "max" | "off";
-export type HighlightStyle = "solid" | "dashed" | "dotted";
+export type HighlightStyle = "solid" | "dashed";
 export type WindowTheme =
   | "auto"
   | "gray"
@@ -547,7 +547,7 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
         ? stored
         : DEFAULT_SETTINGS.position;
     })(),
-    highlightStyle: ["solid", "dashed", "dotted"].includes(s.highlightStyle)
+    highlightStyle: ["solid", "dashed"].includes(s.highlightStyle)
       ? s.highlightStyle
       : DEFAULT_SETTINGS.highlightStyle,
     // The frame's own geometry: a bogus width would make the ±border inset

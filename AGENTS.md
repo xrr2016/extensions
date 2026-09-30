@@ -210,7 +210,7 @@ click 监听（window 捕获）里的 altClick 分支**仍在**，但角色变�
 
 `highlightLinks` 开启时，指针下的链接会被 shadow root 里的一层 `.tp-hl` 框住（`open()` 之外唯一会跟着指针动的元素，和倒计时条同一类）。要点：
 
-- 页面上**不改任何 DOM**，高亮是覆盖层：`position: fixed` + 主题色描边 + 12% 透明底色。描边的**线型/粗细/圆角都可自定义**（`highlightStyle` = solid / dashed / dotted、`highlightWidth` 1–6px、`highlightRadius` 0–16px，`clampSettings` 夹取）：CSS `.tp-hl` 读 `--tp-hlw` / `--tp-hlr` 两个令牌（默认值与 DEFAULT_SETTINGS 一致），线型走 `.tp-dashed` / `.tp-dotted` 类。**外扩量必须跟着边框宽度走**——`place()` 是"锚点 rect 四边各外扩 `borderWidth`"（全局 `box-sizing: border-box`，描边画在框内，所以环的内沿正好压在链接上；外扩 2 时 `insetDelta=0`），而 `borderWidth` 由 `applyVisual` 从同一个 `highlightWidth` 镜像过来，改设置后 `applySettings` 会先 `applyVisual` 再让下一次 `place()` 用新值。`--tp-accent` 得显式设在元素上——shadow root 自身没有这个变量，不定就永远落到默认蓝。
+- 页面上**不改任何 DOM**，高亮是覆盖层：`position: fixed` + 主题色描边 + 12% 透明底色。描边的**线型/粗细/圆角都可自定义**（`highlightStyle` = solid / dashed、`highlightWidth` 1–6px、`highlightRadius` 0–16px，`clampSettings` 夹取）：CSS `.tp-hl` 读 `--tp-hlw` / `--tp-hlr` 两个令牌（默认值与 DEFAULT_SETTINGS 一致），线型走 `.tp-dashed` 类。**外扩量必须跟着边框宽度走**——`place()` 是"锚点 rect 四边各外扩 `borderWidth`"（全局 `box-sizing: border-box`，描边画在框内，所以环的内沿正好压在链接上；外扩 2 时 `insetDelta=0`），而 `borderWidth` 由 `applyVisual` 从同一个 `highlightWidth` 镜像过来，改设置后 `applySettings` 会先 `applyVisual` 再让下一次 `place()` 用新值。`--tp-accent` 得显式设在元素上——shadow root 自身没有这个变量，不定就永远落到默认蓝。
 - `z-index: 2147483640`，append 在遮罩之后、窗口之前：所以它盖在模糊遮罩之上、但永远在预览窗之下；`pointer-events: none` 是必须的，它就压在链接上，能命中就会把悬停本身掐掉。
 - 判定沿用 `anchorHref()`，因此禁用站点、非 http 链接、扩展关闭时都不会高亮；`applySettings` 里关掉开关会立即隐藏。
 - `scroll`（capture + passive）只重算高亮位置，**不重新 `place()` 窗口**——窗口是 fixed 的，跟着页面滚走会打断正在阅读的预览；`resize` 才同时重排两者。链接若已从 DOM 移除，`placeHighlight()` 会自行收起并清引用。
