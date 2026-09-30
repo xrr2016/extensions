@@ -462,8 +462,10 @@
   z-index: 2147483640;
   opacity: 0;
   transition: opacity .12s ease;
-  border: 2px solid var(--tp-accent, #4f6bf6);
-  border-radius: 4px;
+  /* Width/radius are user settings (--tp-hlw / --tp-hlr, written by the
+     widget's applyVisual); the fallbacks match DEFAULT_SETTINGS. */
+  border: var(--tp-hlw, 2px) solid var(--tp-accent, #4f6bf6);
+  border-radius: var(--tp-hlr, 4px);
   background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, transparent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent);
   /* Never hit-tested: it sits exactly on the hovered link. */
@@ -472,6 +474,10 @@
 
 .tp-hl.tp-dashed {
   border-style: dashed;
+}
+
+.tp-hl.tp-dotted {
+  border-style: dotted;
 }
 
 .tp-hl.tp-show {

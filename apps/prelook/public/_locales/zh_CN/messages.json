@@ -158,6 +158,15 @@
   "highlightStyle_dashed": {
     "message": "虚线"
   },
+  "highlightStyle_dotted": {
+    "message": "点线"
+  },
+  "highlightWidth_label": {
+    "message": "边框粗细"
+  },
+  "highlightRadius_label": {
+    "message": "圆角半径"
+  },
   "trigger_delay": {
     "message": "悬停延迟"
   },

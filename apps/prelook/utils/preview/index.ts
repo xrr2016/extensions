@@ -257,7 +257,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     // The highlight frame and the countdown bar hug the hovered link on the host
     // page, so they use that page's colour — never one another window's.
     const chromeAccent = windowAccent(s);
-    highlight.applyVisual(chromeAccent, s.highlightStyle === "dashed");
+    highlight.applyVisual(chromeAccent, s.highlightStyle, s.highlightWidth, s.highlightRadius);
     progress.setAccent(chromeAccent);
     for (const win of windows) {
       applyWindowTheme(win.root, windowPreset(s), windowAccent(s, win));

@@ -22,7 +22,7 @@ export type SidebarSide = "left" | "right";
 export type SpeculationMode = "off" | "prefetch" | "prerender";
 export type ThemeMode = "system" | "light" | "dark";
 export type PowerMode = "auto" | "on" | "max" | "off";
-export type HighlightStyle = "solid" | "dashed";
+export type HighlightStyle = "solid" | "dashed" | "dotted";
 export type WindowTheme =
   | "auto"
   | "gray"
@@ -228,6 +228,10 @@ export interface PrelookSettings {
   highlightLinks: boolean;
   /** Border style for the link highlight frame */
   highlightStyle: HighlightStyle;
+  /** Highlight frame border width in px (1-6) */
+  highlightWidth: number;
+  /** Highlight frame corner radius in px (0-16) */
+  highlightRadius: number;
   /** New preview windows start pinned, so they survive the pointer leaving */
   autoPin: boolean;
   /** Extension appearance: the settings panel and every in-page shadow UI */
@@ -294,6 +298,8 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   reduceMotion: false,
   highlightLinks: true,
   highlightStyle: "dashed",
+  highlightWidth: 2,
+  highlightRadius: 4,
   autoPin: false,
   theme: "system",
   windowTheme: "silver",
@@ -541,9 +547,13 @@ export function clampSettings(s: PrelookSettings): PrelookSettings {
         ? stored
         : DEFAULT_SETTINGS.position;
     })(),
-    highlightStyle: ["solid", "dashed"].includes(s.highlightStyle)
+    highlightStyle: ["solid", "dashed", "dotted"].includes(s.highlightStyle)
       ? s.highlightStyle
       : DEFAULT_SETTINGS.highlightStyle,
+    // The frame's own geometry: a bogus width would make the ±border inset
+    // maths in placeHighlight() (and the CSS) disagree, so both clamp hard.
+    highlightWidth: Math.min(6, Math.max(1, Math.round(s.highlightWidth || DEFAULT_SETTINGS.highlightWidth))),
+    highlightRadius: Math.min(16, Math.max(0, Math.round(s.highlightRadius ?? DEFAULT_SETTINGS.highlightRadius))),
     windowTheme,
     // Two independent colours: the window theme only ever colours preview
     // windows (a preset's own accent, or `windowColor` for "custom"), while

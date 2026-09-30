@@ -1,4 +1,5 @@
 import type { I18n } from "@/utils/i18n";
+import type { HighlightStyle } from "@/utils/storage";
 import {
     NOTICE_MS,
     PROGRESS_BAR_FALLBACK_H,
@@ -123,7 +124,9 @@ export interface HighlightWidget {
   link(anchor: Element | null): void;
   /** Re-measure the framed link; the page may have scrolled or reflowed. */
   place(): void;
-  applyVisual(accent: string, dashed: boolean): void;
+  /** Border style is a class (solid is the base rule); width and radius are
+   *  user px values the CSS reads as tokens. */
+  applyVisual(accent: string, style: HighlightStyle, width: number, radius: number): void;
 }
 
 export function createHighlight(shadow: ShadowRoot): HighlightWidget {
@@ -131,6 +134,9 @@ export function createHighlight(shadow: ShadowRoot): HighlightWidget {
   el.className = "tp-hl";
   shadow.appendChild(el);
   let target: Element | null = null;
+  // The inset maths must match the border the CSS is actually drawing; both
+  // come from the same applyVisual call, mirrored here for place().
+  let borderWidth = 2;
 
   function link(anchor: Element | null) {
     target = anchor;
@@ -150,16 +156,27 @@ export function createHighlight(shadow: ShadowRoot): HighlightWidget {
       return;
     }
     const r = target.getBoundingClientRect();
-    // +2/-2 compensates the 2px border drawn inside the box (border-box).
-    el.style.left = `${r.left - 2}px`;
-    el.style.top = `${r.top - 2}px`;
-    el.style.width = `${r.width + 4}px`;
-    el.style.height = `${r.height + 4}px`;
+    // The box grows outward by the border width on each side so the ring's
+    // inner edge lands exactly on the link (border-box draws inside the box);
+    // borderWidth mirrors the CSS --tp-hlw set by applyVisual.
+    el.style.left = `${r.left - borderWidth}px`;
+    el.style.top = `${r.top - borderWidth}px`;
+    el.style.width = `${r.width + borderWidth * 2}px`;
+    el.style.height = `${r.height + borderWidth * 2}px`;
   }
 
-  function applyVisual(accent: string, dashed: boolean) {
+  function applyVisual(
+    accent: string,
+    style: HighlightStyle,
+    width: number,
+    radius: number,
+  ) {
     el.style.setProperty("--tp-accent", accent);
-    el.classList.toggle("tp-dashed", dashed);
+    el.style.setProperty("--tp-hlw", `${width}px`);
+    el.style.setProperty("--tp-hlr", `${radius}px`);
+    borderWidth = width;
+    el.classList.toggle("tp-dashed", style === "dashed");
+    el.classList.toggle("tp-dotted", style === "dotted");
   }
 
   return { link, place, applyVisual };

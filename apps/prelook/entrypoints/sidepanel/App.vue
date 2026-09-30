@@ -99,7 +99,10 @@ const translateOptions = computed(() =>
 const aiOptions = AI_ENGINES.map((e) => ({ value: e.id, label: e.label }));
 const powerOptions = computed(() => POWER_MODES.map((m) => ({ value: m, label: t(`power.${m}`) })));
 const highlightStyleOptions = computed(() =>
-  (["solid", "dashed"] as const).map((s) => ({ value: s, label: t(`highlightStyle.${s}`) })),
+  (["solid", "dashed", "dotted"] as const).map((s) => ({
+    value: s,
+    label: t(`highlightStyle.${s}`),
+  })),
 );
 
 // Window size remembers separate percent and px values: the sliders bind to
@@ -592,6 +595,16 @@ function onClearHistory() {
               name="highlightStyle"
               :options="highlightStyleOptions"
             />
+          </label>
+          <label v-if="settings.highlightLinks" class="row sz">
+            <span>{{ t("highlightWidth.label") }}</span>
+            <SliderInput v-model="settings.highlightWidth" :min="1" :max="6" unit="px" />
+            <b>{{ settings.highlightWidth }}px</b>
+          </label>
+          <label v-if="settings.highlightLinks" class="row sz">
+            <span>{{ t("highlightRadius.label") }}</span>
+            <SliderInput v-model="settings.highlightRadius" :min="0" :max="16" unit="px" />
+            <b>{{ settings.highlightRadius }}px</b>
           </label>
           <label class="row switch-row">
             <span>{{ t("images.skip") }}</span>

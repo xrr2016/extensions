@@ -161,6 +161,15 @@
   "highlightStyle_dashed": {
     "message": "Dashed"
   },
+  "highlightStyle_dotted": {
+    "message": "Dotted"
+  },
+  "highlightWidth_label": {
+    "message": "Border width"
+  },
+  "highlightRadius_label": {
+    "message": "Corner radius"
+  },
   "trigger_delay": {
     "message": "Hover delay"
   },
