@@ -131,6 +131,12 @@
   "trigger_altHover": {
     "message": "Alt + hover"
   },
+  "trigger_altClick": {
+    "message": "Alt + click"
+  },
+  "trigger_hoverSpace": {
+    "message": "Hover + Space"
+  },
   "trigger_longPress": {
     "message": "Long press"
   },

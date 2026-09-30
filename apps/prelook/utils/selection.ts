@@ -1,12 +1,12 @@
 import type { I18n } from "@/utils/i18n";
 import {
-  AI_ENGINES,
-  SEARCH_ENGINES,
-  TRANSLATE_ENGINES,
-  clampSettings,
-  isSiteDisabled,
-  type PrelookSettings,
-  type TranslateEngine,
+    AI_ENGINES,
+    SEARCH_ENGINES,
+    TRANSLATE_ENGINES,
+    clampSettings,
+    isSiteDisabled,
+    type PrelookSettings,
+    type TranslateEngine,
 } from "@/utils/storage";
 import type { ContentScriptContext } from "wxt/utils/content-script-context";
 
@@ -305,15 +305,8 @@ export function createSelectionSystem(
     rangeCount: number;
     rect: DOMRect | null;
   }) {
-    console.log(
-      "[check] entry, text:",
-      JSON.stringify(snapshot.text),
-      "rect:",
-      snapshot.rect ? `${snapshot.rect.width}x${snapshot.rect.height}` : "null",
-    );
     const s = clampSettings(deps.getSettings());
     if (!s.selectionSearch || !s.enabled || isSiteDisabled(s.disabledSites, location.hostname)) {
-      console.log("[check] fail ①");
       hide();
       return;
     }
@@ -323,27 +316,18 @@ export function createSelectionSystem(
     // selection data. The rect size is the honest guard against click-only
     // (zero-width) ranges.
     if (text.length < s.minSelectionChars || snapshot.rangeCount === 0) {
-      console.log("[check] fail ②", {
-        text: JSON.stringify(text),
-        len: text.length,
-        min: s.minSelectionChars,
-        rangeCount: snapshot.rangeCount,
-      });
       hide();
       return;
     }
     if (editableArea(snapshot.anchorNode)) {
-      console.log("[check] fail ③ editableArea");
       hide();
       return;
     }
     const rect = snapshot.rect;
     if (!rect || (rect.width === 0 && rect.height === 0 && rect.top === 0)) {
-      console.log("[check] fail ④ bad rect", rect);
       hide();
       return;
     }
-    console.log("[check] PASS → show()");
     show(rect);
   }
 

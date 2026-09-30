@@ -57,6 +57,17 @@ function isImageLink(url: string): boolean {
   }
 }
 
+/** True when a key event must reach the page untouched: typing in a form field,
+ *  or Space activating a focused control (button, checkbox, link). The
+ *  `hoverSpace` trigger keys off Space, which is also the page-scroll and
+ *  form-activation key, so it has to stand down in exactly these cases. */
+function isEditableTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el?.closest) return false;
+  if (el.closest("input, textarea, select, button")) return true;
+  return el.isContentEditable === true;
+}
+
 export default defineContentScript({
   matches: ["<all_urls>"],
   runAt: "document_idle",
@@ -247,26 +258,58 @@ export default defineContentScript({
       } else {
         preview?.highlightLink(null);
       }
-      if (hoverTarget && triggerAllows(event)) {
+      // `hoverSpace` arms from a momentary key, not a held one: keep a pending
+      // countdown alive while the pointer stays on that same link, even as
+      // pointerover re-fires across its child elements. (altHover clears
+      // `hoveringUrl` on keyup, so this never revives a released Alt.)
+      if (hoverTarget && (triggerAllows(event) || hoveringUrl === hoverTarget.url)) {
         beginHover(hoverTarget);
       } else {
         clearHoverTimer();
         const overUi = (event.composedPath() as Node[]).some(
           (n) => n instanceof HTMLElement && n.tagName === "PRELOOK-UI",
         );
-        if (!overUi) preview?.releaseExcept(null);
+        if (!overUi) {
+          // `hoverSpace` has no held modifier to re-check once the window is
+          // open: the pointer resting on the link keeps that window alive,
+          // without re-arming the countdown (which would drag a moved window
+          // back to the anchor on every child-element pointerover).
+          if (hoverTarget && settings.triggerMode === "hoverSpace") {
+            preview?.keep(hoverTarget.url);
+          } else {
+            preview?.releaseExcept(null);
+          }
+        }
       }
     });
 
-    // `altHover` must not care about the order: pressing Alt over a link that is
-    // already hovered starts the very same countdown, and letting go of Alt
-    // before the window opens cancels it — the modifier is the intent here, so
-    // hold it. `repeat` matters: Alt auto-repeats while held, and every repeat
-    // would otherwise restart the countdown of an already-opened window.
+    // Two modes arm a hover countdown from the keyboard while a link is under
+    // the pointer, and neither cares about the order the pointer and key
+    // arrived:
+    //  - `altHover`: press Alt over a hovered link. Alt is a hold-modifier, so
+    //    releasing it before the window opens cancels the countdown (see keyup).
+    //  - `hoverSpace`: press Space over a hovered link. Space is a discrete key,
+    //    so the countdown runs to completion even after release; we swallow its
+    //    default page-scroll so the link does not slide out from under the
+    //    pointer, and never hijack it inside a form field or focused control.
+    // `repeat` matters for both: the key auto-repeats while held, and every
+    // repeat would otherwise restart the countdown of an already-opened window.
     ctx.addEventListener(document, "keydown", (e) => {
       const event = e as KeyboardEvent;
-      if (!settings.enabled || settings.triggerMode !== "altHover") return;
-      if (event.key !== "Alt" || event.repeat || hoveringUrl || !hoverTarget) return;
+      if (!settings.enabled || !hoverTarget) return;
+      const mode = settings.triggerMode;
+      if (mode === "altHover") {
+        if (event.key !== "Alt" || event.repeat || hoveringUrl) return;
+        beginHover(hoverTarget);
+        return;
+      }
+      if (mode !== "hoverSpace" || event.key !== " ") return;
+      if (isEditableTarget(event.target)) return;
+      // Swallow the scroll even when a countdown is already running (or the key
+      // auto-repeats): letting it through would move the link out from under the
+      // pointer and cancel the very countdown it started.
+      event.preventDefault();
+      if (event.repeat || hoveringUrl) return;
       beginHover(hoverTarget);
     });
 
@@ -278,8 +321,11 @@ export default defineContentScript({
 
     // "Close when clicking outside": a press anywhere that is not our own UI
     // dismisses the unpinned windows (pinned ones are the user's explicit keep).
+    //
+    // Bound on `window` with `{ capture: true }` — see the click listener below
+    // for why the element and the object form both matter here.
     ctx.addEventListener(
-      document,
+      window,
       "pointerdown",
       (e) => {
         const event = e as PointerEvent;
@@ -288,7 +334,7 @@ export default defineContentScript({
         if (path.some((n) => n instanceof HTMLElement && n.tagName === "PRELOOK-UI")) return;
         preview?.dismissUnpinned();
       },
-      true,
+      { capture: true },
     );
 
     ctx.addEventListener(document, "pointerout", (e) => {
@@ -402,6 +448,83 @@ export default defineContentScript({
       if (target?.closest?.("a[href]")) e.preventDefault();
     });
 
+    // altClick is claimed at the POINTER level, not on click. Holding Alt makes a
+    // few pixels of hand wobble between press and release a *selection drag* (or
+    // a link drag): the text the drag selects pops the selection toolbar right
+    // where the user meant to click, and — because a drag can swallow the click —
+    // a purely click-based altClick silently misses. So Alt+press on a previewable
+    // link preventDefaults the pointerdown, which suppresses the selection start
+    // (and the native link drag), and the preview opens on a pointerup that stayed
+    // within DRAG_INTENT_PX; a longer drag does nothing (page stays put).
+    //
+    // Caveat measured in Chromium: canceling the pointerdown does NOT stop the
+    // later `click` — it still fires, so the click listener below must still
+    // preventDefault it (Chrome's Alt+click default is "download the link"). The
+    // `altGesture` flag tells that listener "this click came from a pointer
+    // gesture I already resolved" so it cancels the default without opening a
+    // second window; a keyboard Alt+Enter has no pointer phase, leaves the flag
+    // clear, and is opened by the click listener itself.
+    let altPress: { x: number; y: number; info: AnchorInfo } | null = null;
+    let altGesture = false;
+
+    ctx.addEventListener(
+      window,
+      "pointerdown",
+      (e) => {
+        const event = e as PointerEvent;
+        altPress = null; // any new press replaces (or clears) the pending gesture
+        altGesture = false;
+        if (
+          !settings.enabled ||
+          settings.triggerMode !== "altClick" ||
+          !event.altKey ||
+          event.button !== 0 ||
+          event.isPrimary === false
+        ) {
+          return;
+        }
+        const hit = anchorHref(event);
+        if (!hit) return; // not a previewable link (or our own UI): leave it to the page
+        event.preventDefault();
+        altGesture = true;
+        altPress = {
+          x: event.clientX,
+          y: event.clientY,
+          info: toAnchorInfo(hit.anchor, hit.url, event, clampSettings(settings).warnDangerous),
+        };
+      },
+      { capture: true },
+    );
+
+    ctx.addEventListener(
+      window,
+      "pointerup",
+      (e) => {
+        const press = altPress;
+        altPress = null;
+        if (!press) return;
+        const event = e as PointerEvent;
+        // Travelled too far to be a click: the gesture was a drag, so it opens
+        // nothing (selection and navigation were already suppressed, so the page
+        // stays exactly where it was). `altGesture` stays set so the click that
+        // Chromium still dispatches is cancelled without opening a window.
+        if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > DRAG_INTENT_PX) return;
+        void ensureUi().then(() => {
+          // The toolbar is dismissed rather than blocking this preview: the
+          // Alt+press is an explicit command (like the context menu), and with
+          // the pointerdown suppressed nothing else would have hidden the bar.
+          selection?.hide();
+          preview?.open(press.info);
+        });
+      },
+      { capture: true },
+    );
+
+    ctx.addEventListener(document, "pointercancel", () => {
+      altPress = null;
+      altGesture = false;
+    });
+
     // Long-press and drag both set this to the link's URL so the click that
     // follows release is swallowed. The check must NOT depend on anchorHref:
     // the preview window may have opened directly over the link, so the click
@@ -410,13 +533,42 @@ export default defineContentScript({
     // uiHost.contains), the click escapes preventDefault, and the browser
     // navigates — opening a new tab for target="_blank" links.
     //
-    // `click` trigger mode lives in the same capture listener: a plain left
-    // click on a link opens the preview instead of navigating. Every modifier
-    // combination keeps its native meaning (Ctrl/Cmd+click and middle-click
-    // open a background tab, Shift+click a new window, Alt+click downloads), so
-    // only a modifier-free primary click is intercepted.
+    // The two click-based modes share this capture listener: `click` takes a
+    // plain left click; `altClick` takes Alt + left click (which Chrome/Firefox
+    // would otherwise spend on downloading the link) — both open the preview
+    // instead of navigating. Every other combination keeps its native meaning
+    // (Ctrl/Cmd+click and middle-click open a background tab, Shift+click a new
+    // window), so only these are intercepted.
+    //
+    // For altClick this is the *default-killer + keyboard path*, not the mouse
+    // opener: canceling the pointerdown above does NOT suppress the click in
+    // Chromium (measured), so this still runs. When the click belongs to a
+    // pointer gesture (`altGesture`), the pointerup handler already decided
+    // open-or-nothing — so here we only preventDefault the download/navigate
+    // default and swallow the event, WITHOUT opening again. That keeps a
+    // too-far Alt-drag (which pointerup bailed on) from being resurrected by
+    // the click. A keyboard Alt+Enter has no pointer phase, leaves the flag
+    // clear, and falls through to the open below.
+    //
+    // It is bound to `window`, NOT `document`, on purpose: many sites (forums,
+    // SPAs) delegate clicks with their own `document` CAPTURE listener and call
+    // `stopImmediatePropagation()` to run a client-side router. That fires before
+    // us whenever it registered first — and a `document_idle` content script
+    // always registers after a page's document-start script — so a `document`
+    // capture listener here would be silently preempted and the click would
+    // navigate instead of previewing. The capture path is
+    // `window → document → … → target`, so a window listener runs before ANY
+    // document one regardless of registration order. (A click inside our own
+    // shadow UI retargets to the `prelook-ui` host, and `anchorHref` bails on
+    // it, so the header buttons are unaffected.)
+    //
+    // `{ capture: true }`, not `true`: `ctx.addEventListener` spreads its 4th
+    // argument into an options object (`{ ...options, signal }`), and spreading a
+    // bare boolean yields `{}` — the listener would quietly fall back to the
+    // bubble phase, which is exactly the phase the interceptor above kills. This
+    // is why the option is spelled out everywhere a capture listener is wanted.
     ctx.addEventListener(
-      document,
+      window,
       "click",
       (e) => {
         if (suppressClickUrl) {
@@ -426,17 +578,24 @@ export default defineContentScript({
           return;
         }
         const event = e as MouseEvent;
-        if (
-          !settings.enabled ||
-          settings.triggerMode !== "click" ||
-          event.button !== 0 ||
-          event.ctrlKey ||
-          event.metaKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
+        if (!settings.enabled || event.button !== 0) return;
+        const mode = settings.triggerMode;
+        const other = event.ctrlKey || event.metaKey || event.shiftKey;
+        // An Alt+click that came from our pointer gesture: the pointerup handler
+        // already opened it (or deliberately bailed on a drag). Cancel the
+        // browser default and stop; never open a second time from here.
+        if (altGesture) {
+          altGesture = false;
+          if (mode === "altClick" && event.altKey && !other) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
           return;
         }
+        const wantsClick =
+          (mode === "click" && !event.altKey && !other) ||
+          (mode === "altClick" && event.altKey && !other);
+        if (!wantsClick) return;
         if (selection?.isVisible()) return; // don't stack a preview onto the toolbar
         const hit = anchorHref(event);
         if (!hit) return;
@@ -452,7 +611,7 @@ export default defineContentScript({
         );
         void ensureUi().then(() => preview?.open(info));
       },
-      true,
+      { capture: true },
     );
 
     /** Anchor rect for a URL, for previews started from outside the page

@@ -128,6 +128,12 @@
   "trigger_altHover": {
     "message": "Alt + 悬停"
   },
+  "trigger_altClick": {
+    "message": "Alt + 单击"
+  },
+  "trigger_hoverSpace": {
+    "message": "悬停 + 空格"
+  },
   "trigger_longPress": {
     "message": "长按链接"
   },

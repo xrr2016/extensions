@@ -1,15 +1,15 @@
 import { extractReaderContent, renderReaderInto } from "@/utils/extract";
 import type { I18n } from "@/utils/i18n";
-import type { PowerState } from "@/utils/power";
 import { extractHostAccent, extractPageAccent, type AccentScope } from "@/utils/pageAccent";
+import type { PowerState } from "@/utils/power";
 import type { RiskReason } from "@/utils/safety";
 import {
-    WINDOW_THEMES,
-    clampSettings,
-    recordHistory,
-    updateHistoryMeta,
-    type PrelookSettings,
-    type WindowThemePreset,
+  WINDOW_THEMES,
+  clampSettings,
+  recordHistory,
+  updateHistoryMeta,
+  type PrelookSettings,
+  type WindowThemePreset,
 } from "@/utils/storage";
 
 export interface AnchorInfo {

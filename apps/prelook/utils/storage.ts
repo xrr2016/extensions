@@ -1,4 +1,11 @@
-export type TriggerMode = "hover" | "click" | "altHover" | "longPress" | "drag";
+export type TriggerMode =
+  | "hover"
+  | "click"
+  | "altHover"
+  | "longPress"
+  | "drag"
+  | "altClick"
+  | "hoverSpace";
 export type PreviewPosition =
   | "top-left"
   | "top"
@@ -144,7 +151,15 @@ export const MAX_WINDOWS_LIMIT = 6;
 export const POWER_MODES: PowerMode[] = ["auto", "on", "max", "off"];
 
 /** Trigger modes, for validating stored settings (values can be removed over time). */
-export const TRIGGER_MODES: TriggerMode[] = ["hover", "click", "altHover", "longPress", "drag"];
+export const TRIGGER_MODES: TriggerMode[] = [
+  "hover",
+  "click",
+  "altHover",
+  "longPress",
+  "drag",
+  "altClick",
+  "hoverSpace",
+];
 
 /** Window width/height bounds as a percentage of the viewport. */
 export const WINDOW_PCT_MIN = 20;

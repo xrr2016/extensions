@@ -71,10 +71,12 @@ const THEMES = [
 // RadioGroup options: computed so labels stay in sync with `t()` like the rest
 // of the panel; engine labels come from the engine tables verbatim.
 const triggerOptions = computed(() =>
-  (["hover", "click", "longPress", "drag", "altHover"] as const).map((m) => ({
-    value: m,
-    label: t(`trigger.${m}`),
-  })),
+  (["hover", "click", "altHover", "altClick", "hoverSpace", "longPress", "drag"] as const).map(
+    (m) => ({
+      value: m,
+      label: t(`trigger.${m}`),
+    }),
+  ),
 );
 // 3×3 grid of floating positions, then sidebar as a full-width row below.
 const positionGrid: { value: PreviewPosition; label: string }[][] = (
@@ -348,7 +350,10 @@ function onClearHistory() {
             :options="triggerOptions"
             :dividers="false"
           />
-          <label class="row sz" v-if="settings.triggerMode === 'hover'">
+          <label
+            class="row sz"
+            v-if="settings.triggerMode === 'hover' || settings.triggerMode === 'hoverSpace'"
+          >
             <span>{{ t("trigger.delay") }}</span>
             <SliderInput
               v-model="hoverDelaySec"
@@ -357,7 +362,6 @@ function onClearHistory() {
               :step="0.1"
               unit="s"
               :decimals="1"
-              :disabled="['longPress', 'drag'].includes(settings.triggerMode)"
             />
             <b>{{ hoverDelaySec }}s</b>
           </label>
@@ -515,12 +519,7 @@ function onClearHistory() {
           </div>
           <!-- 自动跟随网页主题色 -->
           <label class="auto-theme" :class="{ on: settings.windowTheme === 'auto' }">
-            <input
-              v-model="settings.windowTheme"
-              type="radio"
-              name="windowTheme"
-              value="auto"
-            />
+            <input v-model="settings.windowTheme" type="radio" name="windowTheme" value="auto" />
             <svg
               class="auto-icon"
               viewBox="0 0 24 24"
