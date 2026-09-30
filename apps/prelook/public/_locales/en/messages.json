@@ -72,13 +72,19 @@
     "message": "Translate"
   },
   "selection_translateHint": {
-    "message": "Google Translate can't be embedded, so it opens in a new tab; Bing Translate opens in a preview window"
+    "message": "Both open in a preview window: Google Translate fetches the result and renders it as its own card, Bing Translate embeds the page"
   },
   "translate_google": {
     "message": "Google Translate"
   },
   "translate_bing": {
     "message": "Bing Translate"
+  },
+  "translate_detected": {
+    "message": "Detected: $1"
+  },
+  "translate_failed": {
+    "message": "Translation failed — try again or open it in a new tab"
   },
   "panel_tab_preview": {
     "message": "Preview"

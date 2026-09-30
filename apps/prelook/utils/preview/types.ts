@@ -17,6 +17,11 @@ export interface AnchorInfo {
    *  rather than a document, so this window must never fall back to reader
    *  mode — which would render the app's own chrome as the "content". */
   translate?: boolean;
+  /** Inline translation requested by the selection toolbar: the engine's page
+   *  cannot be framed, so the window renders the API's result as a card
+   *  instead of loading `url`. `text` is the selection, `to` the target
+   *  language code. */
+  inlineTranslate?: { text: string; to: string };
 }
 
 export interface FetchReply {
@@ -52,6 +57,9 @@ export interface WindowInstance {
   sidebar?: boolean;
   /** Translation site: the reader fallback is off (see `AnchorInfo`) */
   translate: boolean;
+  /** Inline translation this window renders (see `AnchorInfo.inlineTranslate`);
+   *  set once at creation, and a reload re-runs the same request. */
+  inlineTranslate?: { text: string; to: string };
   risk?: RiskReason;
   /** Pointer is inside this window — drives the backdrop focus effect */
   hovered: boolean;

@@ -23,8 +23,14 @@ export interface SelectionDeps {
   /** Opens the floating preview for the URL picked in the toolbar; `rect` is
    *  the selection, so the window lands where the user was reading.
    *  `translate` marks the window as a translation site — an app, not an
-   *  article — which keeps the reader fallback away from it. */
-  openPreview: (url: string, rect: DOMRect | null, options?: { translate?: boolean }) => void;
+   *  article — which keeps the reader fallback away from it. `inline` carries
+   *  the selection + target language for engines whose page cannot be framed:
+   *  the window fetches the API result and renders its own card. */
+  openPreview: (
+    url: string,
+    rect: DOMRect | null,
+    options?: { translate?: boolean; inline?: { text: string; to: string } },
+  ) => void;
   /** Transient toast at a point on screen, for actions whose result happens
    *  out of sight (the selection was copied on the user's behalf). */
   notify: (key: string, x: number, y: number) => void;
@@ -39,12 +45,16 @@ export interface SelectionSystem {
 /** Target language follows the browser's UI language: a Chinese UI translates
  *  into Chinese, anything else into English (the source is always detected).
  *  Every engine spells the same target its own way (`tl=zh-CN` vs
- *  `to=zh-Hans`), so the codes live in the engine table. */
-function translateUrl(engine: TranslateEngine, text: string): string {
+ *  `to=zh-Hans`), so the codes live in the engine table — and the inline API
+ *  call uses the very same spelling, which is why this is a shared helper. */
+function targetLang(engine: TranslateEngine): string {
   const uiLang = (browser.i18n.getUILanguage() || "").toLowerCase();
-  const family = uiLang.startsWith("zh") ? "zh" : "en";
+  return engine.lang[uiLang.startsWith("zh") ? "zh" : "en"];
+}
+
+function translateUrl(engine: TranslateEngine, text: string): string {
   return engine.url
-    .replace("%t", encodeURIComponent(engine.lang[family]))
+    .replace("%t", encodeURIComponent(targetLang(engine)))
     .replace("%s", encodeURIComponent(text));
 }
 
@@ -210,9 +220,12 @@ export function createSelectionSystem(
   }
 
   /** Translation keeps the page you are reading in place: the engine opens as a
-   *  preview window — except for the engines `openIn: "tab"` marks as unframeable.
+   *  preview window — either by framing its page (Bing) or, when the page
+   *  refuses to be framed but exposes a CORS-open JSON endpoint (Google), by
+   *  fetching the translation and rendering our own card. Only engines that can
+   *  neither be framed nor fetched inline fall back to a real tab.
    *  Preview windows are flagged as translations so they never degrade into
-   *  reader mode (see preview.ts). */
+   *  reader mode (see preview/). */
   function openTranslate(engine: TranslateEngine) {
     const sel = document.getSelection();
     const text = sel?.toString().trim();
@@ -220,7 +233,12 @@ export function createSelectionSystem(
     if (!text) return;
     sel?.removeAllRanges();
     const url = translateUrl(engine, text);
-    if (engine.openIn === "tab") openTab(url);
+    if (engine.inline) {
+      deps.openPreview(url, selectionRect, {
+        translate: true,
+        inline: { text, to: targetLang(engine) },
+      });
+    } else if (engine.openIn === "tab") openTab(url);
     else deps.openPreview(url, selectionRect, { translate: true });
   }
 

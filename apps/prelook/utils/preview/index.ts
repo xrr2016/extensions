@@ -11,6 +11,7 @@ import {
   type PrelookSettings,
   type WindowThemePreset,
 } from "@/utils/storage";
+import type { TranslateReply } from "@/utils/translate";
 import {
   AUTO_CLOSE_GRACE_MS,
   EXIT_MS,
@@ -554,7 +555,82 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     setBodyContent(win, box);
   }
 
+  /** A language code as the user would read it ("英语"), falling back to the raw
+   *  code when the platform cannot name it. */
+  function langLabel(code: string): string {
+    try {
+      const ui = browser.i18n.getUILanguage();
+      const name = new Intl.DisplayNames([ui], { type: "language" }).of(code);
+      if (name && name.toLowerCase() !== code.toLowerCase()) return name;
+    } catch {
+      /* no DisplayNames / unknown code — show what we got */
+    }
+    return code;
+  }
+
+  /** Render an inline translation as our own card: source on top, result below,
+   *  then the detected language and the escape hatch to the real site. */
+  function renderTranslation(win: WindowInstance, source: string, result: string, detected?: string) {
+    const box = document.createElement("div");
+    box.className = "tp-trans";
+    const src = document.createElement("div");
+    src.className = "tp-trans-src";
+    src.textContent = source;
+    const dst = document.createElement("div");
+    dst.className = "tp-trans-dst";
+    dst.textContent = result;
+    const meta = document.createElement("div");
+    meta.className = "tp-trans-meta";
+    if (detected) {
+      const lang = document.createElement("span");
+      lang.textContent = deps.i18n.t("translate.detected", { lang: langLabel(detected) });
+      meta.append(lang);
+    }
+    const btn = document.createElement("button");
+    btn.textContent = deps.i18n.t("preview.openTab");
+    btn.addEventListener("click", () => {
+      void browser.runtime.sendMessage({ type: "prelook:openTab", url: win.url });
+    });
+    meta.append(btn);
+    box.append(src, dst, meta);
+    setBodyContent(win, box);
+    win.iframe = undefined;
+    // No frame and no fetched markup to sample, so "auto" falls back to the
+    // host page's colour — the same path the error card is on.
+    refreshAutoAccent(win);
+  }
+
+  /** The inline path: ask the background for the translation and render it. The
+   *  request is a small JSON GET, so it is not dropped by power saving the way
+   *  the page preflight is — without it this window would have nothing to show. */
+  async function loadTranslation(win: WindowInstance, req: { text: string; to: string }) {
+    let reply: TranslateReply | undefined;
+    try {
+      reply = (await browser.runtime.sendMessage({
+        type: "prelook:translate",
+        text: req.text,
+        to: req.to,
+      })) as TranslateReply | undefined;
+    } catch {
+      reply = undefined;
+    }
+    if (win.closed) return;
+    if (!reply?.ok || !reply.translated) {
+      // The engine's page cannot be framed, so there is no iframe to fall back
+      // to: say so and hand off to a real tab.
+      showError(win, "translate.failed");
+      return;
+    }
+    renderTranslation(win, req.text, reply.translated, reply.sourceLang);
+  }
+
   async function loadFlow(win: WindowInstance) {
+    // An inline translation has no page to embed at all — it renders the API
+    // result, so it skips the whole fetch/embed decision tree.
+    if (win.inlineTranslate) {
+      await loadTranslation(win, win.inlineTranslate);
+      return;
+    }
     // Maximum power saving drops the preflight: nothing is fetched in the
     // background, so no title/favicon and no reader fallback — the iframe is
     // embedded blind, and a site that refuses to be framed just fails.
@@ -703,6 +779,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       manualPosition: false,
       sidebar: info.sidebar,
       translate: info.translate === true,
+      inlineTranslate: info.inlineTranslate,
       hovered: false,
       // Auto-pin is applied when a window is created, not to windows that are
       // already open: pinning everything on a settings change could hit the

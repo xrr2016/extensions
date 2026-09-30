@@ -156,6 +156,7 @@ export default defineContentScript({
                   preview?.open({
                     ...anchorInfoFor(url, rect),
                     translate: options?.translate === true,
+                    inlineTranslate: options?.inline,
                   }),
                 // Same toast as the "every window is pinned" hint: it sits at the
                 // toolbar the user just clicked.

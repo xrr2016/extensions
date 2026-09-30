@@ -69,13 +69,19 @@
     "message": "翻译"
   },
   "selection_translateHint": {
-    "message": "Google 翻译不允许被嵌入，会在新标签页打开；Bing 翻译在预览窗中打开"
+    "message": "两家翻译都在预览窗中打开：Google 翻译取回译文后以自有卡片显示，Bing 翻译直接嵌入页面"
   },
   "translate_google": {
     "message": "Google 翻译"
   },
   "translate_bing": {
     "message": "Bing 翻译"
+  },
+  "translate_detected": {
+    "message": "识别为：$1"
+  },
+  "translate_failed": {
+    "message": "翻译请求失败，请稍后重试或在新标签页打开"
   },
   "panel_tab_preview": {
     "message": "预览"

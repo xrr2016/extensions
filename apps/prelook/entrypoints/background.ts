@@ -1,6 +1,7 @@
 import { translate } from "@/utils/i18n";
 import { DEFAULT_SETTINGS, clampSettings, isSiteDisabled, settingsItem } from "@/utils/storage";
 import { stripTracking } from "@/utils/tracking";
+import { translateText } from "@/utils/translate";
 
 interface FetchPreviewResult {
   ok: boolean;
@@ -301,6 +302,10 @@ export default defineBackground(() => {
       if (msg.type === "prelook:fetch") {
         const hostOrigin = sender.tab?.url ? new URL(sender.tab.url).origin : "";
         return fetchPreview(String(msg.url ?? ""), hostOrigin);
+      }
+
+      if (msg.type === "prelook:translate") {
+        return translateText(String(msg.text ?? ""), String(msg.to ?? "en"));
       }
 
       if (msg.type === "prelook:openTab") {

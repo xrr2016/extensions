@@ -398,6 +398,61 @@
   cursor: pointer;
 }
 
+/* ---------- inline translation card ---------- */
+/* An engine whose page refuses to be framed (Google) but exposes a CORS-open
+   JSON endpoint: we render the result ourselves, so this is the window's
+   content — not an error and not a reader view. Two stacked blocks, source
+   first, so it reads like the translator's own UI. */
+.tp-trans {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 50px 22px 22px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--tp-ink);
+}
+
+.tp-trans-src {
+  color: color-mix(in srgb, var(--tp-ink) 62%, transparent);
+  font-size: 13px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--tp-line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tp-trans-dst {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The detected source language, and the escape hatch to the real site. */
+.tp-trans-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--tp-ink) 52%, transparent);
+}
+
+.tp-trans-meta button {
+  border: 0;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, transparent);
+  color: var(--tp-accent, #4f6bf6);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tp-trans-meta button:hover {
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 22%, transparent);
+}
+
 /* ---------- dark appearance ---------- */
 /* The resolved theme is written to the shadow host as data-tp-theme (see
    content.ts), so both this file's UI and the selection toolbar follow it. */

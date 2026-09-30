@@ -101,10 +101,16 @@ export const SEARCH_ENGINES: SearchEngine[] = [
  * and `%t` the target language from `lang`.
  *
  * `openIn` is not a preference but a fact about the site: a page that refuses to
- * be framed (`X-Frame-Options: SAMEORIGIN`, i.e. Google) can only be handed to a
- * real tab, while an embeddable one (Bing) is what the preview window exists
- * for. The window still guards itself against a refused frame (see
- * `preview.ts`), in case an "embeddable" engine changes its mind.
+ * be framed (`X-Frame-Options: SAMEORIGIN`, i.e. Google) cannot be shown in the
+ * preview window as a page, while an embeddable one (Bing) is exactly what the
+ * preview exists for. The window still guards itself against a refused frame
+ * (see `preview/`), in case an "embeddable" engine changes its mind.
+ *
+ * `inline` is the third option: the site's *page* cannot be framed, but its
+ * public JSON endpoint can be called, so the preview renders the translation as
+ * a card of our own instead. `lang` doubles as the API's `tl=` code (Google
+ * spells the target the same way in both), and the site URL stays as the
+ * fallback the card's "open in a tab" button uses.
  */
 export interface TranslateEngine {
   id: string;
@@ -114,6 +120,8 @@ export interface TranslateEngine {
   lang: { zh: string; en: string };
   /** Where the URL opens: Prelook's preview window, or a real tab */
   openIn: "preview" | "tab";
+  /** Fetch the translation from the API and render it in the preview window */
+  inline?: boolean;
 }
 
 export const TRANSLATE_ENGINES: TranslateEngine[] = [
@@ -121,8 +129,10 @@ export const TRANSLATE_ENGINES: TranslateEngine[] = [
     id: "google",
     url: "https://translate.google.com/?sl=auto&tl=%t&op=translate&text=%s",
     lang: { zh: "zh-CN", en: "en" },
-    // Answers with X-Frame-Options: SAMEORIGIN, so it can never be a preview.
+    // Answers with X-Frame-Options: SAMEORIGIN, so its page can never be a
+    // preview — but the gtx JSON endpoint is CORS-open, so translate inline.
     openIn: "tab",
+    inline: true,
   },
   {
     id: "bing",
