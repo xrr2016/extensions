@@ -775,88 +775,116 @@ section {
   padding: 128px 0;
 }
 
+/* 两张卡片并排一行：等宽弹性列，容器放不下两张时 flex-wrap 自动立起来，
+   不需要额外断点。 */
 .sponsor-grid {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--spacing-lg);
 }
 
-/* 外层卡片：柔和淡紫底色，大号圆角。 */
+/* 外层卡片：渐变表面 + 细边框 + 分层阴影，顶部一条主色渐变饰带做视觉锚点。
+   悬停整张抬起、描边点亮、饰带变实；键盘聚焦到卡里的链接时同样抬起（:has，
+   不支持的浏览器只是少了抬起效果，不影响使用）。抬起效果放在 tile 上，
+   内层链接不再各自 translateY，避免两层位移叠加。 */
 .sponsor-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-md);
+  flex: 1 1 420px;
+  min-width: 0;
+  max-width: 520px;
+  padding: var(--spacing-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: 1.5rem;
-  min-width: 260px;
+  background: linear-gradient(160deg, var(--bg-primary) 0%, var(--primary-light) 130%);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
-/* 爱发电嵌入卡片：白底大圆角，iframe 尺寸按 leaflet 页内容高度给足。
-   整张卡片是一个链接，与 Ko-fi 徽章同款交互：悬停抬起 1px + 阴影加深、按下回落。
+.sponsor-tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-1);
+  opacity: 0.65;
+  transition: opacity 0.25s ease;
+}
+
+.sponsor-tile:hover,
+.sponsor-tile:has(:focus-visible) {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary);
+}
+
+.sponsor-tile:hover::before {
+  opacity: 1;
+}
+
+/* 爱发电嵌入卡片：iframe 高度按 leaflet 页内容给足，宽度跟随卡片。
+   整张卡片是一个链接，按下时微回落（与 feature-card 同款手感）。
    iframe 设了 pointer-events:none —— 否则指针落在 iframe 上时，hover/active
    全被 iframe 文档吃掉，父页面既收不到悬停、点击也跳不出去。
    顺带 iframe 内部本来就没有可点的东西（leaflet 只是张展示卡）。 */
 .sponsor-afdian {
   display: block;
+  width: 100%;
   border-radius: 1.25rem;
-  box-shadow: var(--shadow-md);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.sponsor-afdian:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.3);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
 }
 
 .sponsor-afdian:active {
-  transform: translateY(0);
+  transform: scale(0.99);
 }
 
 .sponsor-afdian iframe {
   display: block;
-  width: 500px;
+  width: 100%;
   height: 200px;
   border: none;
   border-radius: var(--radius-md);
   pointer-events: none;
 }
 
-/* Ko-fi 官方徽章图整张就是按钮：容器只负责居中、悬停抬起和阴影。
-   jpg 无透明通道，徽章自带的圆角已烘焙在图里，外层再给一层同值
-   border-radius 让阴影贴合形状。 */
+/* Ko-fi 官方徽章图整张就是按钮：宽度撑满卡片，2:1 原图自己保持纵横比。
+   jpg 无透明通道，徽章自带的圆角已烘焙在图里，外层给同值 border-radius。 */
 .kofi-btn {
   display: block;
-  width: 500px;
+  width: 100%;
   border-radius: 12px;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
 }
 
 .kofi-btn img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   border-radius: 12px;
 }
 
-.kofi-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.3);
-}
-
 .kofi-btn:active {
-  transform: translateY(0);
+  transform: scale(0.99);
 }
 
-/* 深色主题下保留外层柔和底色，让赞助区有独立层级。 */
+/* 深色主题下保留外层柔和底色，让赞助区有独立层级；渐变往主色方向压一点，
+   饰带与描边在深底上依然读得出层次。 */
 html[data-theme="dark"] .sponsor-tile {
-  background: #232b45;
+  background: linear-gradient(160deg, #232b45 0%, rgba(109, 134, 255, 0.14) 130%);
 }
 
 html[data-theme="dark"] .sponsor-afdian {
@@ -1396,6 +1424,7 @@ html[data-theme="dark"] .sponsor-afdian {
 
   .install-card,
   .feature-card,
+  .sponsor-tile,
   .faq details {
     border-color: var(--text-tertiary);
   }
