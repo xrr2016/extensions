@@ -1,27 +1,31 @@
 import { extractReaderContent, renderReaderInto } from "@/utils/extract";
 import { extractHostAccent, extractPageAccent, type AccentScope } from "@/utils/pageAccent";
 import {
-    WINDOW_THEMES,
-    clampSettings,
-    recordHistory,
-    updateHistoryMeta,
-    type PrelookSettings,
-    type WindowThemePreset,
+  WINDOW_THEMES,
+  clampSettings,
+  recordHistory,
+  updateHistoryMeta,
+  type PrelookSettings,
+  type WindowThemePreset,
 } from "@/utils/storage";
 import {
-    AUTO_CLOSE_GRACE_MS,
-    EXIT_MS,
-    FADE_SLACK_MS,
-    IFRAME_LOAD_TIMEOUT_MS,
-    MAX_BLUR_PX,
-    MAX_DIM,
-    MIN_RESIZE_H,
-    MIN_RESIZE_W,
+  AUTO_CLOSE_GRACE_MS,
+  EXIT_MS,
+  FADE_SLACK_MS,
+  IFRAME_LOAD_TIMEOUT_MS,
+  MAX_BLUR_PX,
+  MAX_DIM,
+  MIN_RESIZE_H,
+  MIN_RESIZE_W,
 } from "./constants";
 import { CLOSE_ICON, OPEN_ICON, PIN_ICON, RELOAD_ICON } from "./icons";
-import { PREVIEW_STYLE } from "./style";
 import type { AnchorInfo, FetchReply, PreviewDeps, PreviewSystem, WindowInstance } from "./types";
 import { createHighlight, createNotice, createProgress } from "./widgets";
+// `?raw` inlines the stylesheet as a string at build time. It has to be a
+// string: shadow DOM does not inherit page styles, so a plain CSS import would
+// be extracted into the manifest's content_scripts.css — invisible to the
+// shadow root and leaking into the host page.
+import PREVIEW_STYLE from "./style.css?raw";
 
 export type { AnchorInfo, PreviewDeps, PreviewSystem } from "./types";
 export { PREVIEW_STYLE };

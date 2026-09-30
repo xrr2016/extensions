@@ -1,0 +1,129 @@
+/* The selection toolbar's shadow-UI styles. Imported with `?raw` by
+   selection.ts (as SELECTION_STYLE) and injected into `createShadowRootUi` by
+   content.ts, concatenated with PREVIEW_STYLE — same reason it must stay a
+   string at runtime: shadow DOM does not inherit page styles. */
+.tp-sel {
+  position: fixed;
+  z-index: 2147483646;
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, .08);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .08);
+  font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.tp-sel.tp-show {
+  display: flex;
+}
+
+.tp-sel button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.2;
+  color: #1f2328;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tp-sel button svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tp-sel button:hover {
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 12%, #fff);
+  color: var(--tp-accent, #4f6bf6);
+}
+
+/* The preview option is inert until the selection reads as a link. */
+.tp-sel button:disabled {
+  color: #aab2bd;
+  cursor: default;
+}
+
+.tp-sel button:disabled:hover {
+  background: transparent;
+  color: #aab2bd;
+}
+
+.tp-sel .tp-sel-div {
+  width: 1px;
+  height: 16px;
+  margin: 0 3px;
+  background: rgba(0, 0, 0, .12);
+}
+
+/* The tail pointing back at the selected text: a rotated square that inherits
+   the bar's fill *and* border colour, so the dark theme needs no rule of its
+   own. Only the two sides that face away from the bar carry a border — the
+   other two would draw lines across the bar's interior. Its position along the
+   edge comes from --tp-arrow-x, written by show(). */
+.tp-sel::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  border: 0 solid;
+  border-color: inherit;
+  pointer-events: none;
+}
+
+.tp-sel.tp-arrow-down::after {
+  bottom: -5px;
+  left: calc(var(--tp-arrow-x, 50%) - 5px);
+  transform: rotate(45deg);
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.tp-sel.tp-arrow-up::after {
+  top: -5px;
+  left: calc(var(--tp-arrow-x, 50%) - 5px);
+  transform: rotate(45deg);
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+
+:host([data-tp-theme='dark']) .tp-sel .tp-sel-div {
+  background: #333941;
+}
+
+:host([data-tp-theme='dark']) .tp-sel {
+  background: #1e2126;
+  border-color: #333941;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .4);
+}
+
+:host([data-tp-theme='dark']) .tp-sel button {
+  color: #e6e8eb;
+}
+
+:host([data-tp-theme='dark']) .tp-sel button:hover {
+  background: color-mix(in srgb, var(--tp-accent, #4f6bf6) 24%, #1e2126);
+}
+
+:host([data-tp-theme='dark']) .tp-sel button:disabled {
+  color: #5c646e;
+}
+
+:host([data-tp-theme='dark']) .tp-sel button:disabled:hover {
+  background: transparent;
+  color: #5c646e;
+}

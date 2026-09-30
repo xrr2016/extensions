@@ -55,9 +55,9 @@ apps/
         types.ts               #   AnchorInfo / WindowInstance / PreviewSystem / PreviewDeps 等类型
         constants.ts           #   超时/动效/尺寸等常量
         icons.ts               #   头部四枚细描边图标（静态 SVG 串）
-        style.ts               #   PREVIEW_STYLE 整段 shadow-CSS
+        style.css              #   PREVIEW_STYLE 整段 shadow-CSS（`?raw` 内联成字符串）
         widgets.ts             #   三个指针浮层：倒计时条 / notice toast / 悬停高亮框
-      selection.ts           # 划词搜索工具条
+      selection.ts           # 划词搜索工具条（样式在同目录 selection.css，`?raw` 导入）
       extract.ts             # 阅读模式正文提取 + sanitize 白名单
       speculation.ts         # Speculation Rules 预热
       i18n.ts                # browser.i18n.getMessage 的薄封装（点号 key → messages.json 消息名）
