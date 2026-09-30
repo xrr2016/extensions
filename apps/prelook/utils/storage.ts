@@ -242,6 +242,9 @@ export interface PrelookSettings {
   warnDangerous: boolean;
   /** Don't preview links that wrap an image or point at an image file */
   skipImages: boolean;
+  /** Remember a dragged/resized preview window's geometry per site, so the
+   *  next preview on the same host opens where the user left it */
+  rememberWindowGeom: boolean;
   /** Close triggers for preview windows (pinned windows ignore all of them) */
   closeOnOutsideClick: boolean;
   closeOnMouseLeave: boolean;
@@ -297,6 +300,7 @@ export const DEFAULT_SETTINGS: PrelookSettings = {
   stripTracking: true,
   warnDangerous: true,
   skipImages: false,
+  rememberWindowGeom: true,
   closeOnOutsideClick: true,
   closeOnMouseLeave: false,
   closeOnScroll: false,
@@ -377,6 +381,41 @@ export async function clearHistory(): Promise<void> {
   } catch {
     /* same as above */
   }
+}
+
+/** Where a preview window sits on one host: viewport px (position = top-left
+ *  corner, size = layout px — unit-agnostic, since a hand-placed window has
+ *  concrete pixels whatever the size setting says). */
+export interface HostWindowGeom {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** How many hosts keep a remembered geometry before the oldest are dropped. */
+export const GEOM_MAX_HOSTS = 60;
+
+/** Per-site preview geometry, keyed by the host page's hostname. */
+export const windowGeomItem = storage.defineItem<Record<string, HostWindowGeom>>(
+  "local:prelook_win_geom",
+  { defaultValue: {} },
+);
+
+/** Insert-or-update `host` at the end of the map and evict the least recently
+ *  adjusted hosts past the cap. Returns a new object: JS key order is
+ *  insertion order, so re-inserting is what makes "recently used" work. */
+export function putHostGeom(
+  map: Record<string, HostWindowGeom>,
+  host: string,
+  geom: HostWindowGeom,
+): Record<string, HostWindowGeom> {
+  const next: Record<string, HostWindowGeom> = { ...map };
+  delete next[host];
+  next[host] = geom;
+  const keys = Object.keys(next);
+  for (const k of keys.slice(0, Math.max(0, keys.length - GEOM_MAX_HOSTS))) delete next[k];
+  return next;
 }
 
 /**

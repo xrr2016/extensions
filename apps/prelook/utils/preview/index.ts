@@ -3,8 +3,11 @@ import { extractHostAccent, extractPageAccent, type AccentScope } from "@/utils/
 import {
   WINDOW_THEMES,
   clampSettings,
+  putHostGeom,
   recordHistory,
   updateHistoryMeta,
+  windowGeomItem,
+  type HostWindowGeom,
   type PrelookSettings,
   type WindowThemePreset,
 } from "@/utils/storage";
@@ -51,6 +54,13 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
   const windows: WindowInstance[] = [];
   let nextId = 1;
   let zIndex = 2147483641;
+  // Per-site window geometry, mirrored from storage at startup. The read is
+  // fire-and-forget: by the time a hover opens a window it has landed, and a
+  // miss only means the first window follows the plain settings.
+  let hostGeoms: Record<string, HostWindowGeom> = {};
+  void windowGeomItem.getValue().then((m) => {
+    if (m) hostGeoms = m;
+  });
 
   function settings(): PrelookSettings {
     return clampSettings(deps.getSettings());
@@ -101,6 +111,65 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     if (win.sidebar === true) return "sidebar";
     if (win.sidebar === false && configured === "sidebar") return "center";
     return configured;
+  }
+
+  /** The key remembered geometry is stored under: the site being browsed,
+   *  not the site being previewed (the previewed URL changes link to link). */
+  function geomHost(): string {
+    return location.hostname;
+  }
+
+  /** Re-apply a remembered hand-placed box for this site, if any. Called
+   *  before place() in open(): setting manualPosition is exactly what a live
+   *  drag does, so place() then defers to the inline geometry. The box is
+   *  clamped against the *current* viewport — one remembered from a bigger
+   *  window (or a since-maximised browser) must not sit off-screen. */
+  function applyRememberedGeom(win: WindowInstance) {
+    const g = hostGeoms[geomHost()];
+    if (!g) return;
+    const w = Math.max(MIN_RESIZE_W, Math.min(g.w, innerWidth - 16));
+    const h = Math.max(MIN_RESIZE_H, Math.min(g.h, innerHeight - 16));
+    const x = Math.min(Math.max(0, g.x), Math.max(0, innerWidth - w));
+    const y = Math.min(Math.max(0, g.y), Math.max(0, innerHeight - h));
+    win.manualSize = { w, h };
+    win.manualPosition = true;
+    // place() defers to manualPosition and would skip its sidebar-class
+    // toggle; a remembered box is by definition floating, so clear the dock.
+    win.root.classList.remove("tp-sidebar");
+    win.root.style.left = `${x}px`;
+    win.root.style.top = `${y}px`;
+    win.root.style.right = "auto";
+    win.root.style.width = `${w}px`;
+    win.root.style.height = `${h}px`;
+    // place() would normally set this, but it defers to manualPosition — so
+    // the entrance zoom still grows toward the link rather than blindly from
+    // the centre.
+    const { x: px, y: py } = win.lastPointer;
+    win.root.style.transformOrigin = `${originPercent(px - x, w)}% ${originPercent(py - y, h)}%`;
+  }
+
+  /** Persist where this window now sits, keyed by the site — called when a
+   *  drag or resize gesture ends. The stored map is re-read at write time
+   *  rather than trusting the local mirror, so a second tab remembering a
+   *  different host cannot be clobbered. Best-effort like the history store. */
+  function saveHostGeom(win: WindowInstance) {
+    if (!settings().rememberWindowGeom || positionOf(win) === "sidebar") return;
+    const root = win.root;
+    const geom: HostWindowGeom = {
+      // offset* are layout values (immune to the entrance transform) and, for
+      // a fixed element, viewport-relative — exactly what apply consumes.
+      x: Math.round(root.offsetLeft),
+      y: Math.round(root.offsetTop),
+      w: win.manualSize?.w ?? root.offsetWidth,
+      h: win.manualSize?.h ?? root.offsetHeight,
+    };
+    void (async () => {
+      const next = putHostGeom(await windowGeomItem.getValue(), geomHost(), geom);
+      hostGeoms = next;
+      await windowGeomItem.setValue(next);
+    })().catch(() => {
+      /* geometry memory is disposable */
+    });
   }
 
   /** The selected preset, falling back to the first one if the id is unknown. */
@@ -544,6 +613,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
       if (info.sidebar !== undefined) existing.sidebar = info.sidebar;
       existing.manualPosition = false;
       existing.lastPointer = info.pointer;
+      // Same as the creation path: a remembered box wins over the default
+      // corner, so re-focusing does not teleport the window away from where
+      // the site's user left it.
+      if (settings().rememberWindowGeom && positionOf(existing) !== "sidebar") {
+        applyRememberedGeom(existing);
+      }
       place(existing);
       existing.root.style.zIndex = String(++zIndex);
       keep(info.url);
@@ -732,7 +807,11 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         root.style.right = "auto";
       });
       head.addEventListener("pointerup", () => {
+        if (!dragging) return;
         dragging = false;
+        // manualPosition is only set once the pointer actually moved, so a
+        // plain click on the title bar does not rewrite (or LRU-bump) memory.
+        if (win.manualPosition) saveHostGeom(win);
       });
 
       // Corner grip: resizes this window only; the size is kept per window so a
@@ -772,6 +851,7 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         resizing = false;
         root.classList.remove("tp-resizing");
         grip.releasePointerCapture?.(e.pointerId);
+        saveHostGeom(win);
       };
       grip.addEventListener("pointerup", endResize);
       grip.addEventListener("pointercancel", endResize);
@@ -779,6 +859,9 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
 
     shadow.appendChild(root);
     windows.push(win);
+    // A hand-placed box from an earlier visit to this site beats the generic
+    // position/size settings — that is the whole point of remembering it.
+    if (s.rememberWindowGeom && positionOf(win) !== "sidebar") applyRememberedGeom(win);
     place(win);
     syncOverlay();
     // Remember the opening for the panel's history tab (newest first, deduped
@@ -800,7 +883,12 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     syncOverlay();
     if (!s.highlightLinks) highlight.link(null);
     for (const win of windows) {
+      // A settings change re-places every window (the size/position settings may
+      // have just changed), which would drop a hand-placed box. Re-apply the
+      // remembered one so tweaking an unrelated setting does not disturb a
+      // window the site's user positioned on purpose.
       win.manualPosition = false;
+      if (s.rememberWindowGeom && positionOf(win) !== "sidebar") applyRememberedGeom(win);
       place(win);
     }
     refreshTitlesAndBadges();

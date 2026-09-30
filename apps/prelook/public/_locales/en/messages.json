@@ -347,6 +347,12 @@
   "windows_max": {
     "message": "Max open windows"
   },
+  "window_rememberGeom": {
+    "message": "Remember window position per site"
+  },
+  "window_rememberGeomHint": {
+    "message": "After you drag or resize a preview, later previews on the same site open with that position and size"
+  },
   "panel_section_sponsor": {
     "message": "Support the author"
   },

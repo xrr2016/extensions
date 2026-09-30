@@ -102,19 +102,31 @@
   height: 100vh;
 }
 
+/* Floating capsule: lifted out of the flex column so the preview content runs
+   to the very top of the window and the bar hovers over it. The frosted fill
+   now blurs the *previewed page* behind the pill — which is what sells the
+   float. z-index beats .tp-body (also positioned) in the paint order. */
 .tp-head {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 3;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  /* Frosted bar: a translucent fill (accent tint fading into the surface) over a
-     blurred sample of whatever is behind the window. */
+  gap: 6px;
+  height: 30px;
+  padding: 0 4px 0 8px;
+  border-radius: 999px;
+  /* Translucent fill (accent tint fading into the surface) over a blurred
+     sample of whatever sits behind the bar. */
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--tp-accent, #4f6bf6) 14%, transparent), transparent),
     color-mix(in srgb, var(--tp-surface) var(--tp-glass), transparent);
   backdrop-filter: blur(14px) saturate(1.5);
-  border-bottom: 1px solid var(--tp-line);
-  flex: none;
+  /* The drop shadow does the floating; the 1px ring keeps the edge readable
+     over both light and dark preview content (it replaces the old border). */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .14), 0 0 0 1px var(--tp-line);
   user-select: none;
 }
 
@@ -180,10 +192,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
   color: color-mix(in srgb, var(--tp-ink) 68%, transparent);
   cursor: pointer;
@@ -192,8 +204,8 @@
 /* Every header button is the same thin-stroke icon, so the bar reads as one set
    (mixing SVG with font glyphs put two weights and two baselines side by side). */
 .tp-btn svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
@@ -260,7 +272,8 @@
 .tp-skeleton {
   position: absolute;
   inset: 0;
-  padding: 18px;
+  /* Top clears the floating capsule (8px offset + 30px bar + breathing room). */
+  padding: 50px 18px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -306,7 +319,9 @@
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 22px 26px;
+  /* Extra top padding keeps the article title clear of the floating capsule at
+     scroll-top; later text glides under the frosted pill, which is the point. */
+  padding: 58px 26px 22px;
   font-size: 15px;
   line-height: 1.75;
   color: #24292f;
@@ -367,7 +382,8 @@
   justify-content: center;
   gap: 10px;
   text-align: center;
-  padding: 24px;
+  /* Top clears the floating capsule even in a short window. */
+  padding: 46px 24px 24px;
   font-size: 13px;
   color: color-mix(in srgb, var(--tp-ink) 62%, transparent);
 }

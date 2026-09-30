@@ -347,6 +347,12 @@
   "windows_max": {
     "message": "同开窗口数"
   },
+  "window_rememberGeom": {
+    "message": "按网站记住窗口位置"
+  },
+  "window_rememberGeomHint": {
+    "message": "拖动或缩放预览窗后，同一网站的下次预览会沿用该位置和大小"
+  },
   "panel_section_sponsor": {
     "message": "赞助支持"
   },

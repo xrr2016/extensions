@@ -597,6 +597,11 @@ function onClearHistory() {
             <span>{{ t("images.skip") }}</span>
             <ToggleSwitch v-model="settings.skipImages" />
           </label>
+          <label class="row switch-row">
+            <span>{{ t("window.rememberGeom") }}</span>
+            <ToggleSwitch v-model="settings.rememberWindowGeom" />
+          </label>
+          <p class="hint muted">{{ t("window.rememberGeomHint") }}</p>
 
           <label class="row sz">
             <span>{{ t("blur.strength") }}</span>
