@@ -11,14 +11,23 @@ lerna-debug.log*
 
 node_modules
 .output
-# Raw screen recordings behind the landing hero video; only the encoded assets in
-# apps/prelook-landing/assets/ are meant to be committed.
+# Scratch material for the demo recording rig under apps/prelook/test/demo/.
+# Nothing on the landing page uses the video right now (the hero recording was
+# removed), so this is just "don't commit takes if you re-record".
 recordings
 apps/*/scripts/private-key.json
 stats.html
 stats-*.json
 .wxt
 web-ext.config.ts
+
+# Local-only tool state. `config.local.json` is also listed in .git/info/exclude
+# by whatever wrote it, but that file does not travel with the clone, so the rule
+# has to live here too or the first `git add -A` on a fresh machine commits it.
+.impeccable/
+
+# One-off review reports (kept on disk, not part of the repo).
+prelook-landing-seo-audit.html
 
 # Editor directories and files
 .vscode/*

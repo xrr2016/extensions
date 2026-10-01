@@ -197,7 +197,7 @@
   function readStore(key) {
     try {
       return localStorage.getItem(key);
-    } catch (e) {
+    } catch {
       return null; /* 隐私模式下存储不可用 */
     }
   }
@@ -205,7 +205,7 @@
   function writeStore(key, value) {
     try {
       localStorage.setItem(key, value);
-    } catch (e) {
+    } catch {
       /* 忽略 */
     }
   }

@@ -1,0 +1,57 @@
+name: CI
+
+# The release workflow only type-checks and zips, which leaves every check that
+# catches a *loadable* extension (not just a compiling one) unenforced: the
+# toolbar `action` key is hand-written in wxt.config.ts, the side panel path is
+# target-specific, and a locale key missing from one file silently falls back to
+# default_locale. All of those build green and break on install.
+#
+# Runs on push to main and on PRs. A tag can outrun this workflow, which is why
+# release.yml re-runs the type check before shipping.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          version: "12"
+          cache: true
+
+      # `--frozen-lockfile` is the gate against a lock that drifted from
+      # package.json on someone's machine, plus it fails on any un-declared
+      # dependency in the workspace.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        run: pnpm lint
+
+      # Both locale files must carry the same legal, non-empty keys; the build
+      # succeeds either way and Chrome is the thing that complains.
+      - name: Locale parity
+        run: pnpm verify:locales
+
+      - name: Type check (vue-tsc)
+        run: pnpm compile
+
+      # Chrome/Edge MV3 and Firefox MV2 diverge in the manifest, so both targets
+      # have to be built and inspected, not just the one this dev machine uses.
+      - name: Build both targets
+        run: |
+          pnpm build:prelook
+          pnpm build:prelook:firefox
+
+      - name: Manifest smoke check
+        run: pnpm verify:manifest
+
+      # The landing page is zero-build and hand-deployed, so its offline-package
+      # links drift behind the extension version silently.
+      - name: Landing download links
+        run: pnpm verify:landing

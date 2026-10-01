@@ -14,6 +14,13 @@
     "landing:prelook": "pnpm -F @extensions/prelook-landing dev",
     "compile": "pnpm -r --if-present compile",
     "build": "pnpm -r --if-present build",
+    "lint": "oxlint apps scripts",
+    "fmt": "oxfmt apps",
+    "fmt:check": "oxfmt --check apps",
+    "verify:locales": "node scripts/check-locales.mjs",
+    "verify:manifest": "node scripts/check-manifest.mjs chrome && node scripts/check-manifest.mjs firefox",
+    "verify:landing": "node scripts/sync-landing-downloads.mjs",
+    "sync:landing": "node scripts/sync-landing-downloads.mjs --write",
     "release:prelook": "pnpm -F @extensions/prelook release"
   },
   "devDependencies": {
