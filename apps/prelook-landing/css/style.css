@@ -752,22 +752,6 @@ section {
   color: var(--text-secondary);
 }
 
-.feature-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: var(--spacing-md);
-}
-
-.feature-tags .tag {
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-}
-
 /* ---------- 赞助 ---------- */
 /* 排在 faq（--bg-primary）之后，翻回 --bg-secondary 保持交替。 */
 .sponsor {
