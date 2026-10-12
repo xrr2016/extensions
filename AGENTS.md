@@ -9,7 +9,7 @@
 
   - **区块顺序**（`index.html`）：`hero(#main) → features → faq → sponsor → cta-band(#get) → footer`。**导航与页脚「快速链接」那一栏是同一份清单、同一个顺序**（功能 / FAQ / 赞助 / 安装 = `#features`/`#faq`/`#sponsor`/`#get`），两处一起改、别只动一边；导航右侧另有一条 privacy 外链。**`#speed`（速度对比）与 `#reviews`（三栏评价墙）已整体下线**，连同 `.reviews-grid` 与 `reviews.rN.*` 词条——扩展没有可核实的真实评价，**不要为了版式把评价墙加回来，更不要杜撰昵称与五星好评**。
   - **区块底色严格深浅交替**（`--bg-secondary` 与 `--bg-primary` 逐段切换，卡片永远取与所在区块相反的那一档），所以**插入新段落要把后面几段的底色整体翻一遍**，否则会出现两段同色连成一片、看不出分段。`.cta-band` 是整段饱和色块，**不在深浅交替的序列里**，所以它前后的 faq / footer 仍按原样式交替。
-  - **安装入口有两份**：hero 的 `.install-grid`（`.install-card` 卡片——Chrome / Edge / Firefox 三张商店卡 + 一张「手动下载」离线包）与页尾色带的 `.cta-actions`（`.install-btn` 按钮）。**商店链接已经是真实地址**（Chrome Web Store `bakhoimjnmigalolahgmbeflgifobeho`、Edge `cfaoggmjcpfmmklonlgjbjgihnenfmmk`、AMO `/firefox/addon/prelook/`），不再是 `href="#"` 占位。**刻意不给 Chrome 任何强调样式**——那会暗示"只该装 Chrome"。前三张卡挂 `assets/browser-chrome.svg` / `browser-edge.svg` / `browser-firefox.svg`（Wikimedia Commons 的官方多色 logo，**必须用 `<img>` 引文件而不是内联**：Chrome 与 Edge 的 SVG 都定义了 `id="a"/"b"/"c"` 的渐变，内联进同一个文档会互相覆盖），「手动下载」那颗是内联的下载线性图标。离线包是 `https://prelook.s3.bitiful.net/prelook-<版本>-<chrome|firefox>.zip`，**版本号不要手改**：`pnpm sync:landing` 会按 `apps/prelook/package.json` 的 version 重写 `index.html` 与 `index.md`（发版顺序见「回归自检」——先上传 zip 再 sync，否则链接指向不存在的对象）。
+  - **安装入口有两份**：hero 的 `.install-grid`（`.install-card` 卡片——Chrome / Edge / Firefox 三张商店卡 + 一张「手动下载」离线包）与页尾色带的 `.cta-actions`（`.install-btn` 按钮）。**商店链接已经是真实地址**（Chrome Web Store `bakhoimjnmigalolahgmbeflgifobeho`、Edge `cfaoggmjcpfmmklonlgjbjgihnenfmmk`、AMO `/firefox/addon/prelook/`），不再是 `href="#"` 占位。**刻意不给 Chrome 任何强调样式**——那会暗示"只该装 Chrome"。前三张卡挂 `assets/browser-chrome.svg` / `browser-edge.svg` / `browser-firefox.svg`（Wikimedia Commons 的官方多色 logo，**必须用 `<img>` 引文件而不是内联**：Chrome 与 Edge 的 SVG 都定义了 `id="a"/"b"/"c"` 的渐变，内联进同一个文档会互相覆盖），「手动下载」那颗是内联的下载线性图标。**Chrome 离线包随站点自己走**（`./assets/prelook-<版本>-chrome.zip`，文件就在 landing 的 `assets/` 里、和站点一起直传），Firefox 那条仍指 bucket（`https://prelook.s3.bitiful.net/prelook-<版本>-firefox.zip`，因为 landing 上没有 Firefox 的 zip）。**版本号不要手改**：`pnpm sync:landing` 会按 `apps/prelook/package.json` 的 version 同时重写这两种形式的链接，并且**断言本地那个 zip 真的在 `assets/` 里**（改完链接没放文件 = 绿着 404，正是这条门禁要挡的）。发版顺序见「回归自检」：先把 zip 就位/上传、再 sync。
   - **页尾色带**（`.cta-band`）构图参照 maxfoc.us：左边是胶囊徽章 + 大标题 + 一行副文案 + 那几颗按钮，右边是一段**纯 CSS 插画**（`.cta-art`：两个歪着的窗口，后面那个是深色浏览器框、前面那个是浅色预览窗，正好是产品自己的剪影）。插画用「前一层负 margin 压住后一层」而不是绝对定位——窗口高度由骨架线内容决定，绝对定位要按内容高度算偏移，加一行线就得重算。色带在浅色/深色各有一版渐变（`.cta-band` + `[data-theme="dark"] .cta-band`），带上的按钮固定白底深字（取 `--bg-primary` 会在深色主题里变成几块近黑色补丁）；`≤820px` 色带才立成一列、文案居中（断点压这么低是因为 768–960 还放得下左右两栏，提前立起来只会让色带上下空出一大片），`≤600px` 直接隐藏插画——留着它这一段会占掉整整一屏，而这一段的意义就是那几颗按钮。
   - **深浅双主题**由 `data-theme` 驱动（`<head>` 内联脚本先落地，避免首帧闪白；用户没手动选过就跟随系统），选择存 `localStorage.prelook-landing-theme`。
   - **词典**以 `data-i18n` 属性 + `js/main.js` 内的 `I18N` 对象独立维护（zh-CN 与 en 必须同步补齐，`data-i18n-aria` 负责无障碍标签）。`footer.slogan` 是词典里一条没人引用的历史遗留，留着没删。
@@ -38,8 +38,8 @@
 | `pnpm fmt` / `pnpm fmt:check`                       | `oxfmt` 格式化 / 只检查。**注意仓库目前不满足 oxfmt 默认风格（30/56 文件会有改动）且没有 `.oxfmtrc.json`**，所以 CI 不跑 `fmt:check`；想全面重排是一次独立的大提交，别夹在功能改动里 |
 | `pnpm verify:locales`                               | `_locales` 体检：键名字符集合合法、zh_CN 与 en 键完全对齐、message 非空                                                                                                  |
 | `pnpm verify:manifest`                              | 对 `.output/chrome-mv3` 与 `.output/firefox-mv2` 的构建产物做 manifest 冒烟断言（可 `node scripts/check-manifest.mjs <chrome\|firefox> [dir]` 单独跑）                    |
-| `pnpm verify:landing`                               | 断言 landing 里的离线包链接版本 == `apps/prelook/package.json` 的 version（CI 用）                                                                                        |
-| `pnpm sync:landing`                                 | 上面那条的写入版：按 package.json 版本重写 `index.html` / `index.md` 里的离线包 URL                                                                                        |
+| `pnpm verify:landing`                               | 断言 landing 里的离线包链接版本 == `apps/prelook/package.json` 的 version，并且本地那份 `assets/prelook-<版本>-chrome.zip` 真的存在（CI 用）                                |
+| `pnpm sync:landing`                                 | 上面那条的写入版：按 package.json 版本重写 `index.html` / `index.md` 里的离线包链接（bucket 形式与本地 `./assets/` 形式都改）                                                |
 
 包管理器固定 **pnpm**（workspace 根有 `pnpm-lock.yaml`）。workspace 子包自身的 `postinstall`（`wxt prepare`）会正常执行，并生成 `apps/<name>/.wxt/tsconfig.json`——`tsconfig.json` 正是 `extends` 它，所以**没跑过 install 就编译会失败**。
 
@@ -316,17 +316,17 @@ click 监听（window 捕获）里的 altClick 分支**仍在**，但角色变�
 ```bash
 pnpm install --frozen-lockfile
 pnpm verify:locales                 # _locales 键名合法 + zh_CN/en 对齐 + message 非空
-pnpm compile && pnpm lint           # 类型检查 + oxlint（8 条 warning 不会让 CI 红）
+pnpm compile && pnpm lint           # 类型检查 + oxlint（4 条 warning 不会让 CI 红）
 pnpm build:prelook && pnpm build:prelook:firefox
 pnpm verify:manifest                # 对两个目标的构建产物做 manifest 冒烟断言
-pnpm verify:landing                 # landing 离线包链接的版本 == apps/prelook/package.json 的 version
+pnpm verify:landing                 # 离线包链接版本 == package.json，且本地 assets zip 存在
 ```
 
 上面这一串就是 `.github/workflows/ci.yml` 的内容（push 到 main 与 PR 时跑；检查脚本本体在仓库根的 `scripts/` 下，所以本地和 CI 看到的是同一份逻辑）。manifest 冒烟那一步的理由是"构建成功"并不等于"插件能用"：它断言 `chrome-mv3` 有 `action` / `side_panel.default_path` / `background.service_worker` / `storage`+`sidePanel` 权限，`firefox-mv2` 有 `browser_action` / `sidebar_action.default_panel` / `background.scripts`，另外还查 `default_locale` 在产物里真有对应的 `_locales/<locale>/messages.json`、以及 manifest 里引用的每个 `__MSG_x__` 在该 locale 里存在。这些键任何一个掉了（`action` 就是典型：它全靠 `wxt.config.ts` 手写，见上）构建照样绿，但装进浏览器就用不了——所以宁可让 CI 红。**改动这些检查时注意每一步都要能在干净克隆上跑通**，别依赖本地生成物（`verify:manifest` 依赖前面那两步构建，CI 里顺序是有意的）。**CI 故意不跑 `fmt:check`**：oxfmt 默认风格与现有代码不一致（30/56 文件会被改动），先加配置、再单独一次大提交重排，之后才谈得上把它变成门禁。
 
 发版链路分两段。`pnpm release:prelook`（`apps/prelook/.release-it.json`）**只做版本号 + 打 tag**：`tagName: "prelook-v${version}"`、`github.release: false`（所以 release 本体不由 release-it 建）、`after:bump` 跑 `auto-changelog -p`、`@release-it/bumper` 把版本同步进 package.json。tag 一推上去就触发 `.github/workflows/release.yml`——它只订阅 `prelook-v*`，所以 monorepo 里将来别的 app 打自己的 tag 不会误跑它。workflow 里先 `pnpm compile`（tag 可以跑在 CI 前面，不能假定这条 tree 还过类型检查），再 `pnpm zip:prelook` + `pnpm zip:prelook:firefox`，产物传成 run artifact，并用 `gh release create --draft` + `gh release upload` 挂上去，**发布本身仍是一次人工点击**（`workflow_dispatch` 可手动跑同一套，只出 artifact 不动 release）。zip 文件名来自 `wxt.config.ts` 的 `zip.artifactTemplate` / `zip.sourcesTemplate`，即 `prelook-<版本>-<浏览器>.zip`（Firefox 还会多出一个 `-sources.zip`，AMO 审核要）。**注意：老文档里写的"先校验 tag 与 package.json 的 version 一致"那一步在当前 workflow 里并不存在**，别以为有这道保险；版本号唯一的真源就是 `apps/prelook/package.json`。
 
-**发版收尾目前全是手工**，顺序照下面走：① 商店侧各自上传（Chrome Web Store / Edge Addons / AMO）；② 把 `prelook-<版本>-chrome.zip` 与 `prelook-<版本>-firefox.zip` 传到 `prelook.s3.bitiful.net`（离线包是给进不了商店的用户兜底的，**两个都要**，历史上 chrome 那条漏传过两个版本，landing 上就一直挂着 1.6.0）；③ `pnpm sync:landing` 按 package.json 改写 landing 的离线包链接（**顺序不能反**：先上传再 sync，反了就是 `verify:landing` 绿、链接 404）；④ 整目录部署 landing；⑤ 确认 CI 全绿。
+**发版收尾目前全是手工**，顺序照下面走：① 商店侧各自上传（Chrome Web Store / Edge Addons / AMO）；② 把 `prelook-<版本>-chrome.zip` **复制进 `apps/prelook-landing/assets/` 并提交**（同时删掉上一版本那份，否则每发一版就在这里多留 ~320 KB 的死重；离线包是给进不了商店的用户兜底的，随站点直传所以它必须是仓库里的文件，CI 在干净克隆上跑 `verify:landing` 会查它），Firefox 那条仍走 bucket，把 `prelook-<版本>-firefox.zip` 传到 `prelook.s3.bitiful.net`（历史上 chrome 漏传过两个版本，landing 上就一直挂着 1.6.0）；③ `pnpm sync:landing` 按 package.json 改写 landing 的离线包链接（**顺序不能反**：先让 zip 就位再 sync，反了就是 `verify:landing` 红——它现在既比版本也查本地文件在不在，不会再绿着指向一个不存在的对象）；④ 整目录部署 landing；⑤ 确认 CI 全绿。
 
 悬停链路回归：改 `entrypoints/content.ts` / `utils/preview/` 后，先 `pnpm build:prelook`，再从**仓库根目录**起静态服务器打开 `apps/prelook/test/repro-hover.html`（页面里的 chrome mock 必须提供 `runtime.connect` 与 `storage.<area>.onChanged`：前者是 `@wxt-dev/analytics` 在入口启动时调用的，缺了会让整个 content script 在挂监听前就抛错，日志表现为 `host present: false`；后者是 `@wxt-dev/storage` 监听设置变化用的，注意是**按区域**的 `chrome.storage.local.onChanged`，不是 `chrome.storage.onChanged`）（mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
 

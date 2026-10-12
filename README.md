@@ -103,9 +103,9 @@ apps/
 ## 开发工作流
 
 - 单产品脚本见「快速开始」；`pnpm compile` / `pnpm build` 聚合全部子包。
-- **机械检查**（三条，本地与 CI 跑同一批脚本，都在仓库根 `scripts/` 下）：`pnpm verify:locales`（zh_CN / en 键对齐 + 键名合法 + message 非空）、`pnpm verify:manifest`（对 `.output/chrome-mv3` 与 `firefox-mv2` 的产物断言 `action` / `side_panel` / `background` / 权限 / `default_locale` 与 `__MSG_` 引用——"构建成功"不等于"插件能用"）、`pnpm verify:landing`（落地页离线包链接的版本要等于 `apps/prelook/package.json`）。另有 `pnpm lint`（oxlint）。固化在 `.github/workflows/ci.yml`（push main 与 PR）。**没有单元测试框架**，业务逻辑靠 `apps/prelook/test/repro-hover.html` 手动回归。
+- **机械检查**（三条，本地与 CI 跑同一批脚本，都在仓库根 `scripts/` 下）：`pnpm verify:locales`（zh_CN / en 键对齐 + 键名合法 + message 非空）、`pnpm verify:manifest`（对 `.output/chrome-mv3` 与 `firefox-mv2` 的产物断言 `action` / `side_panel` / `background` / 权限 / `default_locale` 与 `__MSG_` 引用——"构建成功"不等于"插件能用"）、`pnpm verify:landing`（落地页离线包链接的版本要等于 `apps/prelook/package.json`，并且落地页自己托管的那份 `assets/prelook-<版本>-chrome.zip` 必须真的在）。另有 `pnpm lint`（oxlint）。固化在 `.github/workflows/ci.yml`（push main 与 PR）。**没有单元测试框架**，业务逻辑靠 `apps/prelook/test/repro-hover.html` 手动回归。
 - **新增插件接入**：建 `apps/<name>/`（可复制 prelook 骨架）→ 改 `wxt.config.ts` manifest 与包名（`@extensions/<name>`）→ 根 package.json 注册 `dev/build/zip/compile/landing:<name>` 脚本 → 建 `apps/<name>-landing/` → 图标两边各导一份（插件用 `assets/logo.webp` 交给 auto-icons；落地页用自己的 `assets/logo.webp` + favicon 三件套，**不是同一个文件、仓库里没有导出脚本**）。
-- **发布**：`release-it` 只切 `prelook-v*` tag（`release: false`，不建 release）；`.github/workflows/release.yml` 在 push 该 tag 时类型检查 → `zip:prelook` + `zip:prelook:firefox` → 产物作为 run artifact 并挂到 draft release（发布是人工点击；商店自动提交已注释，暂未启用）。zip 名由 `wxt.config.ts` 的 `zip.artifactTemplate` 决定：`prelook-<版本>-<浏览器>.zip`。**收尾仍是手工**：上传三家商店 → 把两个 zip 传到 `prelook.s3.bitiful.net` → `pnpm sync:landing` 改写落地页离线包链接 → 整目录部署落地页。
+- **发布**：`release-it` 只切 `prelook-v*` tag（`release: false`，不建 release）；`.github/workflows/release.yml` 在 push 该 tag 时类型检查 → `zip:prelook` + `zip:prelook:firefox` → 产物作为 run artifact 并挂到 draft release（发布是人工点击；商店自动提交已注释，暂未启用）。zip 名由 `wxt.config.ts` 的 `zip.artifactTemplate` 决定：`prelook-<版本>-<浏览器>.zip`。**收尾仍是手工**：上传三家商店 → Chrome 的 zip 复制进 `apps/prelook-landing/assets/` 并提交（旧的删掉）、Firefox 的 zip 传到 `prelook.s3.bitiful.net` → `pnpm sync:landing` 改写落地页离线包链接 → 整目录部署落地页。
 
 ---
 
@@ -129,7 +129,7 @@ pnpm compile && pnpm lint                    # 类型检查 + oxlint
 pnpm verify:locales                          # zh_CN 与 en 键集合一致、键名合法、message 非空
 pnpm build:prelook && pnpm build:prelook:firefox
 pnpm verify:manifest                         # 两份产物的 manifest 键冒烟断言
-pnpm verify:landing                          # 落地页离线包链接跟随 package.json 版本
+pnpm verify:landing                          # 离线包链接跟随 package.json 版本 + 本地 zip 存在
 ```
 
 - **悬停链路回归**：改 `entrypoints/content.ts` / `utils/preview/` 后先 `pnpm build:prelook`，再从**仓库根目录**起静态服务器打开 `apps/prelook/test/repro-hover.html`（页面 mock chrome API + 引用 `.output` 真实产物），确认日志出现 `windows in shadow: 1`。
