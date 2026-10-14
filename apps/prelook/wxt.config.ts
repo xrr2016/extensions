@@ -68,7 +68,11 @@ export default defineConfig({
     developmentIndicator: "overlay",
   },
   zip: {
-    sourcesTemplate: "prelook-{{versionName}}-{{browser}}{{modeSuffix}}.zip",
+    sourcesTemplate: "prelook-{{versionName}}-{{browser}}-sources.zip",
     artifactTemplate: "prelook-{{versionName}}-{{browser}}{{modeSuffix}}.zip",
+    // Appended to WXT's own defaults (node_modules, __tests__, .output), which
+    // ignore .gitignore entirely — without these the sources zip ships
+    // logo-rebrand drafts and the removed license system's private key to AMO.
+    excludeSources: ["assets/logo-candidates/**", "scripts/private-key.json"],
   },
 });
