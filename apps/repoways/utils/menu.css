@@ -1,0 +1,124 @@
+/* The "open with" menu's shadow-UI styles. Imported with `?raw` by
+   entrypoints/content.ts (as MENU_STYLE) and dropped into the shadow root as a
+   string: a stylesheet file next to an entrypoint would be scanned as a CSS
+   entrypoint and emitted separately, and shadow DOM inherits nothing from the
+   page anyway — only custom properties cross that boundary, which is exactly
+   what the GitHub tokens below rely on.
+
+   Those tokens are Primer's current naming (`--fgColor-*` / `--bgColor-*` /
+   `--borderColor-*`, measured on github.com 2026-10-14: the old
+   `--color-btn-bg` family is gone bar `--shadow-resting-medium`), so the menu
+   follows the page's light/dark theme for free. The literals are GitHub's own
+   light values. The panel block reads the same four tokens GitHub's own `Code`
+   dropdown uses — `--overlay-bgColor` / `--shadow-floating-small` /
+   `--borderRadius-large` / `--control-transparent-bgColor-hover` — and mind the
+   word order in the first: it is `--overlay-bgColor`, **not**
+   `--bgColor-overlay`, which resolves to nothing and would leave the panel
+   unpainted.
+
+   `.rw-btn` is different: its colours and metrics are copied off the real branch
+   switcher at runtime (see DONOR_PROPS in content.ts), so the declarations below
+   only apply when that control is absent — some repo layouts and narrow
+   viewports render the row without it. They are the branch button's measured
+   light-mode values, token-driven where a token exists (`--bgColor-muted` is
+   #f6f8fa, `--borderRadius-medium` 6px, `--control-medium-gap` .5rem). */
+/* GitHub's page-wide reset, repeated here because `box-sizing` is not inherited
+   across the shadow boundary. Without it every metric below lands outside the
+   box — the button's copied padding + height, the panel's 8px inset, the rows'
+   32px min-height (which is a content-box height, so it grows to 44px). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+.rw {
+  display: inline-flex;
+  position: relative;
+}
+.rw-btn {
+  align-items: center;
+  background: var(--bgColor-muted, #f6f8fa);
+  border: 0.8px solid var(--borderColor-default, #d1d9e0);
+  border-radius: var(--borderRadius-medium, 6px);
+  box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
+  color: var(--fgColor-default, #1f2328);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  gap: var(--control-medium-gap, 8px);
+  justify-content: center;
+  line-height: 21px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+.rw-btn:hover {
+  background: var(--control-transparent-bgColor-hover, rgba(129, 139, 152, 0.1));
+}
+.rw-menu {
+  background: var(--overlay-bgColor, #fff);
+  border-radius: var(--borderRadius-large, 12px);
+  /* GitHub's popovers carry no border — the hairline ring is the first layer of
+     this shadow token. */
+  box-shadow: var(--shadow-floating-small, 0 0 0 1px #d1d9e040, 0 6px 12px -3px #25292e0a, 0 6px 18px 0 #25292e1f);
+  padding: 8px;
+  position: fixed;
+  /* Width follows the longest row instead of a fixed 400px — a row is a mark, a
+     service name and a short description, so a wide panel spends most of itself
+     on empty space. Measured in the harness with the icons in: zh_CN lands at
+     225.15px and en at 280.71px (its longest description is 26 characters), both
+     just above the floor, so the 320px cap is headroom for longer wording rather
+     than something the shipped locales reach. The floor is a guard for a very
+     short locale, not what either of ours measures; the viewport clamp replaces
+     the one the fixed width used to give. */
+  max-width: min(320px, calc(100vw - 16px));
+  /* min() rather than a plain 220px: `min-width` beats `max-width` in the box
+     model, so a bare floor would push the panel off a viewport narrower than it
+     (the `show()` clamp only moves it, it cannot shrink it). */
+  min-width: min(220px, calc(100vw - 16px));
+  width: max-content;
+  z-index: 2147483640;
+}
+/* One ActionList row: 32px tall, 6px corner, and the highlight is a rounded
+   block inset from the panel rather than a full-width band — which is also why
+   there are no dividers between rows. GitHub separates groups, not items. */
+.rw-item {
+  align-items: center;
+  border-radius: var(--borderRadius-medium, 6px);
+  color: var(--fgColor-default, #1f2328);
+  display: flex;
+  font: inherit;
+  font-size: 14px;
+  gap: 16px;
+  justify-content: space-between;
+  line-height: 20px;
+  min-height: 32px;
+  padding: 6px 8px;
+  text-decoration: none;
+}
+.rw-item:hover {
+  background: var(--control-transparent-bgColor-hover, rgba(129, 139, 152, 0.1));
+}
+.rw-desc {
+  color: var(--fgColor-muted, #59636e);
+  font-size: 12px;
+  white-space: nowrap;
+}
+/* The mark is part of the title, not a decoration beside it: icon and name form
+   one group so the 16px gap that separates the two halves of the row sits
+   outside them (GitHub's own ActionList puts 8px between icon and label). */
+.rw-lead {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  min-width: 0;
+}
+/* `flex: none` — a brand mark that squashes to pay for a long service name is
+   worse than a row that wraps. The SVG itself has no width/height attributes
+   (those are the coordinate space's, not the box's), so it is sized here. */
+.rw-icon {
+  flex: none;
+  height: 16px;
+  width: 16px;
+}

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="zh-CN" data-color-mode="light" data-light-theme="light" data-dark-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>RepoWays 悬停菜单回归台</title>
+    <style>
+      /* GitHub's own Primer tokens, values measured off github.com on 2026-10-14.
+         The extension UI reads these through the shadow boundary, so the
+         harness has to publish them the same way GitHub does — and the
+         `data-color-mode` attribute is what the shipped MutationObserver watches
+         for theme switches, so the harness keys its token blocks to it too. */
+      :root[data-color-mode="light"] {
+        --bgColor-default: #fff;
+        --bgColor-muted: #f6f8fa;
+        --bgColor-neutral-muted: #818b981f;
+        --fgColor-default: #1f2328;
+        --fgColor-muted: #59636e;
+        --borderColor-default: #d1d9e0;
+        --borderColor-muted: #d1d9e0b3;
+        --overlay-bgColor: #fff;
+        --borderRadius-large: 0.75rem;
+        --borderRadius-medium: 0.375rem;
+        --control-transparent-bgColor-hover: #818b981a;
+        --shadow-floating-small:
+          0 0 0 1px #d1d9e040, 0 6px 12px -3px #25292e0a, 0 6px 18px 0 #25292e1f;
+        --shadow-floating-medium:
+          0 0 0 1px #d1d9e000, 0 8px 16px -4px #25292e14, 0 4px 32px -4px #25292e14;
+      }
+      :root[data-color-mode="dark"] {
+        --bgColor-default: #0d1117;
+        --bgColor-muted: #151b23;
+        --bgColor-neutral-muted: #656c7633;
+        --fgColor-default: #f0f6fc;
+        --fgColor-muted: #9198a1;
+        --borderColor-default: #3d444d;
+        --borderColor-muted: #3d444db3;
+        --overlay-bgColor: #010409;
+        --borderRadius-large: 0.75rem;
+        --borderRadius-medium: 0.375rem;
+        --control-transparent-bgColor-hover: #656c7633;
+        --shadow-floating-small:
+          0 0 0 1px #3d444d, 0 6px 12px -3px #01040966, 0 6px 18px 0 #01040966;
+        --shadow-floating-medium:
+          0 0 0 1px #3d444d, 0 8px 16px -4px #01040966, 0 4px 32px -4px #01040966;
+      }
+      body {
+        background: var(--bgColor-default, #fff);
+        color: var(--fgColor-default, #1f2328);
+        font-family: -apple-system, "Segoe UI", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+        margin: 0;
+        padding: 24px;
+      }
+      .row {
+        align-items: center;
+        display: flex;
+        /* On a real repo page the Code button sits at the right end of the
+           header row, which is what makes the menu's right edge line up with
+           it instead of clamping to the viewport. */
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      /* Stand in for GitHub's Code button; the content script copies its height. */
+      .gh-btn {
+        align-items: center;
+        background: var(--bgColor-muted, #f6f8fa);
+        border: 1px solid var(--borderColor-default, rgba(31, 35, 40, 0.15));
+        border-radius: 6px;
+        color: var(--fgColor-default, #1f2328);
+        display: inline-flex;
+        font-size: 12px;
+        gap: 4px;
+        height: 28px;
+        justify-content: center;
+        padding: 0 12px;
+        white-space: nowrap;
+      }
+      /* Stand in for the branch switcher — the style donor. Values measured off
+         github.com 2026-10-14 (muted #f6f8fa fill, 0.8px #d1d9e0 border, 6px
+         radius, `0 12px` padding, 14px/500/21px text, 8px gap, 1px drop shadow
+         that is *not* inset); token-driven so flipping the theme actually
+         changes what the extension is supposed to copy. */
+      .gh-ref {
+        align-items: center;
+        background: var(--bgColor-muted, #f6f8fa);
+        border: 0.8px solid var(--borderColor-default, #d1d9e0);
+        border-radius: var(--borderRadius-medium, 6px);
+        box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
+        box-sizing: border-box;
+        color: var(--fgColor-default, #1f2328);
+        display: flex;
+        font-size: 14px;
+        font-weight: 500;
+        gap: var(--control-medium-gap, 8px);
+        height: 32px;
+        justify-content: space-between;
+        line-height: 21px;
+        padding: 0 12px;
+        white-space: nowrap;
+      }
+      .report {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-top: 24px;
+        white-space: pre-wrap;
+      }
+      .report .fail {
+        color: #cf222e;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>octocat/hello-world</h2>
+    <div id="anchor">
+      <turbo-frame id="repo-content-turbo-frame">
+        <div class="row">
+          <button class="gh-ref" id="ref-picker-repos-header-ref-selector" data-component="Button"
+            data-variant="default" data-size="medium" aria-haspopup="true">
+            main
+          </button>
+          <button class="gh-btn" data-component="Button" data-variant="primary" data-size="medium" aria-haspopup="true">
+            Code
+          </button>
+        </div>
+      </turbo-frame>
+    </div>
+    <div class="report" id="report">running…</div>
+
+    <script>
+      // The real built bundle is loaded from `.output`, so this page exercises
+      // shipped code rather than a copy. Paths are captured before
+      // replaceState() moves the document URL to a repo-shaped one.
+      const OUT = new URL("../.output/chrome-mv3/", location.href).href;
+
+      const messages = (() => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `${OUT}_locales/zh_CN/messages.json`, false);
+        xhr.send();
+        return JSON.parse(xhr.responseText);
+      })();
+
+      window.chrome = {
+        runtime: { id: "repoways-harness" },
+        i18n: { getMessage: (name) => messages[name]?.message ?? "" },
+      };
+
+      history.replaceState(null, "", "/octocat/hello-world");
+
+      const script = document.createElement("script");
+      script.src = `${OUT}content-scripts/content.js`;
+      document.body.append(script);
+    </script>
+    <script>
+      addEventListener("load", () => {
+        const lines = [];
+        const check = (label, ok, detail = "") =>
+          lines.push(`${ok ? "PASS" : "FAIL"}  ${label}${detail ? ` — ${detail}` : ""}`);
+
+        let rendered = false;
+        const render = () => {
+          if (rendered) return;
+          rendered = true;
+          document.getElementById("report").innerHTML = lines
+            .map((l) => `<div class="${l.startsWith("FAIL") ? "fail" : ""}">${l}</div>`)
+            .join("");
+          window.__done = true;
+          window.__fail = lines.filter((l) => l.startsWith("FAIL")).length;
+        };
+        // Without this a throw in the async tail leaves the report on
+        // "running…" forever, which reads as a slow page instead of a broken one.
+        addEventListener("unhandledrejection", (event) => {
+          lines.push(`FAIL  检查抛错 — ${event.reason}`);
+          render();
+        });
+        addEventListener("error", (event) => {
+          lines.push(`FAIL  检查抛错 — ${event.message}`);
+          render();
+        });
+
+        const hosts = document.querySelectorAll("repoways-ui");
+        check("注入一个 host", hosts.length === 1, `count=${hosts.length}`);
+
+        const host = hosts[0];
+        const root = host?.shadowRoot;
+        const codeButton = document.querySelector(
+          '#repo-content-turbo-frame button[data-variant="primary"][aria-haspopup="true"]',
+        );
+
+        check("host 在 Code 按钮左边", host?.nextElementSibling === codeButton);
+
+        const button = root?.querySelector(".rw-btn");
+        const menu = root?.querySelector(".rw-menu");
+        const items = [...(root?.querySelectorAll(".rw-item") ?? [])];
+
+        check("按钮文字是 Ways", button?.textContent.trim() === "Ways", `text="${button?.textContent.trim()}"`);
+
+        // Icon / label / caret. The leading glyph is ours (Octicons has no
+        // route icon) so it is pinned by its own prefix; the caret is the one
+        // copied out of the branch button's markup.
+        const glyphs = [...(button?.querySelectorAll("svg") ?? [])];
+        const route = glyphs[0]?.querySelector("path")?.getAttribute("d") ?? "";
+        const caretGlyph = glyphs[1]?.querySelector("path")?.getAttribute("d") ?? "";
+        check(
+          "按钮是 路由图标 + Ways + 箭头",
+          glyphs.length === 2 &&
+            button.firstElementChild === glyphs[0] &&
+            button.lastElementChild === glyphs[1] &&
+            route.startsWith("M4 10a2.5 2.5") &&
+            route.includes("M3.125 4h1.75v6.125") &&
+            caretGlyph.startsWith("m4.427 7.427"),
+          `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
+        );
+        check("菜单初始隐藏", menu?.hidden === true);
+        check("八条入口", items.length === 8, `count=${items.length}`);
+
+        const expected = [
+          "https://gitdiagram.com/octocat/hello-world",
+          "https://deepwiki.com/octocat/hello-world",
+          "https://zread.ai/octocat/hello-world",
+          "https://gitreverse.com/octocat/hello-world",
+          "https://gitingest.com/octocat/hello-world",
+          "https://github1s.com/octocat/hello-world",
+          "https://github.dev/octocat/hello-world",
+          "https://stackblitz.com/github/octocat/hello-world",
+        ];
+        const wrong = items
+          .map((el, i) => (el.href === expected[i] ? null : `${i}: ${el.href}`))
+          .filter(Boolean);
+        check("八条链接逐条对位", wrong.length === 0, wrong.join(" | "));
+
+        // Panel shape is GitHub's own popover: 12px corner, 8px of inset around
+        // the rows, and **no border** — the hairline is the first layer of
+        // `--shadow-floating-small`.
+        const ms = getComputedStyle(menu);
+        const ring = "rgba(209, 217, 224, 0.25) 0px 0px 0px 1px";
+        check(
+          "浮层是 GitHub 弹层的样子",
+          ms.borderTopWidth === "0px" &&
+            ms.borderRadius === "12px" &&
+            ms.padding === "8px" &&
+            ms.backgroundColor === "rgb(255, 255, 255)" &&
+            ms.boxShadow.startsWith(ring),
+          `border=${ms.borderTopWidth} radius=${ms.borderRadius} pad=${ms.padding} bg=${ms.backgroundColor} shadow=${ms.boxShadow.slice(0, ring.length)}`,
+        );
+
+        // Row anatomy, GitHub's own: the destination's mark and its name are one
+        // group on the left, the description is the secondary text on the right.
+        const first = items[0];
+        const lead = first?.firstElementChild;
+        const icon = lead?.firstElementChild;
+        const name = lead?.lastElementChild;
+        const desc = first?.lastElementChild;
+        check(
+          "每行是「图标 + 服务名」在左、描述在右",
+          lead?.className === "rw-lead" &&
+            lead?.children.length === 2 &&
+            icon?.tagName === "svg" &&
+            icon?.getAttribute("class") === "rw-icon" &&
+            name?.className === "rw-name" &&
+            name?.textContent === "GitDiagram" &&
+            desc?.className === "rw-desc" &&
+            desc?.textContent === "生成架构图" &&
+            getComputedStyle(desc).color === "rgb(89, 99, 110)",
+          `${lead?.className}>${icon?.tagName}.${icon?.getAttribute("class")}+${name?.className}="${name?.textContent}" / ${desc?.className}="${desc?.textContent}"`,
+        );
+
+        // Every row carries its own mark, sized as GitHub sizes the ones in its
+        // dropdown. `innerHTML.length` is the identity proxy: eight rows that all
+        // pointed at one icon would collapse the set to 1.
+        const icons = items.map((el) => el.querySelector(".rw-lead > svg.rw-icon"));
+        const sizes = new Set(icons.map((el) => el?.innerHTML.length));
+        const is = icons[0] ? getComputedStyle(icons[0]) : {};
+        check(
+          "八行各有自己的品牌图标",
+          icons.every(Boolean) &&
+            icons.every((el) => el.firstElementChild !== null && el.getAttribute("viewBox")) &&
+            sizes.size === 8 &&
+            is.width === "16px" &&
+            is.height === "16px" &&
+            is.flexGrow === "0",
+          `missing=${icons.filter((el) => !el).length} distinct=${sizes.size} size=${is.width}×${is.height}`,
+        );
+        check(
+          "GitHub1s 那行带的是双档品牌填充",
+          items[5]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
+          `${items[5]?.querySelector("path")?.getAttribute("fill")}`,
+        );
+
+        // The right-hand arrow the previous version put at the end of every
+        // description is gone, not merely hidden. Real `:hover` cannot be
+        // synthesized here, so the stylesheet is read rather than exercised.
+        const rules = [...(root?.styleSheets?.[0]?.cssRules ?? [])];
+        check(
+          "行尾不再有箭头",
+          root?.querySelector(".rw-arrow") === null &&
+            !rules.some((r) => (r.selectorText ?? "").includes("rw-arrow")),
+          `${root?.querySelectorAll(".rw-arrow").length} 个节点 / ${rules.filter((r) => (r.selectorText ?? "").includes("rw-arrow")).length} 条规则`,
+        );
+
+        // ActionList row: 6px corner, 6px/8px inset, 14px text, and no divider
+        // between rows (GitHub separates groups, not items).
+        const rs = getComputedStyle(items[1]);
+        check(
+          "行是 ActionList 的样子",
+          rs.borderRadius === "6px" &&
+            rs.padding === "6px 8px" &&
+            rs.fontSize === "14px" &&
+            rs.borderTopWidth === "0px",
+          `radius=${rs.borderRadius} pad=${rs.padding} fs=${rs.fontSize} top=${rs.borderTopWidth}`,
+        );
+
+        // The donor supplies every visual property; the Code button only owns
+        // the height, so that one has to match the button and the rest have to
+        // match the branch switcher, property by property.
+        const MIRROR = [
+          "backgroundColor",
+          "boxShadow",
+          "color",
+          "borderWidth",
+          "borderStyle",
+          "borderColor",
+          "borderRadius",
+          "padding",
+          "gap",
+          "fontSize",
+          "fontWeight",
+          "lineHeight",
+        ];
+        const donor = document.querySelector(
+          "#repo-content-turbo-frame #ref-picker-repos-header-ref-selector",
+        );
+        // The fallback check below takes the donor away; remember where it sat
+        // so the page ends as it started and the tail can be re-run by hand.
+        const donorSlot = { row: donor.parentElement };
+        const css = getComputedStyle(codeButton);
+        const own = getComputedStyle(button);
+        const dp = getComputedStyle(donor);
+        const mism = (a, b) => MIRROR.filter((p) => a[p] !== b[p]).map((p) => `${p}: ${a[p]} ≠ ${b[p]}`);
+
+        check("高度跟随 Code 按钮", own.height === css.height, `${own.height} vs ${css.height}`);
+        check("样式与分支按钮逐属性相同（浅色）", mism(own, dp).length === 0, mism(own, dp).join(" | "));
+
+        // The listeners sit on the wrapper: a real pointer entering the button
+        // fires pointerenter on the wrapper as its own dispatch, so the
+        // synthetic event has to start there too (pointerenter does not bubble).
+        const wrap = root?.querySelector(".rw");
+        wrap?.dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
+        check("pointerenter 展开", menu?.hidden === false);
+
+        // Only measurable once displayed: a `hidden` element reports a 0×0 rect.
+        // The width is *not* pinned to a number: `width: max-content` makes it a
+        // text-measurement (zh_CN + icons measures 225.15px here, en 277px), and
+        // text measurement follows the machine's fonts, so a literal would flake.
+        // What is stable, and what the rule means, is that the panel is exactly
+        // its longest row plus the 8px inset on each side — and that it sits
+        // between the 220px floor and the 320px cap rather than the old fixed 400.
+        const mw = menu.getBoundingClientRect().width;
+        const widest = Math.max(...items.map((el) => el.getBoundingClientRect().width));
+        check(
+          "展开后弹层贴着最长行、落在 220–320 之间、行 32px、图标 16px",
+          mw >= 220 &&
+            mw <= 320 &&
+            Math.abs(mw - (widest + 16)) < 0.5 &&
+            items[1].getBoundingClientRect().height === 32 &&
+            icon.getBoundingClientRect().width === 16 &&
+            icon.getBoundingClientRect().height === 16,
+          `menu=${mw} widest=${widest} row=${items[1].getBoundingClientRect().height} icon=${icon.getBoundingClientRect().width}×${icon.getBoundingClientRect().height}`,
+        );
+
+        const rect = button.getBoundingClientRect();
+        const mr = menu.getBoundingClientRect();
+        check(
+          "浮层右对齐按钮、落在按钮下方",
+          (Math.abs(mr.right - rect.right) < 1 || mr.left === 8) && mr.top >= rect.bottom,
+          `menu=[${mr.left.toFixed(1)}, ${mr.right.toFixed(1)}, top ${mr.top.toFixed(1)}] button.right=${rect.right.toFixed(1)} button.bottom=${rect.bottom.toFixed(1)}`,
+        );
+        check(
+          "浮层不出视口",
+          mr.left >= 8 && mr.right <= innerWidth - 8,
+          `viewport=${innerWidth} menu=${mr.left.toFixed(1)}…${mr.right.toFixed(1)}`,
+        );
+
+        // The menu is a DOM descendant of the wrapper even though it is
+        // position:fixed, so a pointer travelling from the button into a row
+        // never fires the wrapper's pointerleave — that is what keeps the list
+        // open long enough to click an entry.
+        const row = items[3].getBoundingClientRect();
+        const hitRow = root.elementFromPoint(row.left + 40, row.top + row.height / 2);
+        check(
+          "菜单行点得中",
+          hitRow === items[3] || items[3].contains(hitRow),
+          `hit=${hitRow?.className || hitRow?.tagName}`,
+        );
+        items[3].dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
+        check("指针移入菜单不收起", menu?.hidden === false);
+
+        wrap.dispatchEvent(new PointerEvent("pointerleave", { bubbles: false }));
+        check("宽限期内不立刻收起", menu?.hidden === false);
+
+        setTimeout(async () => {
+          check("150ms 后收起", menu?.hidden === true);
+
+          document.dispatchEvent(new Event("turbo:load"));
+          check(
+            "turbo:load 后不重复注入",
+            document.querySelectorAll("repoways-ui").length === 1 &&
+              document.querySelector("repoways-ui")?.shadowRoot.querySelector(".rw-item")?.href ===
+                "https://gitdiagram.com/octocat/hello-world",
+          );
+
+          // Theme is a couple of attributes on <html>, flipped with no
+          // navigation and no `turbo:load`, so the copied values are only as
+          // fresh as the shipped MutationObserver keeps them. Its callback is a
+          // microtask, so any yield proves it has already run.
+          const fresh = document.querySelector("repoways-ui").shadowRoot;
+          const fBtn = fresh.querySelector(".rw-btn");
+          const fMenu = fresh.querySelector(".rw-menu");
+          document.documentElement.dataset.colorMode = "dark";
+          await new Promise((resolve) => setTimeout(resolve, 0));
+
+          const dark = getComputedStyle(fBtn);
+          check(
+            "样式与分支按钮逐属性相同（深色）",
+            mism(dark, getComputedStyle(donor)).length === 0,
+            mism(dark, getComputedStyle(donor)).join(" | "),
+          );
+          const darkMenu = getComputedStyle(fMenu);
+          check(
+            "深色下真换了色、弹层也跟着变量",
+            dark.backgroundColor === "rgb(21, 27, 35)" &&
+              dark.color === "rgb(240, 246, 252)" &&
+              darkMenu.backgroundColor === "rgb(1, 4, 9)" &&
+              darkMenu.boxShadow.startsWith("rgb(61, 68, 77) 0px 0px 0px 1px"),
+            `按钮=${dark.backgroundColor} / ${dark.color} / 弹层=${darkMenu.backgroundColor} / ${darkMenu.boxShadow.slice(0, 28)}`,
+          );
+
+          // Drop the donor (some repo layouts and narrow viewports render the row
+          // without it) and the tokens (they could be renamed again) and the
+          // stylesheet's own literals still paint a branch-button-shaped control.
+          donor.remove();
+          delete document.documentElement.dataset.colorMode;
+          document.dispatchEvent(new Event("turbo:load"));
+          const bareRoot = document.querySelector("repoways-ui").shadowRoot;
+          const bare = getComputedStyle(bareRoot.querySelector(".rw-btn"));
+          const bareMenu = getComputedStyle(bareRoot.querySelector(".rw-menu"));
+          check(
+            "donor 与变量都没有时回落字面色值",
+            bare.backgroundColor === "rgb(246, 248, 250)" &&
+              bare.color === "rgb(31, 35, 40)" &&
+              bare.borderTopWidth === "0.8px" &&
+              bare.borderRadius === "6px" &&
+              bare.fontSize === "14px" &&
+              bare.fontWeight === "500" &&
+              bare.lineHeight === "21px" &&
+              bare.gap === "8px" &&
+              bare.padding === "0px 12px",
+            `${bare.backgroundColor} / ${bare.color} / ${bare.borderTopWidth} / ${bare.fontWeight} / ${bare.gap} / ${bare.padding}`,
+          );
+          check(
+            "弹层没有变量时也自带那副样子",
+            bareMenu.backgroundColor === "rgb(255, 255, 255)" &&
+              bareMenu.borderRadius === "12px" &&
+              bareMenu.boxShadow.startsWith("rgba(209, 217, 224, 0.25) 0px 0px 0px 1px"),
+            `${bareMenu.backgroundColor} / ${bareMenu.borderRadius} / ${bareMenu.boxShadow.slice(0, 38)}`,
+          );
+
+          // The donor sits first in the row, so re-insert it before the Code
+          // button rather than before whatever sibling it had when the fixture
+          // was captured — that sibling is our own host, and every re-mount
+          // removes it (taking the reference with it).
+          donorSlot.row.insertBefore(donor, codeButton);
+          document.documentElement.dataset.colorMode = "light";
+          document.dispatchEvent(new Event("turbo:load"));
+          const back = getComputedStyle(
+            document.querySelector("repoways-ui").shadowRoot.querySelector(".rw-btn"),
+          );
+          check(
+            "donor 回来后重新挂载又跟上它的样式",
+            mism(back, getComputedStyle(donor)).length === 0,
+            mism(back, getComputedStyle(donor)).join(" | "),
+          );
+
+          render();
+        }, 260);
+      });
+    </script>
+  </body>
+</html>

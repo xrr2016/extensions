@@ -24,7 +24,7 @@ export default defineConfig({
     developmentIndicator: "overlay",
   },
   webExt: {
-    startUrls: ["https://github.com/wxt-dev/wxt"],
+    startUrls: ["https://github.com/xrr2016/extensions"],
   },
   zip: {
     artifactTemplate: "repoways-{{versionName}}-{{browser}}{{modeSuffix}}.zip",

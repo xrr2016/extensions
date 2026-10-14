@@ -1,5 +1,32 @@
 {
   "extDescription": {
     "message": "One click on any GitHub repository to open it with the tools that read, diagram and run it."
+  },
+  "button_label": {
+    "message": "Ways"
+  },
+  "ways_diagram": {
+    "message": "View architecture diagram"
+  },
+  "ways_explainer": {
+    "message": "Read a repo explainer"
+  },
+  "ways_zread": {
+    "message": "Read the Zread walkthrough"
+  },
+  "ways_prompts": {
+    "message": "Export as AI prompts"
+  },
+  "ways_package": {
+    "message": "Package the repo for AI"
+  },
+  "ways_read": {
+    "message": "Read the code online"
+  },
+  "ways_edit": {
+    "message": "Edit the code online"
+  },
+  "ways_run": {
+    "message": "Run the project online"
   }
 }
