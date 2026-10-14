@@ -20,6 +20,9 @@
   "ways_package": {
     "message": "Package the repo for AI"
   },
+  "ways_search": {
+    "message": "Search code and history"
+  },
   "ways_read": {
     "message": "Read the code online"
   },
@@ -28,5 +31,8 @@
   },
   "ways_run": {
     "message": "Run the project online"
+  },
+  "ways_stars": {
+    "message": "Track star history"
   }
 }

@@ -1,12 +1,12 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { ROOT, listLandings, readJson, selectApps } from "./apps.mjs";
 
-// The offline zips are named by version, so every landing link to one goes stale
-// on release day. The extension's own version is the only source of truth:
-// `--write` aligns the links to it, and the default (check) mode is what CI runs —
-// a bump that was never followed by an upload and a sync then fails loudly instead
-// of shipping a 404 or an old build.
+// The offline zips are named by version, so every landing link to one goes stale on
+// release day. The extension's own version is the only source of truth: `--write`
+// aligns the links to it, and the default (check) mode is what CI runs — a bump that
+// was never followed by an upload and a sync then fails loudly instead of shipping a
+// 404 or an old build.
 //
 // Two hosts, because the two packages live in two places: Firefox is on the bucket,
 // Chrome ships inside the landing directory itself, so uploading the site carries it.
@@ -14,81 +14,103 @@ import { fileURLToPath } from "node:url";
 // the job; a zip with that name has to exist in assets/, or the link 404s while every
 // check stays green. And a check that matches nothing is green for the same reason,
 // hence REQUIRED: the Chrome offline entry must stay linked from index.html.
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const LANDING = "apps/prelook-landing";
-const FILES = [`${LANDING}/index.html`, `${LANDING}/index.md`];
+//
+// Everything below is per app, derived from `apps/<name>-landing`: the extension's
+// version, the package filenames, and the bucket host (`<name>.s3.bitiful.net`, which
+// is how Prelook's is spelled today). A product with no landing directory simply has
+// nothing to check yet — it joins this gate the moment one is created.
 const BROWSERS = ["chrome", "firefox"];
-const ASSET_DIR = `${LANDING}/assets`;
-const REQUIRED = [{ file: `${LANDING}/index.html`, browser: "chrome" }];
 
-const SOURCES = [
-  {
-    kind: "bucket",
-    pattern: new RegExp(
-      String.raw`https://prelook\.s3\.bitiful\.net/prelook-[^"'\s)]+-(${BROWSERS.join("|")})\.zip`,
-      "g",
-    ),
-    link: (version, browser) =>
-      `https://prelook.s3.bitiful.net/prelook-${version}-${browser}.zip`,
-  },
-  {
-    kind: "local",
-    pattern: new RegExp(
-      String.raw`(?:\./)?assets/prelook-[^"'\s)]+-(${BROWSERS.join("|")})\.zip`,
-      "g",
-    ),
-    link: (version, browser) => `./assets/prelook-${version}-${browser}.zip`,
-    zip: (version, browser) => `${ASSET_DIR}/prelook-${version}-${browser}.zip`,
-  },
-];
+function sourcesFor(name) {
+  const landing = `apps/${name}-landing`;
+  return [
+    {
+      kind: "bucket",
+      pattern: new RegExp(
+        String.raw`https://${name}\.s3\.bitiful\.net/${name}-[^"'\s)]+-(${BROWSERS.join("|")})\.zip`,
+        "g",
+      ),
+      link: (version, browser) =>
+        `https://${name}.s3.bitiful.net/${name}-${version}-${browser}.zip`,
+    },
+    {
+      kind: "local",
+      pattern: new RegExp(
+        String.raw`(?:\./)?assets/${name}-[^"'\s)]+-(${BROWSERS.join("|")})\.zip`,
+        "g",
+      ),
+      link: (version, browser) => `./assets/${name}-${version}-${browser}.zip`,
+      zip: (version, browser) => `${landing}/assets/${name}-${version}-${browser}.zip`,
+    },
+  ];
+}
 
-const version = JSON.parse(
-  readFileSync(path.join(ROOT, "apps/prelook/package.json"), "utf8"),
-).version;
 const args = process.argv.slice(2);
 const write = args.includes("--write");
-if (args.some((a) => a !== "--write")) {
-  console.error("Usage: node scripts/sync-landing-downloads.mjs [--write]");
-  process.exit(2);
+const named = args.filter((arg) => arg !== "--write");
+const apps = selectApps(named, listLandings(), "landing");
+if (apps.length === 0) {
+  console.log("No apps/<name>-landing directory — nothing to check.");
+  process.exit(0);
 }
 
 const stale = [];
 const missing = new Set();
-const found = new Set();
 const rewrites = [];
+const summaries = [];
 
-for (const file of FILES) {
-  const source = readFileSync(path.join(ROOT, file), "utf8");
-  let rewritten = source;
-  for (const { kind, pattern, link, zip } of SOURCES) {
-    rewritten = rewritten.replace(pattern, (match, browser) => {
-      const wanted = link(version, browser);
-      found.add(`${file}|${browser}|${kind}`);
-      if (match !== wanted) stale.push({ file, kind, match, wanted });
-      if (zip) {
-        const zipPath = path.join(ROOT, zip(version, browser));
-        if (!existsSync(zipPath)) missing.add(zip(version, browser));
-      }
-      return wanted;
-    });
-  }
-  if (rewritten !== source) rewrites.push({ file, contents: rewritten });
-}
-
-// A link that was deleted instead of rewritten would otherwise pass by matching nothing.
-for (const { file, browser } of REQUIRED) {
-  const linked = SOURCES.some(
-    ({ kind }) => found.has(`${file}|${browser}|${kind}`),
-  );
-  if (!linked) {
-    console.error(`${file} no longer links the ${browser} offline package.`);
-    console.error("If that is deliberate, drop the entry from REQUIRED here.");
+for (const name of apps) {
+  const landing = `apps/${name}-landing`;
+  const versionPath = `apps/${name}/package.json`;
+  if (!existsSync(path.join(ROOT, versionPath))) {
+    console.error(`${landing} has no matching ${versionPath} to read a version from.`);
     process.exit(1);
   }
+  const version = readJson(versionPath).version;
+  const files = [`${landing}/index.html`, `${landing}/index.md`];
+  const sources = sourcesFor(name);
+  // A landing's primary offline package is the Chrome zip; deleting the block instead
+  // of updating it would otherwise pass by matching nothing.
+  const required = [{ file: `${landing}/index.html`, browser: "chrome" }];
+  const found = new Set();
+
+  for (const file of files) {
+    const filePath = path.join(ROOT, file);
+    if (!existsSync(filePath)) {
+      console.error(`${file} is missing — the check has nothing to read.`);
+      process.exit(1);
+    }
+    const source = readFileSync(filePath, "utf8");
+    let rewritten = source;
+    for (const { kind, pattern, link, zip } of sources) {
+      rewritten = rewritten.replace(pattern, (match, browser) => {
+        const wanted = link(version, browser);
+        found.add(`${file}|${browser}|${kind}`);
+        if (match !== wanted) stale.push({ file, kind, match, wanted });
+        if (zip) {
+          const zipPath = path.join(ROOT, zip(version, browser));
+          if (!existsSync(zipPath)) missing.add(zip(version, browser));
+        }
+        return wanted;
+      });
+    }
+    if (rewritten !== source) rewrites.push({ file, contents: rewritten });
+  }
+
+  for (const { file, browser } of required) {
+    const linked = sources.some(({ kind }) => found.has(`${file}|${browser}|${kind}`));
+    if (!linked) {
+      console.error(`${file} no longer links the ${browser} offline package.`);
+      console.error("If that is deliberate, drop the entry from `required` here.");
+      process.exit(1);
+    }
+  }
+
+  summaries.push(`${name} v${version} (${files.length} files)`);
 }
 
 if (missing.size) {
-  console.error(`Offline packages missing (extension is v${version}):`);
+  console.error("Offline packages missing:");
   for (const file of missing) console.error(`  - ${file}`);
   console.error("\nPut the built zip there under exactly that filename.");
   process.exit(1);
@@ -99,15 +121,15 @@ for (const { file, contents } of rewrites) {
 }
 
 if (!stale.length) {
-  console.log(`Landing download links match v${version} (${FILES.length} files)`);
+  console.log(`Landing download links current — ${summaries.join(", ")}`);
   process.exit(0);
 }
 
 console.error(
-  `${write ? "Updated" : "Stale"} offline-package links (extension is v${version}):`,
+  `${write ? "Updated" : "Stale"} offline-package links:`,
 );
 for (const s of stale) console.error(`  - ${s.file} [${s.kind}]: ${s.wanted}  <-  ${s.match}`);
 if (!write) {
-  console.error("\nPublish the zips for this version, then run `pnpm sync:landing`.");
+  console.error("\nPublish the zips for these versions, then run `pnpm sync:landing`.");
 }
 process.exit(write ? 0 : 1);

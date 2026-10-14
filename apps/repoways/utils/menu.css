@@ -66,9 +66,10 @@
   position: fixed;
   /* Width follows the longest row instead of a fixed 400px — a row is a mark, a
      service name and a short description, so a wide panel spends most of itself
-     on empty space. Measured in the harness with the icons in: zh_CN lands at
-     225.15px and en at 280.71px (its longest description is 26 characters), both
-     just above the floor, so the 320px cap is headroom for longer wording rather
+     on empty space. Measured in the harness with the icons in and all ten rows:
+     zh_CN lands at 230.33px and en at 280.73px (its longest description is still
+     26 characters), both just above the floor, so the 320px cap is headroom for
+     longer wording rather
      than something the shipped locales reach. The floor is a guard for a very
      short locale, not what either of ours measures; the viewport clamp replaces
      the one the fixed width used to give. */

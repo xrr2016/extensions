@@ -1,0 +1,72 @@
+name: Release RepoWays
+
+# Same shape as release.yml, one app narrower: release-it only cuts the tag, this
+# builds the store zips from that exact tree and attaches them to a draft release, so
+# the file a human drags into the Chrome / Edge / AMO upload pages is the file CI built
+# from the tag.
+#
+# It lives in its own workflow file on purpose: Prelook's pipeline is live (1.8.0 is
+# what the tag-triggered release.yml serves), and folding a second app into that file
+# would put the shipping product behind every edit made here. The two files share the
+# same pnpm scripts, so the steps drift less than they look.
+#
+# `workflow_dispatch` builds the zips without touching a release — a re-build or a dry
+# run of the upload, with the files landing only in the run's artifacts.
+on:
+  push:
+    tags:
+      - "repoways-v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          version: "12"
+          cache: true
+
+      # A tag can be cut without CI having run on its commit; shipping a zip built from
+      # a tree that no longer type-checks is the expensive failure.
+      - name: Type check (tsc)
+        run: pnpm compile:repoways
+
+      # Chrome/Edge zip + Firefox zip + the Firefox sources zip (WXT emits the sources
+      # zip for Firefox only, which AMO review asks for). The two templates must not
+      # collide — see the artifactTemplate / sourcesTemplate note in wxt.config.ts.
+      - name: Build zips
+        run: |
+          pnpm zip:repoways
+          pnpm zip:repoways:firefox
+
+      # "It zipped" is not "it works": this reads both built manifests and asserts the
+      # product's shape is still there — a content script matched on github.com, no
+      # toolbar action, no permissions, and every file the manifest points at present in
+      # the package. Scoped to repoways because this workflow never builds Prelook, and
+      # an unregistered-or-unbuilt app is a hard error by design.
+      # `--require-icons` is only here, not in CI: auto-icons prints a WARN and skips
+      # generation when assets/logo.webp is missing, and the build stays green with zero
+      # icons in the package. CI can tolerate an artwork-pending product; a tag cannot,
+      # because Chrome Web Store / Edge / AMO all reject a listing without an icon.
+      - name: Manifest smoke check
+        run: node scripts/check-manifest.mjs repoways --require-icons
+
+      - name: Upload the zips as run artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: repoways-zips
+          path: apps/repoways/.output/*.zip
+          include-hidden-files: true
+          if-no-files-found: error
+
+      - name: Attach the zips to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.EXTENSIONS_RELEASE_TOKEN }}
+        run: |
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+            || gh release create "$TAG" --draft --title "$TAG" --generate-notes --repo "$GITHUB_REPOSITORY"
+          gh release upload "$TAG" apps/repoways/.output/*.zip --clobber --repo "$GITHUB_REPOSITORY"

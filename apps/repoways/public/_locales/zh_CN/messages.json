@@ -20,6 +20,9 @@
   "ways_package": {
     "message": "打包仓库给 AI"
   },
+  "ways_search": {
+    "message": "跨版本搜代码"
+  },
   "ways_read": {
     "message": "浏览器里读代码"
   },
@@ -28,5 +31,8 @@
   },
   "ways_run": {
     "message": "浏览器里跑项目"
+  },
+  "ways_stars": {
+    "message": "看 Star 增长曲线"
   }
 }

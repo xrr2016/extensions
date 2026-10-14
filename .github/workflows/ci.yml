@@ -6,6 +6,10 @@ name: CI
 # target-specific, and a locale key missing from one file silently falls back to
 # default_locale. All of those build green and break on install.
 #
+# Each step below fans out over the whole workspace (`scripts/apps.mjs` discovers
+# `apps/*`), so a new product is gated the moment its directory exists — and an
+# app whose manifest shape nobody has written down fails instead of being skipped.
+#
 # Runs on push to main and on PRs. A tag can outrun this workflow, which is why
 # release.yml re-runs the type check before shipping.
 on:
@@ -43,10 +47,13 @@ jobs:
 
       # Chrome/Edge MV3 and Firefox MV2 diverge in the manifest, so both targets
       # have to be built and inspected, not just the one this dev machine uses.
-      - name: Build both targets
+      # `pnpm build` / `build:firefox` fan out over every app in the workspace — the
+      # checks below discover apps the same way, so an unbuilt product fails here
+      # rather than going uninspected.
+      - name: Build every app, both targets
         run: |
-          pnpm build:prelook
-          pnpm build:prelook:firefox
+          pnpm build
+          pnpm build:firefox
 
       - name: Manifest smoke check
         run: pnpm verify:manifest

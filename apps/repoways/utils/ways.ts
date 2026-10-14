@@ -47,6 +47,12 @@ export const WAYS: Way[] = [
     url: (r) => `https://gitingest.com/${r.owner}/${r.repo}`,
   },
   {
+    labelKey: "ways.search",
+    service: "Sourcegraph",
+    icon: ICONS.sourcegraph,
+    url: (r) => `https://sourcegraph.com/github.com/${r.owner}/${r.repo}`,
+  },
+  {
     labelKey: "ways.read",
     service: "GitHub1s",
     icon: ICONS.github1s,
@@ -63,5 +69,11 @@ export const WAYS: Way[] = [
     service: "StackBlitz",
     icon: ICONS.stackblitz,
     url: (r) => `https://stackblitz.com/github/${r.owner}/${r.repo}`,
+  },
+  {
+    labelKey: "ways.stars",
+    service: "Star History",
+    icon: ICONS.starhistory,
+    url: (r) => `https://star-history.com/${r.owner}/${r.repo}`,
   },
 ];

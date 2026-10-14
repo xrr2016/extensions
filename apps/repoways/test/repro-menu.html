@@ -211,7 +211,7 @@
           `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
-        check("八条入口", items.length === 8, `count=${items.length}`);
+        check("十条入口", items.length === 10, `count=${items.length}`);
 
         const expected = [
           "https://gitdiagram.com/octocat/hello-world",
@@ -219,14 +219,16 @@
           "https://zread.ai/octocat/hello-world",
           "https://gitreverse.com/octocat/hello-world",
           "https://gitingest.com/octocat/hello-world",
+          "https://sourcegraph.com/github.com/octocat/hello-world",
           "https://github1s.com/octocat/hello-world",
           "https://github.dev/octocat/hello-world",
           "https://stackblitz.com/github/octocat/hello-world",
+          "https://star-history.com/octocat/hello-world",
         ];
         const wrong = items
           .map((el, i) => (el.href === expected[i] ? null : `${i}: ${el.href}`))
           .filter(Boolean);
-        check("八条链接逐条对位", wrong.length === 0, wrong.join(" | "));
+        check("十条链接逐条对位", wrong.length === 0, wrong.join(" | "));
 
         // Panel shape is GitHub's own popover: 12px corner, 8px of inset around
         // the rows, and **no border** — the hairline is the first layer of
@@ -265,25 +267,39 @@
         );
 
         // Every row carries its own mark, sized as GitHub sizes the ones in its
-        // dropdown. `innerHTML.length` is the identity proxy: eight rows that all
+        // dropdown. `innerHTML.length` is the identity proxy: ten rows that all
         // pointed at one icon would collapse the set to 1.
         const icons = items.map((el) => el.querySelector(".rw-lead > svg.rw-icon"));
         const sizes = new Set(icons.map((el) => el?.innerHTML.length));
         const is = icons[0] ? getComputedStyle(icons[0]) : {};
         check(
-          "八行各有自己的品牌图标",
+          "十行各有自己的品牌图标",
           icons.every(Boolean) &&
             icons.every((el) => el.firstElementChild !== null && el.getAttribute("viewBox")) &&
-            sizes.size === 8 &&
+            sizes.size === 10 &&
             is.width === "16px" &&
             is.height === "16px" &&
             is.flexGrow === "0",
           `missing=${icons.filter((el) => !el).length} distinct=${sizes.size} size=${is.width}×${is.height}`,
         );
+
+        // github.com's CSP is `img-src 'self' data: blob: github.githubassets.com`,
+        // so a chrome-extension:// image href silently never paints: every raster
+        // mark has to arrive as an inline data: URI. Two rows are raster now
+        // (Star History joined GitDiagram / DeepWiki / Zread / GitHub.dev), and
+        // this pins the rule for whatever gets added next.
+        const rasters = [...(root?.querySelectorAll(".rw-lead > svg.rw-icon > image") ?? [])];
+        const inlineOk = (el) => (el.getAttribute("href") ?? "").startsWith("data:image/png;base64,");
+        check(
+          "位图图标一律是 data: 内联",
+          rasters.length > 0 && rasters.every(inlineOk),
+          `${rasters.length} 张位图, 非 data: ${rasters.filter((el) => !inlineOk(el)).length}`,
+        );
+
         check(
           "GitHub1s 那行带的是双档品牌填充",
-          items[5]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
-          `${items[5]?.querySelector("path")?.getAttribute("fill")}`,
+          items[6]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
+          `${items[6]?.querySelector("path")?.getAttribute("fill")}`,
         );
 
         // The right-hand arrow the previous version put at the end of every
@@ -443,18 +459,31 @@
           const bareRoot = document.querySelector("repoways-ui").shadowRoot;
           const bare = getComputedStyle(bareRoot.querySelector(".rw-btn"));
           const bareMenu = getComputedStyle(bareRoot.querySelector(".rw-menu"));
+          // Chrome snaps border widths to whole device pixels before it
+          // serializes them, so a declared `0.8px` reads back as `0.8px` at DPR
+          // 1.25 (one device pixel) but as `1px` at DPR 1 — the same declaration
+          // on the same file measured both ways in one session. Pinning either
+          // string is machine-dependent, so compare against a probe carrying the
+          // identical shorthand; a fallback that lost its border reads `0px` and
+          // still fails.
+          const probe = document.createElement("div");
+          probe.style.cssText = "position:absolute;border:0.8px solid red";
+          document.body.append(probe);
+          const declared = getComputedStyle(probe).borderTopWidth;
+          probe.remove();
           check(
             "donor 与变量都没有时回落字面色值",
             bare.backgroundColor === "rgb(246, 248, 250)" &&
               bare.color === "rgb(31, 35, 40)" &&
-              bare.borderTopWidth === "0.8px" &&
+              declared !== "0px" &&
+              bare.borderTopWidth === declared &&
               bare.borderRadius === "6px" &&
               bare.fontSize === "14px" &&
               bare.fontWeight === "500" &&
               bare.lineHeight === "21px" &&
               bare.gap === "8px" &&
               bare.padding === "0px 12px",
-            `${bare.backgroundColor} / ${bare.color} / ${bare.borderTopWidth} / ${bare.fontWeight} / ${bare.gap} / ${bare.padding}`,
+            `${bare.backgroundColor} / ${bare.color} / ${bare.borderTopWidth} (declared 0.8px reads ${declared}) / ${bare.fontWeight} / ${bare.gap} / ${bare.padding}`,
           );
           check(
             "弹层没有变量时也自带那副样子",

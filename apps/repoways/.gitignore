@@ -14,6 +14,11 @@ stats-*.json
 .wxt
 web-ext.config.ts
 
+# Draft logo sheets. The winner becomes assets/logo.webp (tracked — auto-icons reads
+# it); the losers are 2 MB of watermarked PNGs with no future reference value. This
+# does NOT keep them out of the AMO sources zip, that is `zip.excludeSources`.
+assets/logo-candidates/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
