@@ -491,6 +491,14 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
     win.body.appendChild(el);
   }
 
+  /** Return the previewed content to its top. Only the panes we render are
+   *  reachable — a cross-origin iframe cannot be scrolled from this document. */
+  function scrollToTop(win: WindowInstance) {
+    const pane = win.body.querySelector<HTMLElement>(".tp-reader, .tp-trans");
+    if (!pane) return;
+    pane.scrollTo({ top: 0, behavior: deps.getPower().reduceMotion ? "auto" : "smooth" });
+  }
+
   function renderIframe(win: WindowInstance) {
     const frame = document.createElement("iframe");
     frame.src = win.url;
@@ -870,6 +878,13 @@ export function createPreviewSystem(deps: PreviewDeps, shadow: ShadowRoot): Prev
         void browser.runtime.sendMessage({ type: "prelook:openTab", url: win.url });
         closeWindow(win);
       }
+    });
+    // Double-click anywhere on the bar (the title group is also the drag
+    // handle, but a drag that never moved leaves the click pair intact) to jump
+    // back to the top of a long reader/translation pane.
+    head.addEventListener("dblclick", (e) => {
+      if ((e.target as HTMLElement).closest?.("[data-act]")) return;
+      scrollToTop(win);
     });
 
     if (positionOf(win) !== "sidebar") {

@@ -13,6 +13,7 @@
   --tp-base: #fff;
   --tp-ink: #1f2328;
   --tp-surface: #fff;
+  --tp-head-height: 30px;
   --tp-line: color-mix(in srgb, var(--tp-ink) 12%, transparent);
   --tp-soft: color-mix(in srgb, var(--tp-ink) 7%, var(--tp-surface));
 }
@@ -112,9 +113,17 @@
    the blur samples the body instead of the page behind the glass — it
    recovers the moment .tp-in lands transform back at none. */
 .tp-head {
+  /* Out of flow: .tp-body owns the whole window, so the preview content really
+     does scroll under the glass and the backdrop samples it. z-index has to beat
+     the panes, which are positioned too (.tp-body is their containing block). */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
   display: flex;
   align-items: stretch;
-  height: 24px;
+  height: var(--tp-head-height);
   /* Stacked glass: a top sheen fading into a bottom shade (both mixed toward
      transparent so they read in light and dark alike), a faint accent tint,
      and the see-through surface fill — over a real blur of the content. The
@@ -299,6 +308,7 @@
   flex: 1;
   min-height: 0;
   background: var(--tp-surface);
+  padding-top: var(--tp-head-height);
 }
 
 .tp-body>iframe {
