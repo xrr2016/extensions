@@ -57,14 +57,15 @@
   border-radius: 14px;
   overflow: hidden;
   /* No background on the root: the opaque surface lives on .tp-body, which
-     fills the whole window, and the title bar floats over it as glass — the
-     preview content scrolling under the bar is what it samples. overflow:
-     hidden still clips both to the rounded corners. */
+     reserves the bar's height with padding-top. overflow: hidden still clips
+     both to the rounded corners. */
   background: none;
-  /* Glass fill opacity of the title bar. Below 100% the content shows
-     through — that see-through is the point; power saving raises it to 100%.
-     Declared here (not on :host) because the fill mixes with this window's
-     own --tp-surface, which a window theme preset overrides inline. */
+  /* Glass fill opacity of the title bar. Over an iframe there is nothing beneath
+     it (body's padding-top keeps that content below the bar), so the strip just
+     reads as surface; over the reader/translation panes live text does pass
+     under and shows through. Power saving raises it to 100%. Declared here (not
+     on :host) because the fill mixes with this window's own --tp-surface, which
+     a window theme preset overrides inline. */
   --tp-glass: 72%;
   border: 1px solid var(--tp-line);
   box-shadow: 0 12px 40px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .12);
@@ -105,17 +106,16 @@
   height: 100vh;
 }
 
-/* One liquid-glass title bar across the top of the window: a full-width strip
-   that blurs and tints the preview content scrolling underneath it. Title
-   group on the left (it is also the drag handle), pin + actions flush right.
-   Known caveat, inherited from the entrance: while the window's scale
-   transform is live (first ~200ms) the window is its own backdrop root and
-   the blur samples the body instead of the page behind the glass — it
-   recovers the moment .tp-in lands transform back at none. */
+/* Title bar across the top of the window. Absolute and out of flow, paired with
+   the same --tp-head-height reserved as .tp-body's padding-top: the iframe (the
+   only in-flow child there) starts *below* the bar, so a framed page is never
+   partly covered by chrome. The four panes are position:absolute;inset:0 against
+   .tp-body's padding box, so they do span the strip and glide under the glass —
+   which is where the backdrop has anything real to sample. It has to be
+   absolute: back in flow plus that padding would push content down twice the
+   bar, and z-index has to beat those panes. Title group on the left (it is also
+   the drag handle), pin + actions flush right. */
 .tp-head {
-  /* Out of flow: .tp-body owns the whole window, so the preview content really
-     does scroll under the glass and the backdrop samples it. z-index has to beat
-     the panes, which are positioned too (.tp-body is their containing block). */
   position: absolute;
   top: 0;
   left: 0;
@@ -126,7 +126,7 @@
   height: var(--tp-head-height);
   /* Stacked glass: a top sheen fading into a bottom shade (both mixed toward
      transparent so they read in light and dark alike), a faint accent tint,
-     and the see-through surface fill — over a real blur of the content. The
+     and the surface fill — over a blur of whatever .tp-body paints under it. The
      inset light line on the top edge gives the glass its thickness. */
   background:
     linear-gradient(180deg,
@@ -142,9 +142,9 @@
   user-select: none;
 }
 
-/* Power saving flips the glass opaque — text should not sit on raw preview
-   content when the user asked to save GPU work (blurring is exactly that
-   cost). Engines without backdrop sampling get the same fallback. */
+/* Power saving drops the backdrop sampling (blurring is exactly the GPU cost the
+   user asked to avoid) and makes the fill opaque. Engines without backdrop
+   sampling get the same fallback. */
 .tp-win.tp-nofrost .tp-head {
   --tp-glass: 100%;
   backdrop-filter: none;
@@ -321,7 +321,11 @@
 .tp-skeleton {
   position: absolute;
   inset: 0;
-  /* Top clears the 34px glass bar so the first lines never sit under it. */
+  /* Pane paddings below are measured from the top of the window, not from the
+     bar: inset: 0 resolves against .tp-body's padding box, so body's own
+     padding-top does not shift this element. Keep each top value at
+     --tp-head-height + 10–16px of clearance, and change the four together with
+     the token. Here: 30 + 14. */
   padding: 44px 18px 18px;
   display: flex;
   flex-direction: column;
@@ -368,8 +372,8 @@
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  /* Extra top padding keeps the article title clear of the glass bar at
-     scroll-top; later text glides under it, which is the point. */
+  /* 30 + 16: the article title starts clear of the bar at scroll-top, and later
+     text glides under the glass (this pane spans the strip). */
   padding: 46px 26px 22px;
   font-size: 15px;
   line-height: 1.75;
@@ -431,7 +435,7 @@
   justify-content: center;
   gap: 10px;
   text-align: center;
-  /* Top clears the glass bar even in a short window. */
+  /* 30 + 10: clears the bar even in a short window. */
   padding: 40px 24px 24px;
   font-size: 13px;
   color: color-mix(in srgb, var(--tp-ink) 62%, transparent);
@@ -457,7 +461,7 @@
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  /* Top clears the 34px glass bar. */
+  /* 30 + 14, the same clearance .tp-skeleton uses. */
   padding: 44px 22px 22px;
   font-size: 14px;
   line-height: 1.7;

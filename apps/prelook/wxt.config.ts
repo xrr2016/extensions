@@ -55,12 +55,11 @@ export default defineConfig({
     },
     startUrls: [
       "https://linux.sb/",
-      "https://tieba.baidu.com/",
+      "https://www.bilibili.com/",
       "https://bbs.hupu.com/4860",
       "https://www.reddit.com/r/SideProject/",
       "https://www.xiaoheihe.cn/app/bbs/home/",
       "https://ngabbs.com/thread.php?fid=-152678",
-      "https://www.bilibili.com/video/BV1Jiem6XE71/",
     ],
   },
   autoIcons: {
