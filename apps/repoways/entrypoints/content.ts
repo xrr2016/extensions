@@ -48,20 +48,31 @@ const THEME_ATTRS = ["data-color-mode", "data-light-theme", "data-dark-theme"];
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-// The button's leading glyph is hand-authored, not an Octicon: `primer/octicons`
-// has 399 icons and none of them mean "route" (no `route` / `path` / `signpost` /
-// `map` / `compass`), so this is our own two-node L-shaped path — origin
-// bottom-left, destination top-right — drawn on the 16px grid with octicon
-// weights (2.5px ring radius, 1.25px band and stroke). The caret *is* copied from
-// the branch button's markup, so the trailing half of the button still reads as
-// GitHub's.
-const ROUTE_PATH =
-  "M4 10a2.5 2.5 0 1 1 0 5a2.5 2.5 0 1 1 0-5Z" +
-  "M4 11.25a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 1 0 0-2.5Z" +
-  "M12.5 1.5a2.5 2.5 0 1 1 0 5a2.5 2.5 0 1 1 0-5Z" +
-  "M12.5 2.75a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 1 0 0-2.5Z" +
-  "M3.125 4h1.75v6.125H3.125Z" +
-  "M4 3.125h6.125v1.75H4Z";
+// The button's leading mark is RepoWays' own logo (`assets/logo.svg`, the
+// editable master), not an Octicon: `primer/octicons` has 399 icons and none of
+// them mean "route" (no `route` / `path` / `signpost` / `map` / `compass`), and
+// the product's whole point is the fan-out the logo draws — one origin, three
+// ways out, heading right. Two edits to the master, and only two: the rounded
+// plate (`<rect fill="#0969da">`) is dropped, and its white ink becomes
+// `currentColor` — the same move every black-ink mark in utils/icons.ts makes,
+// because white would vanish on the light button and a literal black would vanish
+// on a dark one. Coordinates are the master's own numbers, which is why the
+// viewBox is the master's 1024 grid; and the viewBox is the mark's tight square
+// (200..826 across, 199..825 down, both centred on 512), so the glyph fills its
+// 16px box the way an Octicon does instead of floating in the plate's old margin.
+const LOGO_VIEWBOX = "200 199 626 626";
+const LOGO_BODY =
+  `<g fill="none" stroke="currentColor" stroke-width="72" stroke-linecap="round" stroke-linejoin="round">` +
+  `<path d="M264 512L700 268"/>` +
+  `<path d="M264 512L772 512"/>` +
+  `<path d="M264 512L700 756"/>` +
+  `</g>` +
+  `<g fill="currentColor">` +
+  `<circle cx="264" cy="512" r="64"/>` +
+  `<circle cx="700" cy="268" r="54"/>` +
+  `<circle cx="772" cy="512" r="54"/>` +
+  `<circle cx="700" cy="756" r="54"/>` +
+  `</g>`;
 const CARET_PATH =
   "m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z";
 
@@ -73,6 +84,21 @@ function octicon(path: string): SVGSVGElement {
   svg.setAttribute("fill", "currentColor");
   svg.setAttribute("aria-hidden", "true");
   svg.innerHTML = `<path d="${path}"></path>`;
+  return svg;
+}
+
+// The logo mark for the button's leading slot. Unlike `octicon()` this is not one
+// `path`: it is three stroked spokes plus four filled dots, so the body is parsed
+// as markup. `innerHTML` on an SVG element stays in the SVG namespace, which is
+// what `<g>` and `<circle>` need — `document.createElement` would land them in
+// HTML-land and nothing would render.
+function logoMark(): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", LOGO_VIEWBOX);
+  svg.setAttribute("width", "16");
+  svg.setAttribute("height", "16");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = LOGO_BODY;
   return svg;
 }
 
@@ -121,7 +147,7 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
 
   const label = document.createElement("span");
   label.textContent = t("button.label");
-  button.append(octicon(ROUTE_PATH), label, octicon(CARET_PATH));
+  button.append(logoMark(), label, octicon(CARET_PATH));
 
   const menu = document.createElement("div");
   menu.className = "rw-menu";

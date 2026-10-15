@@ -194,21 +194,33 @@
 
         check("按钮文字是 Ways", button?.textContent.trim() === "Ways", `text="${button?.textContent.trim()}"`);
 
-        // Icon / label / caret. The leading glyph is ours (Octicons has no
-        // route icon) so it is pinned by its own prefix; the caret is the one
+        // Icon / label / caret. The leading glyph is ours (Octicons has no route
+        // icon) and it is now the product's own logo, so it is pinned by its real
+        // geometry rather than a prefix: the fan-out's three spokes and four dots,
+        // the blue plate gone, and currentColor as the ink. The caret is the one
         // copied out of the branch button's markup.
         const glyphs = [...(button?.querySelectorAll("svg") ?? [])];
-        const route = glyphs[0]?.querySelector("path")?.getAttribute("d") ?? "";
+        const leadGlyph = glyphs[0];
+        const leadGroups = [...(leadGlyph?.querySelectorAll("g") ?? [])];
+        const leadSpokes = [...(leadGlyph?.querySelectorAll("path") ?? [])].map((p) => p.getAttribute("d"));
+        const leadDots = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map(
+          (c) => `${c.getAttribute("cx")},${c.getAttribute("cy")}/${c.getAttribute("r")}`,
+        );
         const caretGlyph = glyphs[1]?.querySelector("path")?.getAttribute("d") ?? "";
         check(
-          "按钮是 路由图标 + Ways + 箭头",
+          "按钮是 项目 logo（无底板、线条走 currentColor）+ Ways + 箭头",
           glyphs.length === 2 &&
             button.firstElementChild === glyphs[0] &&
             button.lastElementChild === glyphs[1] &&
-            route.startsWith("M4 10a2.5 2.5") &&
-            route.includes("M3.125 4h1.75v6.125") &&
+            (leadGlyph?.getAttribute("viewBox") ?? "") === "200 199 626 626" &&
+            leadGlyph?.querySelector("rect") === null &&
+            leadGroups.length === 2 &&
+            leadGroups[0].getAttribute("stroke") === "currentColor" &&
+            leadGroups[1].getAttribute("fill") === "currentColor" &&
+            leadSpokes.join("|") === "M264 512L700 268|M264 512L772 512|M264 512L700 756" &&
+            leadDots.join("|") === "264,512/64|700,268/54|772,512/54|700,756/54" &&
             caretGlyph.startsWith("m4.427 7.427"),
-          `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
+          `${glyphs.length} 个图标, viewBox=${leadGlyph?.getAttribute("viewBox")}, 描边 ${leadSpokes.length} 条, 圆点 ${leadDots.join(" ")}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
         check("十二条入口", items.length === 12, `count=${items.length}`);
@@ -433,7 +445,7 @@
           Math.abs(seamRect.left - panelRect.left) < 0.5 &&
             Math.abs(seamRect.right - panelRect.right) < 0.5 &&
             Math.abs(seamRect.width - (widest + 16)) < 0.5 &&
-            Math.abs(seamRect.left - rowRect.left - 8) < 0.5,
+            Math.abs(seamRect.left - (rowRect.left - 8)) < 0.5,
           `seam=[${seamRect.left.toFixed(1)}, ${seamRect.right.toFixed(1)}] w=${seamRect.width.toFixed(1)} 菜单=[${panelRect.left.toFixed(1)}, ${panelRect.right.toFixed(1)}] 行left=${rowRect.left.toFixed(1)}`,
         );
 
