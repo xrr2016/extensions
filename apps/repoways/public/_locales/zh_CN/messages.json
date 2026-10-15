@@ -8,6 +8,12 @@
   "ways_diagram": {
     "message": "生成架构图"
   },
+  "ways_depgraph": {
+    "message": "看仓库依赖图"
+  },
+  "ways_depsdev": {
+    "message": "查依赖与评分"
+  },
   "ways_explainer": {
     "message": "看 AI 讲解"
   },
@@ -16,6 +22,9 @@
   },
   "ways_prompts": {
     "message": "导出 AI 提示词"
+  },
+  "ways_mcp": {
+    "message": "仓库文档转 MCP"
   },
   "ways_package": {
     "message": "打包仓库给 AI"
@@ -29,8 +38,14 @@
   "ways_edit": {
     "message": "浏览器里改代码"
   },
+  "ways_codespaces": {
+    "message": "云端开发环境"
+  },
   "ways_run": {
     "message": "浏览器里跑项目"
+  },
+  "ways_ossinsight": {
+    "message": "看仓库活跃度"
   },
   "ways_stars": {
     "message": "看 Star 增长曲线"

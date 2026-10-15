@@ -3,7 +3,7 @@ import { t } from "@/utils/i18n";
 // gets it without WXT having to emit a separate CSS entrypoint.
 import MENU_STYLE from "@/utils/menu.css?raw";
 import type { Icon } from "@/utils/icons";
-import { repoFromPath, WAYS, type RepoRef } from "@/utils/ways";
+import { repoFromPath, WAYS, type RepoRef, type Way } from "@/utils/ways";
 
 const HOST_TAG = "repoways-ui";
 
@@ -12,8 +12,6 @@ const HOST_TAG = "repoways-ui";
 // This selector matched exactly one element on a repo page and nothing on
 // /issues, which is what keeps non-repo routes out without a path denylist.
 const CODE_BUTTON = '#repo-content-turbo-frame button[data-variant="primary"][aria-haspopup="true"]';
-
-const HIDE_DELAY_MS = 150;
 
 // The row's other neighbour — the branch switcher. Shadow DOM can't use
 // GitHub's classes, so the only way to look identical to it is to copy its
@@ -129,9 +127,15 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   menu.className = "rw-menu";
   menu.hidden = true;
 
+  let prevGroup: Way["group"] | null = null;
   for (const way of WAYS) {
     const item = document.createElement("a");
     item.className = "rw-item";
+    // GitHub's ActionList puts a hairline *between groups*, not between rows.
+    // The first row of the menu is never marked (prevGroup starts null), so a
+    // divider appears only where the group actually changes.
+    if (way.group !== prevGroup && prevGroup !== null) item.classList.add("rw-group-start");
+    prevGroup = way.group;
     item.href = way.url(repo);
     item.target = "_blank";
     item.rel = "noopener noreferrer";
@@ -158,10 +162,7 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   wrap.append(button, menu);
   root.append(wrap);
 
-  let hideTimer: ReturnType<typeof setTimeout> | undefined;
-
   const show = () => {
-    clearTimeout(hideTimer);
     menu.hidden = false;
     button.setAttribute("aria-expanded", "true");
     const rect = button.getBoundingClientRect();
@@ -177,21 +178,54 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
     button.setAttribute("aria-expanded", "false");
   };
 
-  wrap.addEventListener("pointerenter", show);
-  wrap.addEventListener("pointerleave", () => {
-    hideTimer = setTimeout(hide, HIDE_DELAY_MS);
-  });
+  // Click, not hover. GitHub's own `Code` dropdown only appears on press, and a
+  // list that opens under a pointer merely passing by the button on its way to
+  // `Code` is a menu nobody asked for.
   button.addEventListener("click", () => {
     if (menu.hidden) show();
     else hide();
   });
 
-  return { host, restyle };
+  // Every row opens its own tab, so the list has done its job once one is
+  // pressed; leaving it up would mean dismissing it after every pick.
+  menu.addEventListener("click", (event) => {
+    const row = event.target as Element | null;
+    if (row?.closest(".rw-item")) hide();
+  });
+
+  // `window` + capture, not `document` + bubble: a page handler bound earlier can
+  // `stopImmediatePropagation` and eat the dismissal (Prelook hit exactly that
+  // with its own outside-click close). Events raised inside our shadow tree
+  // retarget, but `composedPath()` still lists the host, which is what makes
+  // "outside" mean "not our own UI" here.
+  const dismiss = (event: Event) => {
+    if (!menu.hidden && !event.composedPath().includes(host)) hide();
+  };
+  const onKey = (event: Event) => {
+    if ((event as KeyboardEvent).key === "Escape" && !menu.hidden) hide();
+  };
+  window.addEventListener("pointerdown", dismiss, true);
+  window.addEventListener("keydown", onKey);
+
+  // Repo pages re-mount on every `turbo:load`, and these two are bound on
+  // `window`, so removing the host does not remove them. A leftover one cannot
+  // mis-close the new menu — its closure holds the old, detached nodes — but it
+  // keeps that whole shadow tree (fifteen rows and their inline marks) alive for
+  // as long as the tab stays open, which on a SPA is one per navigation.
+  return {
+    host,
+    restyle,
+    destroy: () => {
+      window.removeEventListener("pointerdown", dismiss, true);
+      window.removeEventListener("keydown", onKey);
+    },
+  };
 }
 
 let mounted: ReturnType<typeof createUi> | null = null;
 
 function mount() {
+  mounted?.destroy();
   document.querySelectorAll(HOST_TAG).forEach((el) => el.remove());
   mounted = null;
 

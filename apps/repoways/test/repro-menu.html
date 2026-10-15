@@ -211,24 +211,29 @@
           `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
-        check("十条入口", items.length === 10, `count=${items.length}`);
+        check("十五条入口", items.length === 15, `count=${items.length}`);
 
         const expected = [
           "https://gitdiagram.com/octocat/hello-world",
+          "https://github.com/octocat/hello-world/network/dependencies",
+          "https://deps.dev/project/github/octocat%2Fhello-world",
           "https://deepwiki.com/octocat/hello-world",
           "https://zread.ai/octocat/hello-world",
           "https://gitreverse.com/octocat/hello-world",
+          "https://gitmcp.io/octocat/hello-world",
           "https://gitingest.com/octocat/hello-world",
           "https://sourcegraph.com/github.com/octocat/hello-world",
           "https://github1s.com/octocat/hello-world",
           "https://github.dev/octocat/hello-world",
+          "https://codespaces.new/octocat/hello-world",
           "https://stackblitz.com/github/octocat/hello-world",
+          "https://ossinsight.io/analyze/octocat/hello-world",
           "https://star-history.com/octocat/hello-world",
         ];
         const wrong = items
           .map((el, i) => (el.href === expected[i] ? null : `${i}: ${el.href}`))
           .filter(Boolean);
-        check("十条链接逐条对位", wrong.length === 0, wrong.join(" | "));
+        check("十五条链接逐条对位", wrong.length === 0, wrong.join(" | "));
 
         // Panel shape is GitHub's own popover: 12px corner, 8px of inset around
         // the rows, and **no border** — the hairline is the first layer of
@@ -267,16 +272,16 @@
         );
 
         // Every row carries its own mark, sized as GitHub sizes the ones in its
-        // dropdown. `innerHTML.length` is the identity proxy: ten rows that all
-        // pointed at one icon would collapse the set to 1.
+        // dropdown. `innerHTML.length` is the identity proxy: fifteen rows that
+        // all pointed at one icon would collapse the set to 1.
         const icons = items.map((el) => el.querySelector(".rw-lead > svg.rw-icon"));
         const sizes = new Set(icons.map((el) => el?.innerHTML.length));
         const is = icons[0] ? getComputedStyle(icons[0]) : {};
         check(
-          "十行各有自己的品牌图标",
+          "十五行各有自己的品牌图标",
           icons.every(Boolean) &&
             icons.every((el) => el.firstElementChild !== null && el.getAttribute("viewBox")) &&
-            sizes.size === 10 &&
+            sizes.size === 15 &&
             is.width === "16px" &&
             is.height === "16px" &&
             is.flexGrow === "0",
@@ -285,9 +290,10 @@
 
         // github.com's CSP is `img-src 'self' data: blob: github.githubassets.com`,
         // so a chrome-extension:// image href silently never paints: every raster
-        // mark has to arrive as an inline data: URI. Two rows are raster now
-        // (Star History joined GitDiagram / DeepWiki / Zread / GitHub.dev), and
-        // this pins the rule for whatever gets added next.
+        // mark has to arrive as an inline data: URI. Eight rows are raster now
+        // (OSSInsight joined deps.dev / GitMCP / GitDiagram / DeepWiki / Zread /
+        // GitHub.dev / Star History), and this pins the rule for whatever gets
+        // added next.
         const rasters = [...(root?.querySelectorAll(".rw-lead > svg.rw-icon > image") ?? [])];
         const inlineOk = (el) => (el.getAttribute("href") ?? "").startsWith("data:image/png;base64,");
         check(
@@ -298,8 +304,8 @@
 
         check(
           "GitHub1s 那行带的是双档品牌填充",
-          items[6]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
-          `${items[6]?.querySelector("path")?.getAttribute("fill")}`,
+          items[9]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
+          `${items[9]?.querySelector("path")?.getAttribute("fill")}`,
         );
 
         // The right-hand arrow the previous version put at the end of every
@@ -323,6 +329,30 @@
             rs.fontSize === "14px" &&
             rs.borderTopWidth === "0px",
           `radius=${rs.borderRadius} pad=${rs.padding} fs=${rs.fontSize} top=${rs.borderTopWidth}`,
+        );
+
+        // The one exception: a hairline seam above each *group's* first row.
+        // Fifteen rows in four contiguous groups (structure 0-2, ai 3-7, code
+        // 8-12, analytics 13-14) means exactly three seams, at indices 3/8/13,
+        // and the menu's first row must NOT carry one. Border width is not pinned
+        // (0.8px serialises as 0.8px or 1px depending on device-pixel ratio, the
+        // same trap the fallback check documents), so assert style + a real
+        // border + the token colour; a plain row keeps its 0px top from the check
+        // above.
+        const seamIdx = items.reduce(
+          (acc, el, i) => (el.classList.contains("rw-group-start") ? [...acc, i] : acc),
+          [],
+        );
+        const seam = getComputedStyle(items[3]);
+        check(
+          "组间有 GitHub 式分隔线（3 条、落在 3/8/13、首行没有）",
+          seamIdx.join(",") === "3,8,13" &&
+            !items[0].classList.contains("rw-group-start") &&
+            seam.borderTopStyle === "solid" &&
+            seam.borderTopWidth !== "0px" &&
+            seam.borderTopColor === "rgb(209, 217, 224)" &&
+            seam.marginTop === "4px",
+          `seams=[${seamIdx.join(",")}] first=${items[0].classList.contains("rw-group-start")} top=${seam.borderTopWidth} color=${seam.borderTopColor} mt=${seam.marginTop}`,
         );
 
         // The donor supplies every visual property; the Code button only owns
@@ -356,20 +386,29 @@
         check("高度跟随 Code 按钮", own.height === css.height, `${own.height} vs ${css.height}`);
         check("样式与分支按钮逐属性相同（浅色）", mism(own, dp).length === 0, mism(own, dp).join(" | "));
 
-        // The listeners sit on the wrapper: a real pointer entering the button
-        // fires pointerenter on the wrapper as its own dispatch, so the
-        // synthetic event has to start there too (pointerenter does not bubble).
+        // Click, not hover. `pointerenter` does not bubble, so a real pointer
+        // entering the button fires it on the wrapper as its own dispatch — both
+        // elements get a synthetic one, because proving the negative needs the
+        // event to arrive wherever a listener could still be hiding.
         const wrap = root?.querySelector(".rw");
         wrap?.dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
-        check("pointerenter 展开", menu?.hidden === false);
+        button?.dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
+        check("悬停不展开", menu?.hidden === true);
+
+        button?.click();
+        check("点击展开", menu?.hidden === false);
 
         // Only measurable once displayed: a `hidden` element reports a 0×0 rect.
         // The width is *not* pinned to a number: `width: max-content` makes it a
-        // text-measurement (zh_CN + icons measures 225.15px here, en 277px), and
-        // text measurement follows the machine's fonts, so a literal would flake.
-        // What is stable, and what the rule means, is that the panel is exactly
-        // its longest row plus the 8px inset on each side — and that it sits
-        // between the 220px floor and the 320px cap rather than the old fixed 400.
+        // text-measurement (fifteen rows, icons in: zh_CN 262.93px here, en
+        // 300.7px), and text measurement follows the machine's fonts, so a
+        // literal would flake. What is stable, and what the rule means, is that
+        // the panel is exactly its longest row plus the 8px inset on each side —
+        // and that it sits between the 220px floor and the 320px cap rather than
+        // the old fixed 400. en is the one that runs at the cap (see the note in
+        // menu.css), and this page only ships zh_CN, so measuring en is a manual
+        // step: rewrite each `.rw-desc` from `_locales/en/messages.json` and
+        // re-read the rect.
         const mw = menu.getBoundingClientRect().width;
         const widest = Math.max(...items.map((el) => el.getBoundingClientRect().width));
         check(
@@ -396,10 +435,9 @@
           `viewport=${innerWidth} menu=${mr.left.toFixed(1)}…${mr.right.toFixed(1)}`,
         );
 
-        // The menu is a DOM descendant of the wrapper even though it is
-        // position:fixed, so a pointer travelling from the button into a row
-        // never fires the wrapper's pointerleave — that is what keeps the list
-        // open long enough to click an entry.
+        // The rows are `position: fixed` but still DOM descendants of the
+        // wrapper, so this hit test is the proof that the list is actually where
+        // its anchor says it is and reachable by a pointer travelling down.
         const row = items[3].getBoundingClientRect();
         const hitRow = root.elementFromPoint(row.left + 40, row.top + row.height / 2);
         check(
@@ -407,15 +445,33 @@
           hitRow === items[3] || items[3].contains(hitRow),
           `hit=${hitRow?.className || hitRow?.tagName}`,
         );
-        items[3].dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
-        check("指针移入菜单不收起", menu?.hidden === false);
 
+        // Nothing dismisses on pointer movement any more — the list only goes
+        // away on a press somewhere else, a row pick, or Escape.
+        items[3].dispatchEvent(new PointerEvent("pointerenter", { bubbles: false }));
         wrap.dispatchEvent(new PointerEvent("pointerleave", { bubbles: false }));
-        check("宽限期内不立刻收起", menu?.hidden === false);
+        check("指针进出菜单都不收起", menu?.hidden === false);
+
+        button.click();
+        check("再点一次收起", menu?.hidden === true);
+
+        button.click();
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        check("Esc 收起", menu?.hidden === true);
+
+        button.click();
+        document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+        check("点页面别处收起", menu?.hidden === true);
+
+        // An untrusted click on an `<a>` still follows the link, so the guard
+        // below eats the navigation and leaves the event for our own listener:
+        // picking an entry closes the list, exactly like GitHub's dropdown.
+        button.click();
+        items[3].addEventListener("click", (event) => event.preventDefault(), { capture: true, once: true });
+        items[3].click();
+        check("点条目收起", menu?.hidden === true);
 
         setTimeout(async () => {
-          check("150ms 后收起", menu?.hidden === true);
-
           document.dispatchEvent(new Event("turbo:load"));
           check(
             "turbo:load 后不重复注入",
@@ -423,6 +479,16 @@
               document.querySelector("repoways-ui")?.shadowRoot.querySelector(".rw-item")?.href ===
                 "https://gitdiagram.com/octocat/hello-world",
           );
+
+          // Dismissal lives on `window`, outside the host that `mount()` throws
+          // away on every re-render, so it is the one thing a re-mount has to
+          // re-arm by hand: check the fresh instance opens *and* closes, not just
+          // the first one.
+          const again = document.querySelector("repoways-ui").shadowRoot;
+          again.querySelector(".rw-btn").click();
+          check("重新挂载后仍是点击才展开", again.querySelector(".rw-menu").hidden === false);
+          document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+          check("重新挂载后点别处照样收起", again.querySelector(".rw-menu").hidden === true);
 
           // Theme is a couple of attributes on <html>, flipped with no
           // navigation and no `turbo:load`, so the copied values are only as
@@ -448,6 +514,18 @@
               darkMenu.backgroundColor === "rgb(1, 4, 9)" &&
               darkMenu.boxShadow.startsWith("rgb(61, 68, 77) 0px 0px 0px 1px"),
             `按钮=${dark.backgroundColor} / ${dark.color} / 弹层=${darkMenu.backgroundColor} / ${darkMenu.boxShadow.slice(0, 28)}`,
+          );
+
+          // The group seam is `var(--borderColor-default)`, so it has to flip with
+          // the page too — the light check pinned rgb(209,217,224); here the same
+          // hairline must read the dark token, not stay a light grey.
+          const darkSeam = getComputedStyle(fresh.querySelector(".rw-group-start"));
+          check(
+            "深色下分隔线也跟着 --borderColor-default",
+            darkSeam.borderTopStyle === "solid" &&
+              darkSeam.borderTopWidth !== "0px" &&
+              darkSeam.borderTopColor === "rgb(61, 68, 77)",
+            `top=${darkSeam.borderTopWidth} color=${darkSeam.borderTopColor}`,
           );
 
           // Drop the donor (some repo layouts and narrow viewports render the row
@@ -510,7 +588,7 @@
           );
 
           render();
-        }, 260);
+        }, 0);
       });
     </script>
   </body>

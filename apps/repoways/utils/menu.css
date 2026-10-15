@@ -66,13 +66,15 @@
   position: fixed;
   /* Width follows the longest row instead of a fixed 400px — a row is a mark, a
      service name and a short description, so a wide panel spends most of itself
-     on empty space. Measured in the harness with the icons in and all ten rows:
-     zh_CN lands at 230.33px and en at 280.73px (its longest description is still
-     26 characters), both just above the floor, so the 320px cap is headroom for
-     longer wording rather
-     than something the shipped locales reach. The floor is a guard for a very
-     short locale, not what either of ours measures; the viewport clamp replaces
-     the one the fixed width used to give. */
+     on empty space. Measured in the harness with the icons in and all fifteen
+     rows: zh_CN lands at 262.93px and en at 300.7px. en's longest row is still
+     "Dependency Graph" + "List its dependencies" — the added OSSInsight row is
+     shorter in both its name and its description, so neither locale's width or
+     the 320px cap's ~19px en headroom moved. A longer service name or
+     description has to land within that, or the nowrap row overflows the panel
+     instead of widening it. The floor is a guard
+     for a very short locale, not what either of ours measures; the viewport clamp
+     replaces the one the fixed width used to give. */
   max-width: min(320px, calc(100vw - 16px));
   /* min() rather than a plain 220px: `min-width` beats `max-width` in the box
      model, so a bare floor would push the panel off a viewport narrower than it
@@ -83,7 +85,8 @@
 }
 /* One ActionList row: 32px tall, 6px corner, and the highlight is a rounded
    block inset from the panel rather than a full-width band — which is also why
-   there are no dividers between rows. GitHub separates groups, not items. */
+   there are no dividers between rows. GitHub separates groups, not items, and
+   `.rw-group-start` below is that separation. */
 .rw-item {
   align-items: center;
   border-radius: var(--borderRadius-medium, 6px);
@@ -100,6 +103,16 @@
 }
 .rw-item:hover {
   background: var(--control-transparent-bgColor-hover, rgba(129, 139, 152, 0.1));
+}
+/* The one divider the menu draws: a hairline above the first row of each group,
+   with 4px of air so it reads as a seam rather than the row's own edge. Same
+   0.8px --borderColor-default weight as the branch control's border; the token
+   flips with the theme, so the seam tracks light/dark for free. content.ts only
+   marks a row whose group differs from the previous one, so the menu's first row
+   never carries it and there are exactly (groups - 1) seams. */
+.rw-group-start {
+  border-top: 0.8px solid var(--borderColor-default, #d1d9e0);
+  margin-top: 4px;
 }
 .rw-desc {
   color: var(--fgColor-muted, #59636e);

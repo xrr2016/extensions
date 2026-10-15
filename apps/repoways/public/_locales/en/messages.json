@@ -8,6 +8,12 @@
   "ways_diagram": {
     "message": "View architecture diagram"
   },
+  "ways_depgraph": {
+    "message": "List its dependencies"
+  },
+  "ways_depsdev": {
+    "message": "Check dependency health"
+  },
   "ways_explainer": {
     "message": "Read a repo explainer"
   },
@@ -16,6 +22,9 @@
   },
   "ways_prompts": {
     "message": "Export as AI prompts"
+  },
+  "ways_mcp": {
+    "message": "Serve docs as MCP"
   },
   "ways_package": {
     "message": "Package the repo for AI"
@@ -29,8 +38,14 @@
   "ways_edit": {
     "message": "Edit the code online"
   },
+  "ways_codespaces": {
+    "message": "Open a dev environment"
+  },
   "ways_run": {
     "message": "Run the project online"
+  },
+  "ways_ossinsight": {
+    "message": "Analyze repo activity"
   },
   "ways_stars": {
     "message": "Track star history"
