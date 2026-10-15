@@ -37,10 +37,5 @@
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
     "release-it": "^21.0.3"
-  },
-  "release-it": {
-    "git": {
-      "requireCleanWorkingDir": false
-    }
   }
 }
