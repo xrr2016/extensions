@@ -327,28 +327,31 @@
           `radius=${rs.borderRadius} pad=${rs.padding} fs=${rs.fontSize} top=${rs.borderTopWidth}`,
         );
 
-        // The one exception: a hairline seam above each *group's* first row.
-        // Twelve rows in four contiguous groups (structure 0-1, ai 2-6, code
-        // 7-10, analytics 11) means exactly three seams, at indices 2/7/11,
-        // and the menu's first row must NOT carry one. Border width is not pinned
-        // (0.8px serialises as 0.8px or 1px depending on device-pixel ratio, the
-        // same trap the fallback check documents), so assert style + a real
-        // border + the token colour; a plain row keeps its 0px top from the check
-        // above.
-        const seamIdx = items.reduce(
-          (acc, el, i) => (el.classList.contains("rw-group-start") ? [...acc, i] : acc),
-          [],
-        );
-        const seam = getComputedStyle(items[2]);
+        // The one exception: a hairline between groups. GitHub's popover draws it
+        // with an element of its own (Primer's `ActionList.Divider`) rather than
+        // with a border on the next row — that is the only way it can span the
+        // panel's full width while the rows stay inset 8px. Twelve rows in four
+        // contiguous groups (structure 0-1, ai 2-6, code 7-10, analytics 11)
+        // means exactly three, each sitting after the last row of its group, and
+        // the menu's first row is never preceded by one. Both the row that used
+        // to carry the border and the one that follows a divider must read 0px,
+        // so a return to the old shape fails here rather than looking fine.
+        const dividers = [...(root?.querySelectorAll(".rw-divider") ?? [])];
+        const seam = dividers[0];
+        const ds = seam ? getComputedStyle(seam) : {};
+        const seamIdx = dividers.map((el) => items.indexOf(el.previousElementSibling));
         check(
-          "组间有 GitHub 式分隔线（3 条、落在 2/7/11、首行没有）",
-          seamIdx.join(",") === "2,7,11" &&
-            !items[0].classList.contains("rw-group-start") &&
-            seam.borderTopStyle === "solid" &&
-            seam.borderTopWidth !== "0px" &&
-            seam.borderTopColor === "rgb(209, 217, 224)" &&
-            seam.marginTop === "4px",
-          `seams=[${seamIdx.join(",")}] first=${items[0].classList.contains("rw-group-start")} top=${seam.borderTopWidth} color=${seam.borderTopColor} mt=${seam.marginTop}`,
+          "组间有 GitHub 式分隔线（3 条、接在每段末尾、首行前面没有）",
+          dividers.length === 3 &&
+            seamIdx.join(",") === "1,6,10" &&
+            dividers.every((el) => el.getAttribute("aria-hidden") === "true") &&
+            seam.nextElementSibling === items[2] &&
+            ds.height === "1px" &&
+            ds.backgroundColor === "rgb(209, 217, 224)" &&
+            ds.marginTop === "7px" &&
+            ds.marginBottom === "8px" &&
+            getComputedStyle(items[2]).borderTopWidth === "0px",
+          `n=${dividers.length} after=[${seamIdx.join(",")}] h=${ds.height} bg=${ds.backgroundColor} m=${ds.marginTop}/${ds.marginBottom} 行borderTop=${getComputedStyle(items[2]).borderTopWidth}`,
         );
 
         // The donor supplies every visual property; the Code button only owns
@@ -416,6 +419,22 @@
             icon.getBoundingClientRect().width === 16 &&
             icon.getBoundingClientRect().height === 16,
           `menu=${mw} widest=${widest} row=${items[1].getBoundingClientRect().height} icon=${icon.getBoundingClientRect().width}×${icon.getBoundingClientRect().height}`,
+        );
+
+        // The seam reaches both edges of the panel — that is the whole reason it
+        // is an element rather than a border on an inset row. Rects are only
+        // meaningful now that the menu is displayed: a `hidden` element reports
+        // 0×0 (the same trap the width check above documents).
+        const seamRect = seam.getBoundingClientRect();
+        const panelRect = menu.getBoundingClientRect();
+        const rowRect = items[1].getBoundingClientRect();
+        check(
+          "分隔线通到弹层两侧边缘（比行宽出两侧各 8px）",
+          Math.abs(seamRect.left - panelRect.left) < 0.5 &&
+            Math.abs(seamRect.right - panelRect.right) < 0.5 &&
+            Math.abs(seamRect.width - (widest + 16)) < 0.5 &&
+            Math.abs(seamRect.left - rowRect.left - 8) < 0.5,
+          `seam=[${seamRect.left.toFixed(1)}, ${seamRect.right.toFixed(1)}] w=${seamRect.width.toFixed(1)} 菜单=[${panelRect.left.toFixed(1)}, ${panelRect.right.toFixed(1)}] 行left=${rowRect.left.toFixed(1)}`,
         );
 
         const rect = button.getBoundingClientRect();
@@ -515,13 +534,11 @@
           // The group seam is `var(--borderColor-default)`, so it has to flip with
           // the page too — the light check pinned rgb(209,217,224); here the same
           // hairline must read the dark token, not stay a light grey.
-          const darkSeam = getComputedStyle(fresh.querySelector(".rw-group-start"));
+          const darkSeam = getComputedStyle(fresh.querySelector(".rw-divider"));
           check(
             "深色下分隔线也跟着 --borderColor-default",
-            darkSeam.borderTopStyle === "solid" &&
-              darkSeam.borderTopWidth !== "0px" &&
-              darkSeam.borderTopColor === "rgb(61, 68, 77)",
-            `top=${darkSeam.borderTopWidth} color=${darkSeam.borderTopColor}`,
+            darkSeam.height === "1px" && darkSeam.backgroundColor === "rgb(61, 68, 77)",
+            `h=${darkSeam.height} bg=${darkSeam.backgroundColor}`,
           );
 
           // Drop the donor (some repo layouts and narrow viewports render the row

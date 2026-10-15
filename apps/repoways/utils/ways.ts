@@ -32,7 +32,7 @@ export const WAYS: Way[] = [
   },
   {
     labelKey: "ways.depgraph",
-    service: "Dependency Graph",
+    service: "Dependency",
     icon: ICONS.depgraph,
     group: "structure",
     url: (r) => `https://github.com/${r.owner}/${r.repo}/network/dependencies`,

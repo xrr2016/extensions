@@ -129,13 +129,22 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
 
   let prevGroup: Way["group"] | null = null;
   for (const way of WAYS) {
+    // GitHub's ActionList separates *groups*, not rows, and it does so with a
+    // divider element of its own rather than with a border on the next row —
+    // which is what lets the hairline run the panel's full width while the rows
+    // stay 8px in from the edge (see `.rw-divider` in menu.css). The first row of
+    // the menu is never preceded by one, so there are exactly (groups - 1) of
+    // them, three here.
+    if (prevGroup !== null && way.group !== prevGroup) {
+      const divider = document.createElement("div");
+      divider.className = "rw-divider";
+      divider.setAttribute("aria-hidden", "true");
+      menu.append(divider);
+    }
+    prevGroup = way.group;
+
     const item = document.createElement("a");
     item.className = "rw-item";
-    // GitHub's ActionList puts a hairline *between groups*, not between rows.
-    // The first row of the menu is never marked (prevGroup starts null), so a
-    // divider appears only where the group actually changes.
-    if (way.group !== prevGroup && prevGroup !== null) item.classList.add("rw-group-start");
-    prevGroup = way.group;
     item.href = way.url(repo);
     item.target = "_blank";
     item.rel = "noopener noreferrer";

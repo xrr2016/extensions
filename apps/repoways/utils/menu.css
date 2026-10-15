@@ -88,7 +88,7 @@
 /* One ActionList row: 32px tall, 6px corner, and the highlight is a rounded
    block inset from the panel rather than a full-width band — which is also why
    there are no dividers between rows. GitHub separates groups, not items, and
-   `.rw-group-start` below is that separation. */
+   `.rw-divider` below is that separation. */
 .rw-item {
   align-items: center;
   border-radius: var(--borderRadius-medium, 6px);
@@ -106,15 +106,29 @@
 .rw-item:hover {
   background: var(--control-transparent-bgColor-hover, rgba(129, 139, 152, 0.1));
 }
-/* The one divider the menu draws: a hairline above the first row of each group,
-   with 4px of air so it reads as a seam rather than the row's own edge. Same
-   0.8px --borderColor-default weight as the branch control's border; the token
-   flips with the theme, so the seam tracks light/dark for free. content.ts only
-   marks a row whose group differs from the previous one, so the menu's first row
-   never carries it and there are exactly (groups - 1) seams. */
-.rw-group-start {
-  border-top: 0.8px solid var(--borderColor-default, #d1d9e0);
-  margin-top: 4px;
+/* The one divider the menu draws. GitHub separates *groups*, not rows, and it
+   does that with an element of its own rather than with a border on the next
+   row — Primer's `ActionList.Divider` is `height: 1px; background:
+   var(--borderColor-muted); margin-block: 7px 8px` with **no inline inset**,
+   because the 8px inset lives on the items there (`margin-inline: 8px`) instead
+   of on the list. Ours is the mirror image — the panel carries the padding — so
+   the negative inline margin below cancels exactly that 8px and the seam reaches
+   both edges of the panel while the rows stay inset. Reading
+   `--borderColor-default` rather than the `-muted` name that rule uses is
+   deliberate: primer/primitives aliases `borderColor.muted` to
+   `borderColor.default`, so the two resolve to the same pixel (#d1d9e0 / #3d444d)
+   — and this way the seam cannot go lighter than the hairline GitHub actually
+   paints if a page still publishes the older alpha'd `-muted` value. The token
+   flips with the theme, so the seam tracks light/dark for free, and content.ts
+   inserts the element only where the group changes, so the menu's first row is
+   never preceded by one and there are exactly (groups - 1) of them. */
+.rw-divider {
+  background: var(--borderColor-default, #d1d9e0);
+  height: 1px;
+  /* 7px above / 8px below is Primer's own `margin-block` (it writes the top as
+     `calc(8px - 1px)`), so the seam reads as a seam rather than as the edge of
+     the row under it. */
+  margin: 7px -8px 8px;
 }
 .rw-desc {
   color: var(--fgColor-muted, #59636e);

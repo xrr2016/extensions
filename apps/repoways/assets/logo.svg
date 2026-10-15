@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- RepoWays: one origin, three ways out, heading right. Editable master;
+       logo.webp beside it is the raster @wxt-dev/auto-icons reads, and the
+       16/32/48/128 in the build come from downscaling that. Regenerate the
+       raster from this file with sharp — the library auto-icons itself uses. -->
+  <rect x="32.0" y="32.0" width="960.0" height="960.0" rx="288.0" fill="#0969da"/>
+  <g fill="none" stroke="#ffffff" stroke-width="72.0" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M264.0 512.0 L700.0 268.0"/>
+    <path d="M264.0 512.0 L772.0 512.0"/>
+    <path d="M264.0 512.0 L700.0 756.0"/>
+  </g>
+  <g fill="#ffffff">
+    <circle cx="264.0" cy="512.0" r="64.0"/>
+    <circle cx="700.0" cy="268.0" r="54.0"/>
+    <circle cx="772.0" cy="512.0" r="54.0"/>
+    <circle cx="700.0" cy="756.0" r="54.0"/>
+  </g>
+</svg>
