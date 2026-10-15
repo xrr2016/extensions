@@ -11,9 +11,6 @@
   "ways_depgraph": {
     "message": "List its dependencies"
   },
-  "ways_depsdev": {
-    "message": "Check dependency health"
-  },
   "ways_explainer": {
     "message": "Read a repo explainer"
   },

@@ -237,7 +237,7 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   // Repo pages re-mount on every `turbo:load`, and these are bound on
   // `window`, so removing the host does not remove them. A leftover one cannot
   // mis-close the new menu — its closure holds the old, detached nodes — but it
-  // keeps that whole shadow tree (fifteen rows and their inline marks) alive for
+  // keeps that whole shadow tree (fourteen rows and their inline marks) alive for
   // as long as the tab stays open, which on a SPA is one per navigation.
   return {
     host,

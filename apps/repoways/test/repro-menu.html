@@ -211,12 +211,11 @@
           `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
-        check("十五条入口", items.length === 15, `count=${items.length}`);
+        check("十四条入口", items.length === 14, `count=${items.length}`);
 
         const expected = [
           "https://gitdiagram.com/octocat/hello-world",
           "https://github.com/octocat/hello-world/network/dependencies",
-          "https://deps.dev/project/github/octocat%2Fhello-world",
           "https://deepwiki.com/octocat/hello-world",
           "https://zread.ai/octocat/hello-world",
           "https://gitreverse.com/octocat/hello-world",
@@ -233,7 +232,7 @@
         const wrong = items
           .map((el, i) => (el.href === expected[i] ? null : `${i}: ${el.href}`))
           .filter(Boolean);
-        check("十五条链接逐条对位", wrong.length === 0, wrong.join(" | "));
+        check("十四条链接逐条对位", wrong.length === 0, wrong.join(" | "));
 
         // Panel shape is GitHub's own popover: 12px corner, 8px of inset around
         // the rows, and **no border** — the hairline is the first layer of
@@ -272,16 +271,16 @@
         );
 
         // Every row carries its own mark, sized as GitHub sizes the ones in its
-        // dropdown. `innerHTML.length` is the identity proxy: fifteen rows that
+        // dropdown. `innerHTML.length` is the identity proxy: a set of rows that
         // all pointed at one icon would collapse the set to 1.
         const icons = items.map((el) => el.querySelector(".rw-lead > svg.rw-icon"));
         const sizes = new Set(icons.map((el) => el?.innerHTML.length));
         const is = icons[0] ? getComputedStyle(icons[0]) : {};
         check(
-          "十五行各有自己的品牌图标",
+          "十四行各有自己的品牌图标",
           icons.every(Boolean) &&
             icons.every((el) => el.firstElementChild !== null && el.getAttribute("viewBox")) &&
-            sizes.size === 15 &&
+            sizes.size === 14 &&
             is.width === "16px" &&
             is.height === "16px" &&
             is.flexGrow === "0",
@@ -290,10 +289,9 @@
 
         // github.com's CSP is `img-src 'self' data: blob: github.githubassets.com`,
         // so a chrome-extension:// image href silently never paints: every raster
-        // mark has to arrive as an inline data: URI. Eight rows are raster now
-        // (OSSInsight joined deps.dev / GitMCP / GitDiagram / DeepWiki / Zread /
-        // GitHub.dev / Star History), and this pins the rule for whatever gets
-        // added next.
+        // mark has to arrive as an inline data: URI. Seven rows are raster
+        // (GitDiagram / DeepWiki / Zread / GitMCP / GitHub.dev / OSSInsight /
+        // Star History), and this pins the rule for whatever gets added next.
         const rasters = [...(root?.querySelectorAll(".rw-lead > svg.rw-icon > image") ?? [])];
         const inlineOk = (el) => (el.getAttribute("href") ?? "").startsWith("data:image/png;base64,");
         check(
@@ -304,8 +302,8 @@
 
         check(
           "GitHub1s 那行带的是双档品牌填充",
-          items[9]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
-          `${items[9]?.querySelector("path")?.getAttribute("fill")}`,
+          items[8]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
+          `${items[8]?.querySelector("path")?.getAttribute("fill")}`,
         );
 
         // The right-hand arrow the previous version put at the end of every
@@ -332,8 +330,8 @@
         );
 
         // The one exception: a hairline seam above each *group's* first row.
-        // Fifteen rows in four contiguous groups (structure 0-2, ai 3-7, code
-        // 8-12, analytics 13-14) means exactly three seams, at indices 3/8/13,
+        // Fourteen rows in four contiguous groups (structure 0-1, ai 2-6, code
+        // 7-11, analytics 12-13) means exactly three seams, at indices 2/7/12,
         // and the menu's first row must NOT carry one. Border width is not pinned
         // (0.8px serialises as 0.8px or 1px depending on device-pixel ratio, the
         // same trap the fallback check documents), so assert style + a real
@@ -343,10 +341,10 @@
           (acc, el, i) => (el.classList.contains("rw-group-start") ? [...acc, i] : acc),
           [],
         );
-        const seam = getComputedStyle(items[3]);
+        const seam = getComputedStyle(items[2]);
         check(
-          "组间有 GitHub 式分隔线（3 条、落在 3/8/13、首行没有）",
-          seamIdx.join(",") === "3,8,13" &&
+          "组间有 GitHub 式分隔线（3 条、落在 2/7/12、首行没有）",
+          seamIdx.join(",") === "2,7,12" &&
             !items[0].classList.contains("rw-group-start") &&
             seam.borderTopStyle === "solid" &&
             seam.borderTopWidth !== "0px" &&
@@ -621,7 +619,7 @@
           );
 
           // A 2400px spacer in front of the anchor is this page being scrolled by
-          // 2400px: the button lands far below the viewport, where a fifteen-row
+          // 2400px: the button lands far below the viewport, where a fourteen-row
           // list cannot fit under it and has to flip above.
           const spacer = document.createElement("div");
           spacer.style.height = "2400px";

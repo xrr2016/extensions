@@ -11,9 +11,6 @@
   "ways_depgraph": {
     "message": "看仓库依赖图"
   },
-  "ways_depsdev": {
-    "message": "查依赖与评分"
-  },
   "ways_explainer": {
     "message": "看 AI 讲解"
   },

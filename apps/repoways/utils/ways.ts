@@ -18,7 +18,7 @@ export type Way = {
 
 // The rows stay in this order and content.ts draws a hairline wherever `group`
 // changes, so the array is already partitioned into four contiguous blocks:
-//   structure  — what the repo is made of (diagram + the two dependency views)
+//   structure  — what the repo is made of (diagram + dependency view)
 //   ai         — read / summarise / feed it to a model
 //   code       — browse, edit, and run the source
 //   analytics  — how the repo has moved over time
@@ -36,14 +36,6 @@ export const WAYS: Way[] = [
     icon: ICONS.depgraph,
     group: "structure",
     url: (r) => `https://github.com/${r.owner}/${r.repo}/network/dependencies`,
-  },
-  {
-    labelKey: "ways.depsdev",
-    service: "deps.dev",
-    icon: ICONS.depsdev,
-    group: "structure",
-    // The project key is `owner/repo` with the slash left percent-encoded.
-    url: (r) => `https://deps.dev/project/github/${r.owner}%2F${r.repo}`,
   },
   {
     labelKey: "ways.explainer",
