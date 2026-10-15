@@ -15,6 +15,7 @@
         --bgColor-neutral-muted: #818b981f;
         --fgColor-default: #1f2328;
         --fgColor-muted: #59636e;
+        --button-default-fgColor-rest: #25292e;
         --borderColor-default: #d1d9e0;
         --borderColor-muted: #d1d9e0b3;
         --overlay-bgColor: #fff;
@@ -32,6 +33,7 @@
         --bgColor-neutral-muted: #656c7633;
         --fgColor-default: #f0f6fc;
         --fgColor-muted: #9198a1;
+        --button-default-fgColor-rest: #f0f6fc;
         --borderColor-default: #3d444d;
         --borderColor-muted: #3d444db3;
         --overlay-bgColor: #010409;
@@ -78,7 +80,13 @@
          github.com 2026-10-14 (muted #f6f8fa fill, 0.8px #d1d9e0 border, 6px
          radius, `0 12px` padding, 14px/500/21px text, 8px gap, 1px drop shadow
          that is *not* inset); token-driven so flipping the theme actually
-         changes what the extension is supposed to copy. */
+         changes what the extension is supposed to copy. The label colour is
+         `--button-default-fgColor-rest` (#25292e), not `--fgColor-default`
+         (#1f2328) — that was the mock's own drift (re-measured 2026-10-15, the
+         real branch switcher and "Go to file" both paint rgb(37, 41, 46)) — and
+         `font-family: inherit` mirrors what github.com does explicitly on its
+         buttons: it repeats the `<body>` stack instead of taking a button's UA
+         default. */
       .gh-ref {
         align-items: center;
         background: var(--bgColor-muted, #f6f8fa);
@@ -86,8 +94,9 @@
         border-radius: var(--borderRadius-medium, 6px);
         box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
         box-sizing: border-box;
-        color: var(--fgColor-default, #1f2328);
+        color: var(--button-default-fgColor-rest, #25292e);
         display: flex;
+        font-family: inherit;
         font-size: 14px;
         font-weight: 500;
         gap: var(--control-medium-gap, 8px);
@@ -196,31 +205,38 @@
 
         // Icon / label / caret. The leading glyph is ours (Octicons has no route
         // icon) and it is now the product's own logo, so it is pinned by its real
-        // geometry rather than a prefix: the fan-out's three spokes and four dots,
-        // the blue plate gone, and currentColor as the ink. The caret is the one
-        // copied out of the branch button's markup.
+        // geometry rather than a prefix: the fan-out's three spokes and four
+        // *hollow* rings, the blue plate gone, and currentColor as the ink. The
+        // caret is the one copied out of the branch button's markup.
         const glyphs = [...(button?.querySelectorAll("svg") ?? [])];
         const leadGlyph = glyphs[0];
         const leadGroups = [...(leadGlyph?.querySelectorAll("g") ?? [])];
         const leadSpokes = [...(leadGlyph?.querySelectorAll("path") ?? [])].map((p) => p.getAttribute("d"));
-        const leadDots = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map(
+        const leadRings = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map(
           (c) => `${c.getAttribute("cx")},${c.getAttribute("cy")}/${c.getAttribute("r")}`,
         );
+        // A ring only reads as hollow if nothing paints its inside, so the two
+        // ways to break it are checked here: a second group (the old filled
+        // twin), or a circle carrying a fill of its own.
+        const ringFills = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map((c) => c.getAttribute("fill"));
+        const leadStrokeWidth = leadGroups[0]?.getAttribute("stroke-width") ?? "";
         const caretGlyph = glyphs[1]?.querySelector("path")?.getAttribute("d") ?? "";
         check(
-          "按钮是 项目 logo（无底板、线条走 currentColor）+ Ways + 箭头",
+          "按钮是 项目 logo（无底板、细线走 currentColor、四个空心圆）+ Ways + 箭头",
           glyphs.length === 2 &&
             button.firstElementChild === glyphs[0] &&
             button.lastElementChild === glyphs[1] &&
-            (leadGlyph?.getAttribute("viewBox") ?? "") === "200 199 626 626" &&
+            (leadGlyph?.getAttribute("viewBox") ?? "") === "168 162 700 700" &&
             leadGlyph?.querySelector("rect") === null &&
-            leadGroups.length === 2 &&
+            leadGroups.length === 1 &&
             leadGroups[0].getAttribute("stroke") === "currentColor" &&
-            leadGroups[1].getAttribute("fill") === "currentColor" &&
-            leadSpokes.join("|") === "M264 512L700 268|M264 512L772 512|M264 512L700 756" &&
-            leadDots.join("|") === "264,512/64|700,268/54|772,512/54|700,756/54" &&
+            leadGroups[0].getAttribute("fill") === "none" &&
+            leadStrokeWidth === "64" &&
+            leadSpokes.join("|") === "M319.8 480.7L644.2 299.3|M328 512L708 512|M319.8 543.3L644.2 724.7" &&
+            leadRings.join("|") === "264,512/64|700,268/64|772,512/64|700,756/64" &&
+            ringFills.every((f) => f === null) &&
             caretGlyph.startsWith("m4.427 7.427"),
-          `${glyphs.length} 个图标, viewBox=${leadGlyph?.getAttribute("viewBox")}, 描边 ${leadSpokes.length} 条, 圆点 ${leadDots.join(" ")}`,
+          `${glyphs.length} 个图标, viewBox=${leadGlyph?.getAttribute("viewBox")}, 组 ${leadGroups.length}, 线宽 ${leadStrokeWidth}, 描边 ${leadSpokes.length} 条, 环 ${leadRings.join(" ")}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
         check("十二条入口", items.length === 12, `count=${items.length}`);
@@ -257,6 +273,34 @@
             ms.backgroundColor === "rgb(255, 255, 255)" &&
             ms.boxShadow.startsWith(ring),
           `border=${ms.borderTopWidth} radius=${ms.borderRadius} pad=${ms.padding} bg=${ms.backgroundColor} shadow=${ms.boxShadow.slice(0, ring.length)}`,
+        );
+
+        // The open animation, measured off GitHub's own dropdown 2026-10-16: its
+        // React overlay runs `prc-Overlay-overlay-appear` — opacity 0 → 1 over
+        // 0.2s with Primer's `cubic-bezier(0.33, 1, 0.68, 1)` — and its
+        // keyframes carry no transform, so the panel fades where it sits instead
+        // of scaling or sliding (a recording of the real dropdown shows the same).
+        // The numbers are pinned here rather than compared against a mock: the
+        // requirement is "like GitHub", so GitHub's measured values are the
+        // oracle. Primer gates these rules behind
+        // `prefers-reduced-motion: no-preference`, and the shipped stylesheet
+        // repeats that guard, so the check only applies when this browser agrees
+        // — otherwise a reduced-motion environment would fail the suite for
+        // correctly honouring the preference.
+        const motionOk = matchMedia("(prefers-reduced-motion: no-preference)").matches;
+        const sheetRules = [...(root?.styleSheets?.[0]?.cssRules ?? [])];
+        const appearRule = sheetRules.find((r) => r.name === "rw-menu-appear");
+        const appearSteps = appearRule
+          ? [...appearRule.cssRules].map((k) => `${k.keyText}:${k.style.opacity}`)
+          : [];
+        check(
+          "展开动画抄自 GitHub 弹层（0.2s 淡入、无缩放位移）",
+          !motionOk ||
+            (ms.animationName === "rw-menu-appear" &&
+              ms.animationDuration === "0.2s" &&
+              ms.animationTimingFunction === "cubic-bezier(0.33, 1, 0.68, 1)" &&
+              appearSteps.join("|") === "0%:0|100%:1"),
+          `reduced=${!motionOk} name=${ms.animationName} ${ms.animationDuration} ${ms.animationTimingFunction} steps=${appearSteps.join("|")}`,
         );
 
         // Row anatomy, GitHub's own: the destination's mark and its name are one
@@ -379,6 +423,7 @@
           "borderRadius",
           "padding",
           "gap",
+          "fontFamily",
           "fontSize",
           "fontWeight",
           "lineHeight",
@@ -397,6 +442,28 @@
         check("高度跟随 Code 按钮", own.height === css.height, `${own.height} vs ${css.height}`);
         check("样式与分支按钮逐属性相同（浅色）", mism(own, dp).length === 0, mism(own, dp).join(" | "));
 
+        // The check above only proves the copy equals the donor, and it passes
+        // just as happily against a donor that has itself drifted from
+        // github.com — which is what had happened: the fixture painted the mock
+        // branch button with `--fgColor-default` (#1f2328) while the real one
+        // paints `--button-default-fgColor-rest` (#25292e), so a green harness
+        // said nothing about the label matching GitHub's buttons. The visible
+        // text is the label span, not the button box, so read it there and pin
+        // it to the numbers measured off github.com 2026-10-15: every button in
+        // that row (branch switcher, "Go to file", "Code") reads 14px / 500 /
+        // 21px in the button's own foreground.
+        const buttonLabel = root?.querySelector(".rw-btn > span");
+        const lf = getComputedStyle(buttonLabel);
+        check(
+          "按钮文字与 github.com 按钮一致（14px/500/21px、按钮前景色）",
+          lf.fontSize === "14px" &&
+            lf.fontWeight === "500" &&
+            lf.lineHeight === "21px" &&
+            lf.color === "rgb(37, 41, 46)" &&
+            lf.fontFamily === dp.fontFamily,
+          `${lf.fontSize}/${lf.fontWeight}/${lf.lineHeight} color=${lf.color} family=${lf.fontFamily}`,
+        );
+
         // Click, not hover. `pointerenter` does not bubble, so a real pointer
         // entering the button fires it on the wrapper as its own dispatch — both
         // elements get a synthetic one, because proving the negative needs the
@@ -408,6 +475,17 @@
 
         button?.click();
         check("点击展开", menu?.hidden === false);
+        // The declaration above proves the stylesheet says so; this proves it
+        // actually replays. `hidden` toggles `display`, and an element coming
+        // back from `display: none` starts its animation again from the top —
+        // which is why no JS is needed to re-trigger it on every open, and why
+        // this has to be read synchronously, while the 200ms is still running.
+        const replay = menu?.getAnimations?.() ?? [];
+        check(
+          "每次展开都从头重放这支动画",
+          !motionOk || replay.some((a) => a.animationName === "rw-menu-appear"),
+          `${replay.length} 条: ${replay.map((a) => a.animationName).join(",") || "无"}`,
+        );
 
         // Only measurable once displayed: a `hidden` element reports a 0×0 rect.
         // The width is *not* pinned to a number: `width: max-content` makes it a
@@ -577,16 +655,21 @@
           check(
             "donor 与变量都没有时回落字面色值",
             bare.backgroundColor === "rgb(246, 248, 250)" &&
-              bare.color === "rgb(31, 35, 40)" &&
+              bare.color === "rgb(37, 41, 46)" &&
               declared !== "0px" &&
               bare.borderTopWidth === declared &&
               bare.borderRadius === "6px" &&
               bare.fontSize === "14px" &&
               bare.fontWeight === "500" &&
               bare.lineHeight === "21px" &&
+              // Without `font: inherit` in the stylesheet a shadow `<button>`
+              // takes the UA's own font (Arial here) instead of the page's, and
+              // the label would render in a different typeface with no token
+              // involved — the one part of "字体" no token can rescue.
+              bare.fontFamily === getComputedStyle(document.body).fontFamily &&
               bare.gap === "8px" &&
               bare.padding === "0px 12px",
-            `${bare.backgroundColor} / ${bare.color} / ${bare.borderTopWidth} (declared 0.8px reads ${declared}) / ${bare.fontWeight} / ${bare.gap} / ${bare.padding}`,
+            `${bare.backgroundColor} / ${bare.color} / ${bare.borderTopWidth} (declared 0.8px reads ${declared}) / ${bare.fontWeight} / ${bare.fontFamily.slice(0, 24)} / ${bare.gap} / ${bare.padding}`,
           );
           check(
             "弹层没有变量时也自带那副样子",

@@ -2,17 +2,25 @@
   <!-- RepoWays: one origin, three ways out, heading right. Editable master;
        logo.webp beside it is the raster @wxt-dev/auto-icons reads, and the
        16/32/48/128 in the build come from downscaling that. Regenerate the
-       raster from this file with sharp — the library auto-icons itself uses. -->
+       raster from this file with sharp — the library auto-icons itself uses.
+
+       The ink is one uniform hairline, in the grammar GitHub's own `git-branch`
+       octicon uses: `stroke-width` 64, so every spoke is as thick as the ring
+       band, and each node is a *hollow* ring (stroke centred on r 64 gives an
+       outer radius of 96 and a hole of 64 — the same 3:1 outer-to-hole ratio
+       GitHub draws, and at the 16px the button renders it, 1.46px of ink and a
+       1.46px hole). The spokes therefore stop 64 short of each node's centre:
+       a round cap then reaches exactly to the ring's outer edge and spreads
+       into the band, leaving the hole clean — run them to the centre instead
+       and the cap fills the hole, which is what "hollow" would have lost. -->
   <rect x="32.0" y="32.0" width="960.0" height="960.0" rx="288.0" fill="#0969da"/>
-  <g fill="none" stroke="#ffffff" stroke-width="72.0" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M264.0 512.0 L700.0 268.0"/>
-    <path d="M264.0 512.0 L772.0 512.0"/>
-    <path d="M264.0 512.0 L700.0 756.0"/>
-  </g>
-  <g fill="#ffffff">
+  <g fill="none" stroke="#ffffff" stroke-width="64.0" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M319.8 480.7 L644.2 299.3"/>
+    <path d="M328.0 512.0 L708.0 512.0"/>
+    <path d="M319.8 543.3 L644.2 724.7"/>
     <circle cx="264.0" cy="512.0" r="64.0"/>
-    <circle cx="700.0" cy="268.0" r="54.0"/>
-    <circle cx="772.0" cy="512.0" r="54.0"/>
-    <circle cx="700.0" cy="756.0" r="54.0"/>
+    <circle cx="700.0" cy="268.0" r="64.0"/>
+    <circle cx="772.0" cy="512.0" r="64.0"/>
+    <circle cx="700.0" cy="756.0" r="64.0"/>
   </g>
 </svg>

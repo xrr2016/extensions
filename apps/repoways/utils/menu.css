@@ -21,7 +21,14 @@
    only apply when that control is absent — some repo layouts and narrow
    viewports render the row without it. They are the branch button's measured
    light-mode values, token-driven where a token exists (`--bgColor-muted` is
-   #f6f8fa, `--borderRadius-medium` 6px, `--control-medium-gap` .5rem). */
+   #f6f8fa, `--borderRadius-medium` 6px, `--control-medium-gap` .5rem).
+
+   The label colour is the one place the fallback used to drift: it read
+   `--fgColor-default` (#1f2328), the page's own foreground, while every button
+   on github.com paints `--button-default-fgColor-rest` (#25292e) — measured 2026-10-15,
+   `rgb(37, 41, 46)` on the branch switcher and on "Go to file" alike. The two
+   differ by 6/255 in light mode and resolve to the same #f0f6fc in dark, so the
+   button token is both the correct one and the safe one to read. */
 /* GitHub's page-wide reset, repeated here because `box-sizing` is not inherited
    across the shadow boundary. Without it every metric below lands outside the
    box — the button's copied padding + height, the panel's 8px inset, the rows'
@@ -41,7 +48,7 @@
   border: 0.8px solid var(--borderColor-default, #d1d9e0);
   border-radius: var(--borderRadius-medium, 6px);
   box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
-  color: var(--fgColor-default, #1f2328);
+  color: var(--button-default-fgColor-rest, #25292e);
   cursor: pointer;
   display: inline-flex;
   font: inherit;
@@ -84,6 +91,32 @@
   min-width: min(220px, calc(100vw - 16px));
   width: max-content;
   z-index: 2147483640;
+}
+/* The panel fades in where GitHub's own dropdown does. Measured on github.com
+   2026-10-16: the Code button's React overlay (`.prc-AnchoredOverlay
+   .prc-Overlay`) runs `prc-Overlay-overlay-appear` — opacity 0 → 1 over 0.2s
+   with Primer's standard `cubic-bezier(0.33, 1, 0.68, 1)` (the computed
+   animation reads exactly `0.2s cubic-bezier(0.33, 1, 0.68, 1)
+   prc-Overlay-overlay-appear-…`), and its keyframes carry **no transform**, so
+   the panel neither scales nor slides — a screen recording of the real
+   dropdown shows it holding its size and position while only the opacity ramps
+   up. Cheap fidelity: the animation replays on every open with no JS, because
+   `hidden` toggles `display` and an animation restarts when an element goes
+   from `display: none` back to a rendered state. Primer wraps the equivalent
+   rule in `@media screen and (prefers-reduced-motion: no-preference)` rather
+   than posting it unconditionally, so the same guard is repeated here. */
+@keyframes rw-menu-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  .rw-menu {
+    animation: 0.2s cubic-bezier(0.33, 1, 0.68, 1) rw-menu-appear;
+  }
 }
 /* One ActionList row: 32px tall, 6px corner, and the highlight is a rounded
    block inset from the panel rather than a full-width band — which is also why

@@ -27,6 +27,15 @@ const DONOR = "#repo-content-turbo-frame #ref-picker-repos-header-ref-selector";
 // neighbours reads as a bug. The shorthand entries (`border-*`, `border-radius`,
 // `padding`) were checked on the live page: each reads back non-empty and
 // round-trips through an inline declaration to the same computed value.
+//
+// `font-family` is on the list although it looks redundant: the label would
+// inherit it across the shadow boundary anyway, because github.com puts the
+// "Mona Sans VF" stack on `<body>` and the branch switcher's own rule repeats
+// it (measured 2026-10-15: donor and body report the same stack). Copying it is
+// what keeps the button's typeface pinned to the *button's* rule rather than to
+// whatever the page happens to inherit — the same reason every other entry is
+// here. `font-weight` is the other half of it, and 500 is what makes the label
+// read as a control rather than as body copy.
 const DONOR_PROPS = [
   "background-color",
   "box-shadow",
@@ -37,6 +46,7 @@ const DONOR_PROPS = [
   "border-radius",
   "padding",
   "gap",
+  "font-family",
   "font-size",
   "font-weight",
   "line-height",
@@ -58,20 +68,28 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // because white would vanish on the light button and a literal black would vanish
 // on a dark one. Coordinates are the master's own numbers, which is why the
 // viewBox is the master's 1024 grid; and the viewBox is the mark's tight square
-// (200..826 across, 199..825 down, both centred on 512), so the glyph fills its
-// 16px box the way an Octicon does instead of floating in the plate's old margin.
-const LOGO_VIEWBOX = "200 199 626 626";
+// (168..868 across, 162..862 down, both centred on the ink's own 518/512), so the
+// glyph fills its 16px box the way an Octicon does instead of floating in the
+// plate's old margin.
+//
+// The ink itself is the master's — one uniform hairline with every node a hollow
+// ring, which is the grammar GitHub's `git-branch` octicon uses (asked for
+// 2026-10-16: "跟 GitHub 的分支图标类似，细线条，顶端为空心圆形"). That is why
+// there is exactly one `<g>` here and no filled twin: strokes and rings carry the
+// same `stroke-width` of 64, and a ring at r 64 has its band spanning radius
+// 32..96, so the spokes stop 64 short of each node's centre (a round cap reaches
+// exactly 96) and each hole stays open. Run a spoke to its node's centre instead
+// and the cap fills the hole — the one way to get this wrong.
+const LOGO_VIEWBOX = "168 162 700 700";
 const LOGO_BODY =
-  `<g fill="none" stroke="currentColor" stroke-width="72" stroke-linecap="round" stroke-linejoin="round">` +
-  `<path d="M264 512L700 268"/>` +
-  `<path d="M264 512L772 512"/>` +
-  `<path d="M264 512L700 756"/>` +
-  `</g>` +
-  `<g fill="currentColor">` +
+  `<g fill="none" stroke="currentColor" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">` +
+  `<path d="M319.8 480.7L644.2 299.3"/>` +
+  `<path d="M328 512L708 512"/>` +
+  `<path d="M319.8 543.3L644.2 724.7"/>` +
   `<circle cx="264" cy="512" r="64"/>` +
-  `<circle cx="700" cy="268" r="54"/>` +
-  `<circle cx="772" cy="512" r="54"/>` +
-  `<circle cx="700" cy="756" r="54"/>` +
+  `<circle cx="700" cy="268" r="64"/>` +
+  `<circle cx="772" cy="512" r="64"/>` +
+  `<circle cx="700" cy="756" r="64"/>` +
   `</g>`;
 const CARET_PATH =
   "m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z";
@@ -88,7 +106,7 @@ function octicon(path: string): SVGSVGElement {
 }
 
 // The logo mark for the button's leading slot. Unlike `octicon()` this is not one
-// `path`: it is three stroked spokes plus four filled dots, so the body is parsed
+// `path`: it is three stroked spokes plus four hollow rings, so the body is parsed
 // as markup. `innerHTML` on an SVG element stays in the SVG namespace, which is
 // what `<g>` and `<circle>` need — `document.createElement` would land them in
 // HTML-land and nothing would render.
