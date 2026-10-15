@@ -1,8 +1,8 @@
 import { t } from "@/utils/i18n";
 // `?raw` inlines the stylesheet as a string at build time, so the shadow root
 // gets it without WXT having to emit a separate CSS entrypoint.
-import MENU_STYLE from "@/utils/menu.css?raw";
 import type { Icon } from "@/utils/icons";
+import MENU_STYLE from "@/utils/menu.css?raw";
 import { repoFromPath, WAYS, type RepoRef, type Way } from "@/utils/ways";
 
 const HOST_TAG = "repoways-ui";
@@ -162,15 +162,31 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   wrap.append(button, menu);
   root.append(wrap);
 
+  // 4px and right-flush is what GitHub's own dropdown measures against its
+  // anchor; the right edge is what `left` below is computed from. What is *not*
+  // GitHub's is when this runs: the panel is `position: fixed`, which pins it to
+  // the viewport, while the header row it hangs off scrolls with the document —
+  // the repo header is not sticky, so a rect read once at open time leaves the
+  // list parked over the commit list instead of hanging off its button.
+  const GAP = 4;
+  const EDGE = 8;
+
+  const place = () => {
+    const rect = button.getBoundingClientRect();
+    const { offsetWidth: width, offsetHeight: height } = menu;
+    const left = Math.max(EDGE, Math.min(rect.right - width, window.innerWidth - width - EDGE));
+    // Below is what the anchor asks for; above is the alternative when the whole
+    // list cannot fit under it, and the roomier side wins.
+    const below = window.innerHeight - rect.bottom - GAP - EDGE;
+    const above = rect.top - GAP - EDGE;
+    menu.style.left = `${left}px`;
+    menu.style.top = `${below < height && above > below ? rect.top - GAP - height : rect.bottom + GAP}px`;
+  };
+
   const show = () => {
     menu.hidden = false;
     button.setAttribute("aria-expanded", "true");
-    const rect = button.getBoundingClientRect();
-    const left = Math.max(8, Math.min(rect.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8));
-    menu.style.left = `${left}px`;
-    // 4px and right-flush is what GitHub's own dropdown measures against its
-    // anchor; the right edge is what `left` above is computed from.
-    menu.style.top = `${rect.bottom + 4}px`;
+    place();
   };
 
   const hide = () => {
@@ -204,10 +220,21 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   const onKey = (event: Event) => {
     if ((event as KeyboardEvent).key === "Escape" && !menu.hidden) hide();
   };
+  // The panel is `position: fixed`, so it does not follow the button on its own:
+  // a scroll has to be answered by measuring again. `window` + capture, not
+  // `document`, because scroll events do not bubble — a capture listener on the
+  // window is what hears a scroll raised by any scrolling ancestor, including
+  // the document itself. The re-place is synchronous so the panel never paints a
+  // frame at the stale position.
+  const track = () => {
+    if (!menu.hidden) place();
+  };
   window.addEventListener("pointerdown", dismiss, true);
   window.addEventListener("keydown", onKey);
+  window.addEventListener("scroll", track, true);
+  window.addEventListener("resize", track);
 
-  // Repo pages re-mount on every `turbo:load`, and these two are bound on
+  // Repo pages re-mount on every `turbo:load`, and these are bound on
   // `window`, so removing the host does not remove them. A leftover one cannot
   // mis-close the new menu — its closure holds the old, detached nodes — but it
   // keeps that whole shadow tree (fifteen rows and their inline marks) alive for
@@ -218,6 +245,8 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
     destroy: () => {
       window.removeEventListener("pointerdown", dismiss, true);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", track, true);
+      window.removeEventListener("resize", track);
     },
   };
 }

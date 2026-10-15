@@ -587,6 +587,93 @@
             mism(back, getComputedStyle(donor)).join(" | "),
           );
 
+          // --- 跟随锚点（滚动 / 缩放） ---
+          // The panel is `position: fixed`, so nothing in the layout keeps it
+          // hanging off its button: whatever moves the anchor has to be answered
+          // by re-measuring. Real scrolling is not something this harness can ask
+          // for — the in-app Browser's surface is hidden, so a `scrollTo` may not
+          // move the document at all, and a frame never runs (see AGENTS.md) —
+          // so the movement is produced the other way round: the anchor is
+          // *shifted* by inserting a spacer in front of it, which moves the button
+          // exactly as a scroll would, and then the event the shipped listener
+          // listens for is dispatched on `window`. That binding is capture on
+          // `window` precisely because a document-level scroll (the real one) is
+          // raised on `document` and does not bubble — a capture listener on the
+          // window is what hears it — and the re-place inside it is synchronous,
+          // so none of this needs to wait.
+          const liveRoot = document.querySelector("repoways-ui").shadowRoot;
+          const liveBtn = liveRoot.querySelector(".rw-btn");
+          const liveMenu = liveRoot.querySelector(".rw-menu");
+          // Same 4px the panel measures off its anchor with (see content.ts).
+          const GAP = 4;
+          const at = () => ({
+            btn: liveBtn.getBoundingClientRect(),
+            menu: liveMenu.getBoundingClientRect(),
+          });
+
+          liveBtn.click();
+          const opened = at();
+          check(
+            "展开时挂在按钮下方 4px、右缘对齐",
+            Math.abs(opened.menu.top - (opened.btn.bottom + GAP)) < 1 &&
+              Math.abs(opened.menu.right - opened.btn.right) < 1,
+            `menu.top=${opened.menu.top.toFixed(1)} button.bottom=${opened.btn.bottom.toFixed(1)} 右缘差 ${(opened.menu.right - opened.btn.right).toFixed(2)}`,
+          );
+
+          // A 2400px spacer in front of the anchor is this page being scrolled by
+          // 2400px: the button lands far below the viewport, where a fifteen-row
+          // list cannot fit under it and has to flip above.
+          const spacer = document.createElement("div");
+          spacer.style.height = "2400px";
+          spacer.setAttribute("aria-hidden", "true");
+          document.getElementById("anchor").before(spacer);
+          const shifted = at();
+          check(
+            "锚点被挪走后浮层停在原处（fixed 不会自己跟）",
+            Math.abs(shifted.menu.top - opened.menu.top) < 1 && shifted.btn.top - opened.btn.top > 2000,
+            `菜单 top ${opened.menu.top.toFixed(1)}→${shifted.menu.top.toFixed(1)}，按钮 top ${opened.btn.top.toFixed(1)}→${shifted.btn.top.toFixed(1)}`,
+          );
+
+          window.dispatchEvent(new Event("scroll"));
+          const flipped = at();
+          check(
+            "一条 scroll 事件让浮层重新挂回按钮（下方放不下就翻到上方）",
+            Math.abs(flipped.menu.bottom - (flipped.btn.top - GAP)) < 1 &&
+              flipped.menu.top < flipped.btn.top &&
+              Math.abs(flipped.menu.right - flipped.btn.right) < 1,
+            `button.top=${flipped.btn.top.toFixed(1)} menu=[${flipped.menu.top.toFixed(1)}, ${flipped.menu.bottom.toFixed(1)}]`,
+          );
+
+          // Taking the spacer away is the scroll back to the top, and the same
+          // event has to put the panel back under the button.
+          spacer.remove();
+          window.dispatchEvent(new Event("scroll"));
+          const restored = at();
+          check(
+            "回到原位后浮层又落回按钮下方",
+            Math.abs(restored.menu.top - (restored.btn.bottom + GAP)) < 1 &&
+              Math.abs(restored.menu.top - opened.menu.top) < 1,
+            `menu.top=${restored.menu.top.toFixed(1)} button.bottom=${restored.btn.bottom.toFixed(1)}`,
+          );
+
+          // Same shape for the other listener: pushing the Code button out by
+          // 300px drags the whole flex-end row left, and a `resize` has to bring
+          // the panel's right edge along with it.
+          codeButton.style.marginRight = "300px";
+          window.dispatchEvent(new Event("resize"));
+          const resized = at();
+          check(
+            "一条 resize 事件也让浮层跟上新位置",
+            Math.abs(resized.menu.right - resized.btn.right) < 1 &&
+              resized.btn.right < opened.btn.right - 200,
+            `按钮右缘 ${opened.btn.right.toFixed(1)}→${resized.btn.right.toFixed(1)}，菜单右缘差 ${(resized.menu.right - resized.btn.right).toFixed(2)}`,
+          );
+          codeButton.style.marginRight = "";
+          window.dispatchEvent(new Event("resize"));
+
+          // Left closed, like the page was found.
+          liveBtn.click();
+
           render();
         }, 0);
       });
