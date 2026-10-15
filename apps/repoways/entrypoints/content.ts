@@ -9,15 +9,24 @@ const HOST_TAG = "repoways-ui";
 
 // GitHub's hashed class names (`Box_6__yyTyGl`, `prc-Button-*`) change on every
 // deploy, and the button's label is localised, so neither can be the anchor.
-// This selector matched exactly one element on a repo page and nothing on
-// /issues, which is what keeps non-repo routes out without a path denylist.
-const CODE_BUTTON = '#repo-content-turbo-frame button[data-variant="primary"][aria-haspopup="true"]';
+//
+// Previously scoped to `#repo-content-turbo-frame` — a turbo-frame that used
+// to wrap the repo header row. GitHub removed it (observed 2026-10-16:
+// `querySelector("#repo-content-turbo-frame")` returned null while the Code
+// button sat directly under the repo header), so the selector is now scoped by
+// attributes instead. `data-component="Button"` is Primer's own marker on
+// real Button instances; without it a stray `data-variant="primary"` button
+// elsewhere on the page could be mistaken for the Code button. `aria-haspopup`
+// keeps it to the dropdown trigger (not a plain primary action).
+const CODE_BUTTON = 'button[data-component="Button"][data-variant="primary"][aria-haspopup="true"]';
 
 // The row's other neighbour — the branch switcher. Shadow DOM can't use
 // GitHub's classes, so the only way to look identical to it is to copy its
 // resolved styles; that also tracks light/dark without naming a single token.
 // An id, not a class: the hashed `prc-Button-*` name rotates on every deploy.
-const DONOR = "#repo-content-turbo-frame #ref-picker-repos-header-ref-selector";
+// The `#repo-content-turbo-frame` ancestor prefix was dropped at the same
+// time as CODE_BUTTON — that frame no longer exists in the DOM.
+const DONOR = "#ref-picker-repos-header-ref-selector";
 
 // Measured off github.com 2026-10-14: muted fill #f6f8fa, 0.8px #d1d9e0 border,
 // 6px radius, `0 12px` padding, 14px/500/21px text, 8px gap between icon, label
@@ -312,6 +321,7 @@ function mount() {
   mounted = null;
 
   const codeButton = document.querySelector<HTMLElement>(CODE_BUTTON);
+  console.log("codeButton", codeButton);
   const row = codeButton?.parentElement;
   if (!codeButton || !row) return;
 

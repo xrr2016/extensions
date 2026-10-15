@@ -192,7 +192,7 @@
         const host = hosts[0];
         const root = host?.shadowRoot;
         const codeButton = document.querySelector(
-          '#repo-content-turbo-frame button[data-variant="primary"][aria-haspopup="true"]',
+          'button[data-component="Button"][data-variant="primary"][aria-haspopup="true"]',
         );
 
         check("host 在 Code 按钮左边", host?.nextElementSibling === codeButton);
@@ -429,7 +429,7 @@
           "lineHeight",
         ];
         const donor = document.querySelector(
-          "#repo-content-turbo-frame #ref-picker-repos-header-ref-selector",
+          "#ref-picker-repos-header-ref-selector",
         );
         // The fallback check below takes the donor away; remember where it sat
         // so the page ends as it started and the tail can be re-run by hand.
