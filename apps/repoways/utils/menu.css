@@ -66,12 +66,14 @@
   position: fixed;
   /* Width follows the longest row instead of a fixed 400px — a row is a mark, a
      service name and a short description, so a wide panel spends most of itself
-     on empty space. Measured in the harness with the icons in and all fourteen
-     rows: zh_CN lands at 262.93px and en at 285.34px. en's longest row is now
-     "GitDiagram" + "Architecture diagram": the 2026-10-15 pass that shortened
-     every description (dropping redundant qualifiers, "浏览器里读代码" → "读代码")
-     took en down from 300.7px, while zh_CN did not move because its longest row
-     was already the first one. A longer service name or description has to land
+     on empty space. Measured in the harness with the icons in and all twelve
+     rows: zh_CN lands at 238.93px and en at 285.34px, and in both locales the
+     longest row is the same one — "Dependency Graph" + its description ("看依赖图"
+     / "List dependencies"). The 2026-10-15 pass that shortened every description
+     (dropping redundant qualifiers, "浏览器里读代码" → "读代码") took en down from
+     300.7px and zh_CN down from 262.93px; the same day's removal of the
+     Sourcegraph and Star History rows then moved neither, because neither was
+     anywhere near the longest. A longer service name or description has to land
      within that, or the nowrap row overflows the panel instead of widening it.
      The floor is a guard for a very short locale, not what either of ours
      measures; the viewport clamp replaces the one the fixed width used to give. */

@@ -73,13 +73,6 @@ export const WAYS: Way[] = [
     url: (r) => `https://gitingest.com/${r.owner}/${r.repo}`,
   },
   {
-    labelKey: "ways.search",
-    service: "Sourcegraph",
-    icon: ICONS.sourcegraph,
-    group: "code",
-    url: (r) => `https://sourcegraph.com/github.com/${r.owner}/${r.repo}`,
-  },
-  {
     labelKey: "ways.read",
     service: "GitHub1s",
     icon: ICONS.github1s,
@@ -115,12 +108,5 @@ export const WAYS: Way[] = [
     icon: ICONS.ossinsight,
     group: "analytics",
     url: (r) => `https://ossinsight.io/analyze/${r.owner}/${r.repo}`,
-  },
-  {
-    labelKey: "ways.stars",
-    service: "Star History",
-    icon: ICONS.starhistory,
-    group: "analytics",
-    url: (r) => `https://star-history.com/${r.owner}/${r.repo}`,
   },
 ];

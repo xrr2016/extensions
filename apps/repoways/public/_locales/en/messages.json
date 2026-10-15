@@ -26,9 +26,6 @@
   "ways_package": {
     "message": "Package for AI"
   },
-  "ways_search": {
-    "message": "Code search"
-  },
   "ways_read": {
     "message": "Read code"
   },
@@ -43,8 +40,5 @@
   },
   "ways_ossinsight": {
     "message": "Repo activity"
-  },
-  "ways_stars": {
-    "message": "Star growth"
   }
 }

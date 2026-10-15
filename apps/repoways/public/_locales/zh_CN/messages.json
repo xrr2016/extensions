@@ -26,9 +26,6 @@
   "ways_package": {
     "message": "打包给 AI"
   },
-  "ways_search": {
-    "message": "搜代码"
-  },
   "ways_read": {
     "message": "读代码"
   },
@@ -43,8 +40,5 @@
   },
   "ways_ossinsight": {
     "message": "看活跃度"
-  },
-  "ways_stars": {
-    "message": "看 Star 趋势"
   }
 }

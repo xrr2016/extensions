@@ -211,7 +211,7 @@
           `${glyphs.length} 个图标, first=${route.slice(0, 13)}, last=${caretGlyph.slice(0, 12)}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
-        check("十四条入口", items.length === 14, `count=${items.length}`);
+        check("十二条入口", items.length === 12, `count=${items.length}`);
 
         const expected = [
           "https://gitdiagram.com/octocat/hello-world",
@@ -221,18 +221,16 @@
           "https://gitreverse.com/octocat/hello-world",
           "https://gitmcp.io/octocat/hello-world",
           "https://gitingest.com/octocat/hello-world",
-          "https://sourcegraph.com/github.com/octocat/hello-world",
           "https://github1s.com/octocat/hello-world",
           "https://github.dev/octocat/hello-world",
           "https://codespaces.new/octocat/hello-world",
           "https://stackblitz.com/github/octocat/hello-world",
           "https://ossinsight.io/analyze/octocat/hello-world",
-          "https://star-history.com/octocat/hello-world",
         ];
         const wrong = items
           .map((el, i) => (el.href === expected[i] ? null : `${i}: ${el.href}`))
           .filter(Boolean);
-        check("十四条链接逐条对位", wrong.length === 0, wrong.join(" | "));
+        check("十二条链接逐条对位", wrong.length === 0, wrong.join(" | "));
 
         // Panel shape is GitHub's own popover: 12px corner, 8px of inset around
         // the rows, and **no border** — the hairline is the first layer of
@@ -277,10 +275,10 @@
         const sizes = new Set(icons.map((el) => el?.innerHTML.length));
         const is = icons[0] ? getComputedStyle(icons[0]) : {};
         check(
-          "十四行各有自己的品牌图标",
+          "十二行各有自己的品牌图标",
           icons.every(Boolean) &&
             icons.every((el) => el.firstElementChild !== null && el.getAttribute("viewBox")) &&
-            sizes.size === 14 &&
+            sizes.size === 12 &&
             is.width === "16px" &&
             is.height === "16px" &&
             is.flexGrow === "0",
@@ -289,9 +287,9 @@
 
         // github.com's CSP is `img-src 'self' data: blob: github.githubassets.com`,
         // so a chrome-extension:// image href silently never paints: every raster
-        // mark has to arrive as an inline data: URI. Seven rows are raster
-        // (GitDiagram / DeepWiki / Zread / GitMCP / GitHub.dev / OSSInsight /
-        // Star History), and this pins the rule for whatever gets added next.
+        // mark has to arrive as an inline data: URI. Six rows are raster
+        // (GitDiagram / DeepWiki / Zread / GitMCP / GitHub.dev / OSSInsight),
+        // and this pins the rule for whatever gets added next.
         const rasters = [...(root?.querySelectorAll(".rw-lead > svg.rw-icon > image") ?? [])];
         const inlineOk = (el) => (el.getAttribute("href") ?? "").startsWith("data:image/png;base64,");
         check(
@@ -302,8 +300,8 @@
 
         check(
           "GitHub1s 那行带的是双档品牌填充",
-          items[8]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
-          `${items[8]?.querySelector("path")?.getAttribute("fill")}`,
+          items[7]?.querySelector("path")?.getAttribute("fill") === "light-dark(#13227a,#0a84ff)",
+          `${items[7]?.querySelector("path")?.getAttribute("fill")}`,
         );
 
         // The right-hand arrow the previous version put at the end of every
@@ -330,8 +328,8 @@
         );
 
         // The one exception: a hairline seam above each *group's* first row.
-        // Fourteen rows in four contiguous groups (structure 0-1, ai 2-6, code
-        // 7-11, analytics 12-13) means exactly three seams, at indices 2/7/12,
+        // Twelve rows in four contiguous groups (structure 0-1, ai 2-6, code
+        // 7-10, analytics 11) means exactly three seams, at indices 2/7/11,
         // and the menu's first row must NOT carry one. Border width is not pinned
         // (0.8px serialises as 0.8px or 1px depending on device-pixel ratio, the
         // same trap the fallback check documents), so assert style + a real
@@ -343,8 +341,8 @@
         );
         const seam = getComputedStyle(items[2]);
         check(
-          "组间有 GitHub 式分隔线（3 条、落在 2/7/12、首行没有）",
-          seamIdx.join(",") === "2,7,12" &&
+          "组间有 GitHub 式分隔线（3 条、落在 2/7/11、首行没有）",
+          seamIdx.join(",") === "2,7,11" &&
             !items[0].classList.contains("rw-group-start") &&
             seam.borderTopStyle === "solid" &&
             seam.borderTopWidth !== "0px" &&
@@ -398,7 +396,7 @@
 
         // Only measurable once displayed: a `hidden` element reports a 0×0 rect.
         // The width is *not* pinned to a number: `width: max-content` makes it a
-        // text-measurement (fourteen rows, icons in: zh_CN 262.93px here, en
+        // text-measurement (twelve rows, icons in: zh_CN 238.93px here, en
         // 285.34px), and text measurement follows the machine's fonts, so a
         // literal would flake. What is stable, and what the rule means, is that
         // the panel is exactly its longest row plus the 8px inset on each side —
@@ -619,7 +617,7 @@
           );
 
           // A 2400px spacer in front of the anchor is this page being scrolled by
-          // 2400px: the button lands far below the viewport, where a fourteen-row
+          // 2400px: the button lands far below the viewport, where a twelve-row
           // list cannot fit under it and has to flip above.
           const spacer = document.createElement("div");
           spacer.style.height = "2400px";
@@ -671,6 +669,42 @@
 
           // Left closed, like the page was found.
           liveBtn.click();
+
+          // The CSP rule checked earlier only pins the *shape* of the href, and
+          // that is not enough: a PNG whose deflate stream is corrupt still
+          // starts with `data:image/png;base64,` and still measures 16×16, while
+          // painting absolutely nothing — which is exactly how a dead OSSInsight
+          // mark shipped unnoticed (2026-10-15, base64 hand-retyped during an
+          // unrelated edit, two characters drifted, IDAT CRC went bad). So decode
+          // every distinct raster href for real and require visible pixels.
+          const freshRasters = [...fresh.querySelectorAll(".rw-lead > svg.rw-icon > image")];
+          const hrefs = [...new Set(freshRasters.map((el) => el.getAttribute("href")))];
+
+          const decoded = await Promise.all(
+            hrefs.map(async (href) => {
+              try {
+                const img = new Image();
+                img.src = href;
+                await img.decode();
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext("2d", { willReadFrequently: true });
+                ctx.drawImage(img, 0, 0);
+                const px = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let visible = 0;
+                for (let i = 3; i < px.length; i += 4) if (px[i] > 0) visible++;
+                return { ok: img.naturalWidth > 0 && visible > 0, detail: `${img.naturalWidth}px/${visible}px` };
+              } catch (error) {
+                return { ok: false, detail: `无法解码: ${error.name ?? error}` };
+              }
+            }),
+          );
+          check(
+            "每张位图都真能解码、且带可见像素",
+            hrefs.length > 0 && decoded.length === hrefs.length && decoded.every((d) => d.ok),
+            `${decoded.length} 张: ${decoded.map((d) => d.detail).join(", ")}`,
+          );
 
           render();
         }, 0);
