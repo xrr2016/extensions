@@ -67,15 +67,14 @@
   /* Width follows the longest row instead of a fixed 400px — a row is a mark, a
      service name and a short description, so a wide panel spends most of itself
      on empty space. Measured in the harness with the icons in and all fourteen
-     rows: zh_CN lands at 262.93px and en at 300.7px. en's longest row is still
-     "Dependency Graph" + "List its dependencies" (tied with GitDiagram's) — the
-     added OSSInsight row, and the deps.dev row removed on 2026-10-15, were both
-     shorter in name and description, so neither locale's width nor the 320px
-     cap's ~19px en headroom moved when either changed. A longer service name or
-     description has to land within that, or the nowrap row overflows the panel
-     instead of widening it. The floor is a guard
-     for a very short locale, not what either of ours measures; the viewport clamp
-     replaces the one the fixed width used to give. */
+     rows: zh_CN lands at 262.93px and en at 285.34px. en's longest row is now
+     "GitDiagram" + "Architecture diagram": the 2026-10-15 pass that shortened
+     every description (dropping redundant qualifiers, "浏览器里读代码" → "读代码")
+     took en down from 300.7px, while zh_CN did not move because its longest row
+     was already the first one. A longer service name or description has to land
+     within that, or the nowrap row overflows the panel instead of widening it.
+     The floor is a guard for a very short locale, not what either of ours
+     measures; the viewport clamp replaces the one the fixed width used to give. */
   max-width: min(320px, calc(100vw - 16px));
   /* min() rather than a plain 220px: `min-width` beats `max-width` in the box
      model, so a bare floor would push the panel off a viewport narrower than it

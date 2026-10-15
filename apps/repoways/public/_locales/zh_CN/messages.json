@@ -9,7 +9,7 @@
     "message": "生成架构图"
   },
   "ways_depgraph": {
-    "message": "看仓库依赖图"
+    "message": "看依赖图"
   },
   "ways_explainer": {
     "message": "看 AI 讲解"
@@ -21,30 +21,30 @@
     "message": "导出 AI 提示词"
   },
   "ways_mcp": {
-    "message": "仓库文档转 MCP"
+    "message": "文档转 MCP"
   },
   "ways_package": {
-    "message": "打包仓库给 AI"
+    "message": "打包给 AI"
   },
   "ways_search": {
-    "message": "跨版本搜代码"
+    "message": "搜代码"
   },
   "ways_read": {
-    "message": "浏览器里读代码"
+    "message": "读代码"
   },
   "ways_edit": {
-    "message": "浏览器里改代码"
+    "message": "改代码"
   },
   "ways_codespaces": {
-    "message": "云端开发环境"
+    "message": "云端开发"
   },
   "ways_run": {
-    "message": "浏览器里跑项目"
+    "message": "跑项目"
   },
   "ways_ossinsight": {
-    "message": "看仓库活跃度"
+    "message": "看活跃度"
   },
   "ways_stars": {
-    "message": "看 Star 增长曲线"
+    "message": "看 Star 趋势"
   }
 }

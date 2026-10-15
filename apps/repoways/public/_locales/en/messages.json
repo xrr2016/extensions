@@ -6,45 +6,45 @@
     "message": "Ways"
   },
   "ways_diagram": {
-    "message": "View architecture diagram"
+    "message": "Architecture diagram"
   },
   "ways_depgraph": {
-    "message": "List its dependencies"
+    "message": "List dependencies"
   },
   "ways_explainer": {
-    "message": "Read a repo explainer"
+    "message": "AI explainer"
   },
   "ways_zread": {
-    "message": "Read the Zread walkthrough"
+    "message": "Zread walkthrough"
   },
   "ways_prompts": {
-    "message": "Export as AI prompts"
+    "message": "AI prompts"
   },
   "ways_mcp": {
-    "message": "Serve docs as MCP"
+    "message": "Docs as MCP"
   },
   "ways_package": {
-    "message": "Package the repo for AI"
+    "message": "Package for AI"
   },
   "ways_search": {
-    "message": "Search code and history"
+    "message": "Code search"
   },
   "ways_read": {
-    "message": "Read the code online"
+    "message": "Read code"
   },
   "ways_edit": {
-    "message": "Edit the code online"
+    "message": "Edit code"
   },
   "ways_codespaces": {
-    "message": "Open a dev environment"
+    "message": "Dev environment"
   },
   "ways_run": {
-    "message": "Run the project online"
+    "message": "Run project"
   },
   "ways_ossinsight": {
-    "message": "Analyze repo activity"
+    "message": "Repo activity"
   },
   "ways_stars": {
-    "message": "Track star history"
+    "message": "Star growth"
   }
 }

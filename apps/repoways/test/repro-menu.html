@@ -398,12 +398,12 @@
 
         // Only measurable once displayed: a `hidden` element reports a 0×0 rect.
         // The width is *not* pinned to a number: `width: max-content` makes it a
-        // text-measurement (fifteen rows, icons in: zh_CN 262.93px here, en
-        // 300.7px), and text measurement follows the machine's fonts, so a
+        // text-measurement (fourteen rows, icons in: zh_CN 262.93px here, en
+        // 285.34px), and text measurement follows the machine's fonts, so a
         // literal would flake. What is stable, and what the rule means, is that
         // the panel is exactly its longest row plus the 8px inset on each side —
         // and that it sits between the 220px floor and the 320px cap rather than
-        // the old fixed 400. en is the one that runs at the cap (see the note in
+        // the old fixed 400. en is the wider of the two (see the note in
         // menu.css), and this page only ships zh_CN, so measuring en is a manual
         // step: rewrite each `.rw-desc` from `_locales/en/messages.json` and
         // re-read the rect.
