@@ -121,17 +121,21 @@
   <body>
     <h2>octocat/hello-world</h2>
     <div id="anchor">
-      <turbo-frame id="repo-content-turbo-frame">
-        <div class="row">
-          <button class="gh-ref" id="ref-picker-repos-header-ref-selector" data-component="Button"
-            data-variant="default" data-size="medium" aria-haspopup="true">
-            main
-          </button>
-          <button class="gh-btn" data-component="Button" data-variant="primary" data-size="medium" aria-haspopup="true">
-            Code
-          </button>
-        </div>
-      </turbo-frame>
+      <!-- The repo header row, without the `#repo-content-turbo-frame` it used to
+           sit in. GitHub has begun dropping that frame (2026-10-16) and this
+           fixture kept the wrapper long after the site had stopped shipping it on
+           some repo pages — which is why the suite stayed green while the shipped
+           selector went blind. A fixture is only evidence about the page it
+           copies. -->
+      <div class="row">
+        <button class="gh-ref" id="ref-picker-repos-header-ref-selector" data-component="Button"
+          data-variant="default" data-size="medium" aria-haspopup="true">
+          main
+        </button>
+        <button class="gh-btn" data-component="Button" data-variant="primary" data-size="medium" aria-haspopup="true">
+          Code
+        </button>
+      </div>
     </div>
     <div class="report" id="report">running…</div>
 
@@ -585,7 +589,7 @@
                 "https://gitdiagram.com/octocat/hello-world",
           );
 
-          // Dismissal lives on `window`, outside the host that `mount()` throws
+          // Dismissal lives on `window`, outside the host that `ensure()` throws
           // away on every re-render, so it is the one thing a re-mount has to
           // re-arm by hand: check the fresh instance opens *and* closes, not just
           // the first one.
@@ -816,6 +820,41 @@
             "每张位图都真能解码、且带可见像素",
             hrefs.length > 0 && decoded.length === hrefs.length && decoded.every((d) => d.ok),
             `${decoded.length} 张: ${decoded.map((d) => d.detail).join(", ")}`,
+          );
+
+          // --- GitHub 重渲染仓库头部那一行 ---
+          // The row is React's: when its partial commits it replaces the row and
+          // everything inside it goes — including the button the content script
+          // put there. A fresh clone of the row *is* that commit, down to the
+          // identity of the Code button: the old row (with our host in it) leaves,
+          // a new Code button arrives, and nothing dispatches `turbo:load`. This is
+          // the shipped bug (2026-10-16, the 0.4s-then-gone button in the
+          // recording): `turbo:load` was the only re-mount signal, so a re-render
+          // left the row buttonless for good. The watcher is the only thing that
+          // can bring it back — which is what the two checks below pin, one
+          // asserting the loss actually happens, the other asserting the recovery.
+          const liveRow = codeButton.parentElement;
+          const clone = liveRow.cloneNode(true);
+          clone.querySelectorAll("repoways-ui").forEach((el) => el.remove());
+          liveRow.replaceWith(clone);
+          check(
+            "重渲染的一瞬按钮确实没了（复现线上那一幕）",
+            document.querySelectorAll("repoways-ui").length === 0,
+            `换行后剩 ${document.querySelectorAll("repoways-ui").length} 个 host`,
+          );
+
+          // The watcher's callback is a microtask, so any yield proves it ran.
+          await new Promise((resolve) => setTimeout(resolve, 0));
+          const revived = document.querySelector("repoways-ui");
+          const freshCode = clone.querySelector(
+            'button[data-component="Button"][data-variant="primary"][aria-haspopup="true"]',
+          );
+          check(
+            "GitHub 重渲染后按钮自己回来了、仍插在 Code 按钮左边",
+            document.querySelectorAll("repoways-ui").length === 1 &&
+              revived?.parentElement === clone &&
+              revived?.nextElementSibling === freshCode,
+            `host=${document.querySelectorAll("repoways-ui").length} 父=${revived?.parentElement?.className} 右邻=${revived?.nextElementSibling?.textContent?.trim()}`,
           );
 
           render();

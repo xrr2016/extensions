@@ -10,10 +10,12 @@ const HOST_TAG = "repoways-ui";
 // GitHub's hashed class names (`Box_6__yyTyGl`, `prc-Button-*`) change on every
 // deploy, and the button's label is localised, so neither can be the anchor.
 //
-// Previously scoped to `#repo-content-turbo-frame` — a turbo-frame that used
-// to wrap the repo header row. GitHub removed it (observed 2026-10-16:
-// `querySelector("#repo-content-turbo-frame")` returned null while the Code
-// button sat directly under the repo header), so the selector is now scoped by
+// Previously scoped to `#repo-content-turbo-frame` — a turbo-frame that used to
+// wrap the repo header row. GitHub is dropping it (observed 2026-10-16: on one
+// repo page `querySelector("#repo-content-turbo-frame")` returned null while
+// the Code button sat directly under the repo header, and on another repo page
+// the same selector still matched — the rollout is partial), which makes the
+// frame unsafe to anchor on in either state. The selector is scoped by
 // attributes instead. `data-component="Button"` is Primer's own marker on
 // real Button instances; without it a stray `data-variant="primary"` button
 // elsewhere on the page could be mistaken for the Code button. `aria-haspopup`
@@ -24,8 +26,9 @@ const CODE_BUTTON = 'button[data-component="Button"][data-variant="primary"][ari
 // GitHub's classes, so the only way to look identical to it is to copy its
 // resolved styles; that also tracks light/dark without naming a single token.
 // An id, not a class: the hashed `prc-Button-*` name rotates on every deploy.
-// The `#repo-content-turbo-frame` ancestor prefix was dropped at the same
-// time as CODE_BUTTON — that frame no longer exists in the DOM.
+// This one used to be scoped to `#repo-content-turbo-frame` as well; an id is
+// already unique on the page, so the ancestor bought nothing and broke on the
+// same deploy the Code button's scoping did.
 const DONOR = "#ref-picker-repos-header-ref-selector";
 
 // Measured off github.com 2026-10-14: muted fill #f6f8fa, 0.8px #d1d9e0 border,
@@ -296,13 +299,18 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   window.addEventListener("scroll", track, true);
   window.addEventListener("resize", track);
 
-  // Repo pages re-mount on every `turbo:load`, and these are bound on
-  // `window`, so removing the host does not remove them. A leftover one cannot
+  // The button is rebuilt whenever the page re-renders it away (see `ensure()`
+  // below), and these are bound on `window`, so removing the host does not
+  // remove them. A leftover one cannot
   // mis-close the new menu — its closure holds the old, detached nodes — but it
   // keeps that whole shadow tree (twelve rows and their inline marks) alive for
   // as long as the tab stays open, which on a SPA is one per navigation.
   return {
     host,
+    // The donor this instance mirrored, so a later pass can tell "the same
+    // donor" from "a donor that has just been replaced or taken away" without
+    // re-reading anything.
+    donor,
     restyle,
     destroy: () => {
       window.removeEventListener("pointerdown", dismiss, true);
@@ -313,25 +321,59 @@ function createUi(codeButton: HTMLElement, donor: HTMLElement | null, repo: Repo
   };
 }
 
+// One injection, re-runnable, driven by the document rather than by navigation.
+//
+// The row is React's — the Code button's parent is a Primer `Box` carrying
+// `__reactFiber` keys (read off github.com 2026-10-16) — and a node inserted
+// into a React-managed parent is a node React can drop on its next commit. That
+// is the bug this replaces: the button appeared, the row's React partial
+// finished booting and replaced the row under it a moment later, and the button
+// never came back, because `turbo:load` fires on navigation and not on a
+// re-render — so a re-render was a state the script could not hear about at
+// all. A screen recording of it is 0.4s of button (2026-10-16).
 let mounted: ReturnType<typeof createUi> | null = null;
 
-function mount() {
+// Removes whatever is standing: ours, or a leftover host from an earlier run of
+// the content script (reloading the extension leaves the old one behind with no
+// `mounted` pointing at it).
+function teardown() {
   mounted?.destroy();
   document.querySelectorAll(HOST_TAG).forEach((el) => el.remove());
   mounted = null;
+}
 
+function ensure() {
   const codeButton = document.querySelector<HTMLElement>(CODE_BUTTON);
-  console.log("codeButton", codeButton);
-  const row = codeButton?.parentElement;
-  if (!codeButton || !row) return;
-
-  const repo = repoFromPath(location.pathname);
-  if (!repo) return;
-
-  // The donor lives in the same turbo frame but not in this flex row, hence the
-  // frame-scoped id selector rather than a walk sideways from the Code button.
   const donor = document.querySelector<HTMLElement>(DONOR);
 
+  // Nothing has happened to us: the same slot, the same donor to mirror. This
+  // is what makes the watcher below safe to run on every mutation in the page —
+  // re-inserting further down is itself a mutation, and the pass it raises
+  // lands here — and it is also what keeps `restyle()` from re-running for
+  // free. `mounted.donor === donor` covers the other direction: a donor that
+  // has just been replaced or taken away reads as a change, and the button
+  // rebuilds onto (or off) it.
+  if (
+    mounted?.host.isConnected &&
+    mounted.host.nextElementSibling === codeButton &&
+    mounted.donor === donor
+  ) {
+    return;
+  }
+
+  const row = codeButton?.parentElement;
+  const repo = repoFromPath(location.pathname);
+  if (!codeButton || !row || !repo) {
+    // Either off the repo header (another route, or a path that is not a repo)
+    // or mid-re-render, with React having taken the row away and not yet put
+    // the next one back. Drop our node rather than leave one hanging beside
+    // nothing; the mutation that brings the Code button back asks for a new
+    // one.
+    teardown();
+    return;
+  }
+
+  teardown();
   mounted = createUi(codeButton, donor, repo);
   row.insertBefore(mounted.host, codeButton);
 }
@@ -340,16 +382,35 @@ export default defineContentScript({
   matches: ["https://github.com/*"],
   runAt: "document_idle",
   main(ctx) {
-    mount();
-    // Repo pages are a SPA: switching tabs replaces the turbo frame without a
-    // document reload, so the injected button has to be re-added each render.
-    document.addEventListener("turbo:load", mount);
+    ensure();
 
-    // Light/dark is a pair of attributes on <html>, flipped in place with no
-    // navigation and no `turbo:load`. Without this the copied paint keeps the
-    // palette from before the switch: a white button on a dark page.
-    const observer = new MutationObserver(() => mounted?.restyle());
-    observer.observe(document.documentElement, { attributeFilter: THEME_ATTRS });
-    ctx.onInvalidated(() => observer.disconnect());
+    // Re-assert the injection on any structural change. The row above is
+    // React's and its depth in the tree is not ours to pin, so the watcher
+    // covers the document; `ensure()` is two queries when nothing happened to
+    // us, and a callback is raised once per batch of mutations rather than once
+    // per record, which is what keeps this affordable at GitHub's mutation rate.
+    const tree = new MutationObserver(ensure);
+    tree.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Light/dark is a pair of attributes on `<html>`, flipped in place with no
+    // navigation and no re-render, so it gets an observer of its own: a restyle
+    // reads the donor's computed style — a forced layout, the expensive part of
+    // this file — and has to stay rare, while the watcher above has to hear
+    // about everything.
+    const theme = new MutationObserver(() => mounted?.restyle());
+    theme.observe(document.documentElement, { attributeFilter: THEME_ATTRS });
+
+    // The watcher above already answers a re-render; this answers the other
+    // half of a soft navigation — the URL. Turbo rewrites `location.pathname`
+    // after the new content is in, so a button rebuilt from the mutation that
+    // preceded that rewrite would carry the previous repo's links. `turbo:load`
+    // fires once the address bar has caught up.
+    document.addEventListener("turbo:load", ensure);
+
+    ctx.onInvalidated(() => {
+      tree.disconnect();
+      theme.disconnect();
+      document.removeEventListener("turbo:load", ensure);
+    });
   },
 });
