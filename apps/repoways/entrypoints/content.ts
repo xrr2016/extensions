@@ -328,6 +328,7 @@ function mount() {
 
 export default defineContentScript({
   matches: ["https://github.com/*"],
+  runAt: "document_idle",
   main(ctx) {
     mount();
     // Repo pages are a SPA: switching tabs replaces the turbo frame without a
