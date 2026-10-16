@@ -9,7 +9,6 @@ export default defineConfig({
   server: {
     host: "127.0.0.1",
     // 4173 归 prelook-landing，这里写死 4174 + strictPort：两个官网可以同时起 dev 互不抢占
-    port: 4174,
-    strictPort: true,
+    port: 4175,
   },
 });
