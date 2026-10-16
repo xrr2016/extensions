@@ -1,6 +1,6 @@
 # RepoWays
 
-RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge，MV3）。它在任意 GitHub 仓库页的
+RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge / Firefox）。它在任意 GitHub 仓库页的
 `Code` 按钮左边注入一枚 `Ways` 按钮，点击展开十二条入口，全部是由 `owner/repo`
 现拼出来的普通链接——不抓取、不申请任何浏览器权限、不收集任何数据。
 
@@ -23,7 +23,15 @@ RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge，MV3）。�
 | 读、改、跑 | StackBlitz       | 跑项目         | `https://stackblitz.com/github/{owner}/{repo}`           |
 | 看活跃度   | OSSInsight       | 看活跃度       | `https://ossinsight.io/analyze/{owner}/{repo}`           |
 
-## 安装（离线包）
+## 安装
+
+商店（首次提交审核中，通过后页面生效）：
+
+- Chrome：https://chromewebstore.google.com/detail/ggckmbmffcjplnipncopliaeabbafkc
+- Edge：https://microsoftedge.microsoft.com/addons/detail/0RDCKDRHHKSB
+- Firefox：https://addons.mozilla.org/zh-CN/firefox/addon/repoways/
+
+离线包（进不了商店时的兜底）：
 
 1. 下载 `./assets/repoways-1.0.4-chrome.zip` 并解压到一个文件夹；
 2. 打开 `chrome://extensions`，在右上角开启「开发者模式」；
