@@ -224,22 +224,6 @@ a:hover {
   color: #fff;
 }
 
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.65rem 1.2rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.btn-ghost:hover {
-  color: var(--primary);
-  border-color: var(--primary);
-}
-
 /* --- hero 插画：GitHub 仓库头部一行的纯 CSS 剪影 --- */
 
 .hero-visual {

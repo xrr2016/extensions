@@ -15,7 +15,6 @@
       "hero.title": "GitHub 仓库的 12 种打开方式",
       "hero.sub": "在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。",
       "hero.cta": "下载离线包",
-      "hero.cta2": "查看全部入口",
       "features.title": "十二条入口，按你要做的事分四组",
       "features.sub": "菜单里的每一条都是普通链接——点了才跳转，不碰任何抓取。",
       "group.structure": "看懂结构",
@@ -65,7 +64,6 @@
       "hero.sub":
         "One click on any GitHub repository to open it with the tools that read, diagram and run it.",
       "hero.cta": "Download",
-      "hero.cta2": "See all entries",
       "features.title": "Twelve entries, in four groups",
       "features.sub":
         "Every row in the menu is a plain link — it only opens when you click it. Nothing is scraped.",
