@@ -40,6 +40,10 @@
       "pr.foot.home": "首页",
       "pr.foot.features": "功能",
       "pr.foot.privacy": "隐私政策",
+      "pr.foot.contact": "联系",
+      "pr.foot.support": "支持",
+      "pr.foot.feedback": "反馈与功能许愿",
+      "pr.foot.issues": "报告问题",
       "pr.foot.rights": "保留所有权利",
     },
     en: {
@@ -80,6 +84,10 @@
       "pr.foot.home": "Home",
       "pr.foot.features": "Features",
       "pr.foot.privacy": "Privacy policy",
+      "pr.foot.contact": "Contact",
+      "pr.foot.support": "Support",
+      "pr.foot.feedback": "Feedback & feature requests",
+      "pr.foot.issues": "Report an issue",
       "pr.foot.rights": "All rights reserved",
     },
   };
