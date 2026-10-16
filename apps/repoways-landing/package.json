@@ -1,0 +1,14 @@
+{
+  "name": "@extensions/repoways-landing",
+  "description": "RepoWays 产品官网",
+  "private": true,
+  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}

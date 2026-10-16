@@ -92,12 +92,25 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // 32..96, so the spokes stop 64 short of each node's centre (a round cap reaches
 // exactly 96) and each hole stays open. Run a spoke to its node's centre instead
 // and the cap fills the hole — the one way to get this wrong.
+//
+// The spokes are one step lighter than the nodes (2026-10-16: "中间的连线线条颜色
+// 还是太深了"). They take Primer's own secondary ink, `--fgColor-muted` (light
+// #59636e / dark #9198a1) — the same token the menu rows use for their
+// descriptions — rather than a made-up alpha, because it is a real step in the
+// scale GitHub is already shipping and it flips with the theme by itself. The
+// fallback is `currentColor`, so on a page without the token the mark simply
+// stays one colour. `var()` in a *presentation attribute* does resolve inside a
+// shadow root (measured: computed stroke is rgb(89,99,110) on the light button),
+// so this does not need an inline `style`. Painting order keeps the junctions
+// clean: the rings come after the spokes, so each dark band covers the lighter
+// cap that reaches into it and there is no seam where they meet.
 const LOGO_VIEWBOX = "168 162 700 700";
+const SPOKE_STROKE = "var(--fgColor-muted, currentColor)";
 const LOGO_BODY =
   `<g fill="none" stroke="currentColor" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">` +
-  `<path d="M319.8 480.7L644.2 299.3"/>` +
-  `<path d="M328 512L708 512"/>` +
-  `<path d="M319.8 543.3L644.2 724.7"/>` +
+  `<path stroke="${SPOKE_STROKE}" d="M319.8 480.7L644.2 299.3"/>` +
+  `<path stroke="${SPOKE_STROKE}" d="M328 512L708 512"/>` +
+  `<path stroke="${SPOKE_STROKE}" d="M319.8 543.3L644.2 724.7"/>` +
   `<circle cx="264" cy="512" r="64"/>` +
   `<circle cx="700" cy="268" r="64"/>` +
   `<circle cx="772" cy="512" r="64"/>` +

@@ -1,0 +1,735 @@
+/* ==========================================================================
+   RepoWays landing — 设计令牌 + 布局
+   与 prelook-landing 同一套令牌命名；固定浅色（无主题切换）；不引外部字体。
+   主色取 RepoWays logo / GitHub Primer 强调蓝 #0969da。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --primary: #0969da;
+  --primary-hover: #0550ae;
+  --primary-light: rgba(9, 105, 218, 0.08);
+  --primary-shadow: rgba(9, 105, 218, 0.28);
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #eef1f4;
+
+  --text-primary: #1f2328;
+  --text-secondary: #424a53;
+  --text-tertiary: #59636e;
+  --border: #d1d9e0;
+  --border-soft: #e2e7ec;
+
+  --shadow-sm: 0 1px 3px rgba(31, 35, 40, 0.06);
+  --shadow-md: 0 4px 12px rgba(31, 35, 40, 0.08);
+  --shadow-lg: 0 12px 32px rgba(31, 35, 40, 0.12);
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4.5rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+.container {
+  width: min(1080px, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--text-primary);
+}
+
+.brand:hover {
+  color: var(--text-primary);
+}
+
+.brand img {
+  border-radius: 22%;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.site-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.site-nav > a {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.site-nav > a:hover {
+  color: var(--primary);
+}
+
+#langToggle {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.28rem 0.8rem;
+  cursor: pointer;
+}
+
+#langToggle:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding: var(--spacing-2xl) 0;
+  background:
+    radial-gradient(60% 55% at 78% 12%, rgba(9, 105, 218, 0.07), transparent 70%),
+    var(--bg-primary);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-block;
+  margin: 0 0 var(--spacing-sm);
+  padding: 0.3rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 999px;
+}
+
+.hero h1 {
+  margin: 0 0 var(--spacing-sm);
+  font-size: clamp(1.7rem, 3.6vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.hero-sub {
+  margin: 0 0 var(--spacing-lg);
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  max-width: 34em;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px var(--primary-shadow);
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  color: #fff;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.btn-ghost:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* --- hero 插画：GitHub 仓库头部一行的纯 CSS 剪影 --- */
+
+.hero-visual {
+  min-width: 0;
+}
+
+.mock-window {
+  position: relative;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  overflow: visible;
+}
+
+.mock-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-a {
+  background: #f85149;
+}
+
+.dot-b {
+  background: #f0b72f;
+}
+
+.dot-c {
+  background: #57ab5a;
+}
+
+.mock-url {
+  margin-left: 0.5rem;
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  border-radius: 999px;
+  padding: 0.2rem 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mock-body {
+  padding: 0.9rem 1rem 1.1rem;
+}
+
+.mock-repo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.mock-repo-name {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.mock-star {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  background: var(--bg-secondary);
+}
+
+.mock-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.mock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #25292e;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+  flex: none;
+}
+
+.mock-btn svg {
+  flex: none;
+}
+
+.mock-btn .caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  opacity: 0.6;
+  margin-left: 0.1rem;
+}
+
+.mock-btn-code {
+  background: #1f883d;
+  border-color: rgba(31, 136, 61, 0.85);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  font-family: var(--font-mono);
+}
+
+.mock-btn-ways {
+  position: relative;
+  box-shadow:
+    0 0 0 3px rgba(9, 105, 218, 0.18),
+    0 1px 0 rgba(31, 35, 40, 0.04);
+}
+
+.mock-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -10px;
+  z-index: 3;
+  width: 250px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow:
+    0 1px 0 rgba(31, 35, 40, 0.04),
+    0 8px 24px rgba(31, 35, 40, 0.16);
+  outline: 1px solid var(--border);
+  outline-offset: -1px;
+}
+
+.mrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.mrow b {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.mrow em {
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mdiv {
+  display: block;
+  height: 1px;
+  margin: 7px -8px 8px;
+  background: var(--border);
+}
+
+.mock-lines {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 2.4rem;
+}
+
+.mock-lines span {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--bg-tertiary);
+}
+
+.mock-lines span:nth-child(1) {
+  width: 92%;
+}
+
+.mock-lines span:nth-child(2) {
+  width: 76%;
+}
+
+.mock-lines span:nth-child(3) {
+  width: 84%;
+}
+
+/* --------------------------------------------------------------------------
+   Sections
+   -------------------------------------------------------------------------- */
+
+.section {
+  padding: var(--spacing-2xl) 0;
+  background: var(--bg-primary);
+}
+
+.section-alt {
+  background: var(--bg-secondary);
+}
+
+.section-title {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  letter-spacing: -0.01em;
+}
+
+.section-sub {
+  margin: 0 0 var(--spacing-xl);
+  color: var(--text-secondary);
+  max-width: 42em;
+}
+
+/* --- features：四组卡片（卡片底色与所在区块相反那一档）。
+   两列而不是四列：en 最长一行 "Dependency Graph + List dependencies" 在 1080 容器的
+   四分之一宽（约 218px 内容宽）里放不下，会被挤成错位的两行 --- */
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.group-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.group-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.95rem;
+}
+
+.group-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gd, var(--primary));
+  flex: none;
+}
+
+.group-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.group-card li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+}
+
+.group-card li b {
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.group-card li em {
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  text-align: right;
+}
+
+/* --- install：三步 --- */
+
+.steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0 0 var(--spacing-xl);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.steps li {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+}
+
+.step-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 0.7rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.steps p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.install-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.install-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  max-width: 30em;
+}
+
+/* --- assure：三枚承诺 --- */
+
+.assure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.assure h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.assure p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-soft);
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.footer-brand-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.footer-brand img {
+  border-radius: 22%;
+}
+
+.footer-brand p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  max-width: 26em;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.footer-column {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+}
+
+.footer-column h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.footer-column a {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footer-column a:hover {
+  color: var(--primary);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border-soft);
+  padding-top: var(--spacing-md);
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.footer-filing {
+  color: var(--text-tertiary);
+}
+
+.footer-filing:hover {
+  color: var(--primary);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: var(--spacing-xl) 0;
+  }
+
+  .groups {
+    grid-template-columns: 1fr;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .steps,
+  .assure-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .mock-menu {
+    width: 210px;
+  }
+
+  .site-nav {
+    gap: 0.8rem;
+  }
+}

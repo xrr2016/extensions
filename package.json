@@ -19,6 +19,7 @@
     "zip:repoways": "pnpm -F @extensions/repoways zip",
     "zip:repoways:firefox": "pnpm -F @extensions/repoways zip:firefox",
     "compile:repoways": "pnpm -F @extensions/repoways compile",
+    "landing:repoways": "pnpm -F @extensions/repoways-landing dev",
     "compile": "pnpm -r --if-present compile",
     "build": "pnpm -r --if-present build",
     "build:firefox": "pnpm -r --if-present build:firefox",

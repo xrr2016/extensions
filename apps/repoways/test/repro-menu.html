@@ -145,9 +145,16 @@
       // replaceState() moves the document URL to a repo-shaped one.
       const OUT = new URL("../.output/chrome-mv3/", location.href).href;
 
+      // `python -m http.server` sends no `Cache-Control`, so Chrome falls back to
+      // heuristic freshness and can serve a bundle it fetched minutes ago — which
+      // reads as "my change did nothing" (or worse, as a pass on the old code).
+      // Every `.output` read here is a *product* artifact, so each one gets a
+      // per-load bust: this rig must never test a stale build.
+      const BUST = `?t=${Date.now()}`;
+
       const messages = (() => {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `${OUT}_locales/zh_CN/messages.json`, false);
+        xhr.open("GET", `${OUT}_locales/zh_CN/messages.json${BUST}`, false);
         xhr.send();
         return JSON.parse(xhr.responseText);
       })();
@@ -160,7 +167,7 @@
       history.replaceState(null, "", "/octocat/hello-world");
 
       const script = document.createElement("script");
-      script.src = `${OUT}content-scripts/content.js`;
+      script.src = `${OUT}content-scripts/content.js${BUST}`;
       document.body.append(script);
     </script>
     <script>
@@ -210,12 +217,13 @@
         // Icon / label / caret. The leading glyph is ours (Octicons has no route
         // icon) and it is now the product's own logo, so it is pinned by its real
         // geometry rather than a prefix: the fan-out's three spokes and four
-        // *hollow* rings, the blue plate gone, and currentColor as the ink. The
-        // caret is the one copied out of the branch button's markup.
+        // *hollow* rings, the blue plate gone, the nodes on currentColor and the
+        // spokes a step lighter. The caret is the one copied out of the branch
+        // button's markup.
         const glyphs = [...(button?.querySelectorAll("svg") ?? [])];
         const leadGlyph = glyphs[0];
         const leadGroups = [...(leadGlyph?.querySelectorAll("g") ?? [])];
-        const leadSpokes = [...(leadGlyph?.querySelectorAll("path") ?? [])].map((p) => p.getAttribute("d"));
+        const leadSpokes = [...(leadGlyph?.querySelectorAll("path") ?? [])];
         const leadRings = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map(
           (c) => `${c.getAttribute("cx")},${c.getAttribute("cy")}/${c.getAttribute("r")}`,
         );
@@ -223,10 +231,19 @@
         // ways to break it are checked here: a second group (the old filled
         // twin), or a circle carrying a fill of its own.
         const ringFills = [...(leadGlyph?.querySelectorAll("circle") ?? [])].map((c) => c.getAttribute("fill"));
+        const spokeStrokes = leadSpokes.map((p) => p.getAttribute("stroke"));
+        const spokeD = leadSpokes.map((p) => p.getAttribute("d"));
+        // The two-tone has to be checked *computed*: an attribute string only
+        // proves we wrote it, and `var()` in a presentation attribute is exactly
+        // the kind of thing a browser can silently refuse (it resolves here —
+        // rgb(89,99,110) on the light button). Rings still inherit the ink, so
+        // the two sets must differ; equal colours mean the token did not land.
+        const spokeColors = [...new Set(leadSpokes.map((p) => getComputedStyle(p).stroke))];
+        const ringColors = [...new Set([...(leadGlyph?.querySelectorAll("circle") ?? [])].map((c) => getComputedStyle(c).stroke))];
         const leadStrokeWidth = leadGroups[0]?.getAttribute("stroke-width") ?? "";
         const caretGlyph = glyphs[1]?.querySelector("path")?.getAttribute("d") ?? "";
         check(
-          "按钮是 项目 logo（无底板、细线走 currentColor、四个空心圆）+ Ways + 箭头",
+          "按钮是 项目 logo（无底板、节点走 currentColor、连线更浅一档、四个空心圆）+ Ways + 箭头",
           glyphs.length === 2 &&
             button.firstElementChild === glyphs[0] &&
             button.lastElementChild === glyphs[1] &&
@@ -236,11 +253,15 @@
             leadGroups[0].getAttribute("stroke") === "currentColor" &&
             leadGroups[0].getAttribute("fill") === "none" &&
             leadStrokeWidth === "64" &&
-            leadSpokes.join("|") === "M319.8 480.7L644.2 299.3|M328 512L708 512|M319.8 543.3L644.2 724.7" &&
+            spokeD.join("|") === "M319.8 480.7L644.2 299.3|M328 512L708 512|M319.8 543.3L644.2 724.7" &&
+            spokeStrokes.every((s) => s === "var(--fgColor-muted, currentColor)") &&
+            spokeColors.length === 1 &&
+            ringColors.length === 1 &&
+            spokeColors[0] !== ringColors[0] &&
             leadRings.join("|") === "264,512/64|700,268/64|772,512/64|700,756/64" &&
             ringFills.every((f) => f === null) &&
             caretGlyph.startsWith("m4.427 7.427"),
-          `${glyphs.length} 个图标, viewBox=${leadGlyph?.getAttribute("viewBox")}, 组 ${leadGroups.length}, 线宽 ${leadStrokeWidth}, 描边 ${leadSpokes.length} 条, 环 ${leadRings.join(" ")}`,
+          `${glyphs.length} 个图标, viewBox=${leadGlyph?.getAttribute("viewBox")}, 组 ${leadGroups.length}, 线宽 ${leadStrokeWidth}, 描边 ${spokeD.length} 条 ${spokeColors[0]} / 环 ${leadRings.join(" ")} ${ringColors[0]}`,
         );
         check("菜单初始隐藏", menu?.hidden === true);
         check("十二条入口", items.length === 12, `count=${items.length}`);

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>RepoWays — GitHub 仓库的 12 种打开方式</title>
+    <meta
+      id="metaDescription"
+      name="description"
+      content="RepoWays 在 GitHub 仓库页的 Code 按钮旁加一枚 Ways 按钮，一键调用能读懂它、图解它、运行它的 12 个工具。免费、开源、零权限。"
+    />
+    <!-- 语言初始化：首帧就把 <html lang> 落到正确语言（用户手动选过优先，否则按浏览器语言）。
+         检测结果写入 window.__repowaysDetectedLang，供 main.js 作为默认语言。 -->
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem("repoways-landing-lang");
+          var lang = s === "zh-CN" || s === "en" ? s : null;
+          if (!lang) {
+            var nl = (navigator.language || "en").toLowerCase();
+            lang = nl.indexOf("zh") === 0 ? "zh-CN" : "en";
+          }
+          document.documentElement.lang = lang;
+          window.__repowaysDetectedLang = lang;
+        } catch (e) {
+          document.documentElement.lang = "zh-CN";
+          window.__repowaysDetectedLang = "zh-CN";
+        }
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body id="top">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="#top">
+          <img src="./assets/logo.webp" alt="" width="28" height="28" />
+          <span class="brand-name">RepoWays</span>
+        </a>
+        <nav class="site-nav">
+          <a href="#features" data-i18n="nav.features">功能</a>
+          <a href="#install" data-i18n="nav.install">安装</a>
+          <button id="langToggle" type="button" data-i18n-aria="nav.lang" aria-label="切换语言">
+            EN
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <p class="hero-badge" data-i18n="hero.badge">免费 · 开源 · 零权限</p>
+            <h1 data-i18n="hero.title">GitHub 仓库的 12 种打开方式</h1>
+            <p class="hero-sub" data-i18n="hero.sub">
+              在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。
+            </p>
+            <div class="hero-actions">
+              <a class="btn-primary" href="./assets/repoways-1.0.3-chrome.zip" download>
+                <span data-i18n="hero.cta">下载离线包</span>
+              </a>
+              <a class="btn-ghost" href="#features" data-i18n="hero.cta2">查看全部入口</a>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="mock-window">
+              <div class="mock-bar">
+                <span class="dot dot-a"></span><span class="dot dot-b"></span
+                ><span class="dot dot-c"></span>
+                <span class="mock-url">github.com/owner/repo</span>
+              </div>
+              <div class="mock-body">
+                <div class="mock-repo">
+                  <span class="mock-repo-name">owner / repo</span>
+                  <span class="mock-star">★ 1.2k</span>
+                </div>
+                <div class="mock-actions">
+                  <span class="mock-btn">main <i class="caret"></i></span>
+                  <span class="mock-btn mock-btn-ways">
+                    <svg viewBox="168 162 700 700" width="16" height="16" fill="none">
+                      <g
+                        stroke="currentColor"
+                        stroke-width="64"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path stroke="#59636e" d="M319.8 480.7L644.2 299.3" />
+                        <path stroke="#59636e" d="M328 512L708 512" />
+                        <path stroke="#59636e" d="M319.8 543.3L644.2 724.7" />
+                        <circle cx="264" cy="512" r="64" />
+                        <circle cx="700" cy="268" r="64" />
+                        <circle cx="772" cy="512" r="64" />
+                        <circle cx="700" cy="756" r="64" />
+                      </g>
+                    </svg>
+                    Ways <i class="caret"></i>
+                    <span class="mock-menu">
+                      <span class="mrow">
+                        <b>GitDiagram</b><em data-i18n="way.gitdiagram">生成架构图</em>
+                      </span>
+                      <span class="mrow"><b>Dependency</b><em data-i18n="way.depgraph">看依赖图</em></span>
+                      <span class="mdiv"></span>
+                      <span class="mrow"><b>DeepWiki</b><em data-i18n="way.deepwiki">看 AI 讲解</em></span>
+                      <span class="mrow"><b>Zread</b><em data-i18n="way.zread">看 Zread 导读</em></span>
+                      <span class="mdiv"></span>
+                      <span class="mrow"><b>GitHub1s</b><em data-i18n="way.github1s">读代码</em></span>
+                    </span>
+                  </span>
+                  <span class="mock-btn mock-btn-code">&lt;/&gt; Code</span>
+                </div>
+                <div class="mock-lines">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section section-alt">
+        <div class="container">
+          <h2 class="section-title" data-i18n="features.title">十二条入口，按你要做的事分四组</h2>
+          <p class="section-sub" data-i18n="features.sub">
+            菜单里的每一条都是普通链接——点了才跳转，不碰任何抓取。
+          </p>
+          <div class="groups">
+            <div class="group-card">
+              <h3><span class="group-dot" style="--gd: #0969da"></span><span data-i18n="group.structure">看懂结构</span></h3>
+              <ul>
+                <li><b>GitDiagram</b><em data-i18n="way.gitdiagram">生成架构图</em></li>
+                <li><b>Dependency Graph</b><em data-i18n="way.depgraph">看依赖图</em></li>
+              </ul>
+            </div>
+            <div class="group-card">
+              <h3><span class="group-dot" style="--gd: #8250df"></span><span data-i18n="group.ai">交给 AI</span></h3>
+              <ul>
+                <li><b>DeepWiki</b><em data-i18n="way.deepwiki">看 AI 讲解</em></li>
+                <li><b>Zread</b><em data-i18n="way.zread">看 Zread 导读</em></li>
+                <li><b>GitReverse</b><em data-i18n="way.gitreverse">导出 AI 提示词</em></li>
+                <li><b>GitMCP</b><em data-i18n="way.gitmcp">文档转 MCP</em></li>
+                <li><b>Gitingest</b><em data-i18n="way.gitingest">打包给 AI</em></li>
+              </ul>
+            </div>
+            <div class="group-card">
+              <h3><span class="group-dot" style="--gd: #1a7f37"></span><span data-i18n="group.code">读、改、跑</span></h3>
+              <ul>
+                <li><b>GitHub1s</b><em data-i18n="way.github1s">读代码</em></li>
+                <li><b>GitHub.dev</b><em data-i18n="way.githubdev">改代码</em></li>
+                <li><b>Codespaces</b><em data-i18n="way.codespaces">云端开发</em></li>
+                <li><b>StackBlitz</b><em data-i18n="way.stackblitz">跑项目</em></li>
+              </ul>
+            </div>
+            <div class="group-card">
+              <h3><span class="group-dot" style="--gd: #f59f3c"></span><span data-i18n="group.analytics">看活跃度</span></h3>
+              <ul>
+                <li><b>OSSInsight</b><em data-i18n="way.ossinsight">看活跃度</em></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="install" class="section">
+        <div class="container">
+          <h2 class="section-title" data-i18n="install.title">四步装好</h2>
+          <p class="section-sub" data-i18n="install.sub">用离线包安装，适用于 Chrome 与 Edge。</p>
+          <ol class="steps">
+            <li>
+              <span class="step-no">1</span>
+              <p data-i18n="install.step1">下载离线包，解压到一个文件夹</p>
+            </li>
+            <li>
+              <span class="step-no">2</span>
+              <p data-i18n="install.step2">打开 chrome://extensions，在右上角开启「开发者模式」</p>
+            </li>
+            <li>
+              <span class="step-no">3</span>
+              <p data-i18n="install.step3">点「加载已解压的扩展程序」，选中刚才的文件夹</p>
+            </li>
+            <li>
+              <span class="step-no">4</span>
+              <p data-i18n="install.step4">打开任意 GitHub 仓库页，Code 左边的 Ways 就是它</p>
+            </li>
+          </ol>
+          <div class="install-cta">
+            <a class="btn-primary" href="./assets/repoways-1.0.3-chrome.zip" download>
+              <span data-i18n="install.button">下载 Chrome 离线包</span>
+            </a>
+            <p class="install-note" data-i18n="install.note">
+              解压后的文件夹请保留：浏览器是按文件夹加载扩展的，删掉它就失效了。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt assure">
+        <div class="container assure-grid">
+          <div>
+            <h3 data-i18n="assure.perm.title">零权限</h3>
+            <p data-i18n="assure.perm.body">不申请任何浏览器权限，也不后台联网。</p>
+          </div>
+          <div>
+            <h3 data-i18n="assure.link.title">纯链接</h3>
+            <p data-i18n="assure.link.body">十二条入口全是由仓库地址拼出来的普通链接。</p>
+          </div>
+          <div>
+            <h3 data-i18n="assure.data.title">不收集</h3>
+            <p data-i18n="assure.data.body">没有统计、没有账号、没有任何数据上传。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="footer-brand-head">
+              <img src="./assets/logo.webp" alt="" width="40" height="40" />
+              <span class="brand-name">RepoWays</span>
+            </div>
+            <p data-i18n="footer.about">在 GitHub 仓库页，一键换种方式打开它。</p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-column">
+              <h4 data-i18n="footer.links">快速链接</h4>
+              <a href="#features" data-i18n="nav.features">功能</a>
+              <a href="#install" data-i18n="nav.install">安装</a>
+            </div>
+            <div class="footer-column">
+              <h4 data-i18n="footer.contact">联系</h4>
+              <a href="https://github.com/xrr2016/extensions" target="_blank" rel="noopener">
+                GitHub
+              </a>
+              <a href="https://afdian.com/a/coldstoneboy" target="_blank" rel="noopener">爱发电</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 冷石Boy · <span data-i18n="footer.rights">保留所有权利</span></p>
+          <a
+            class="footer-filing"
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            rel="noopener"
+            >粤ICP备2026134562号</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <script src="./js/main.js" defer></script>
+  </body>
+</html>
