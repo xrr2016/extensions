@@ -1,7 +1,8 @@
 /* ==========================================================================
    RepoWays landing — 设计令牌 + 布局
-   与 prelook-landing 同一套令牌命名；固定浅色（无主题切换）；不引外部字体。
-   主色取 RepoWays logo / GitHub Primer 强调蓝 #0969da。
+   与 prelook-landing 同一套令牌命名；深浅双主题由 <head> 内联脚本先落地、导航右侧
+   按钮手动切换（存 localStorage.repoways-landing-theme，未选过则跟随系统）；不引外部字体。
+   主色取 RepoWays logo / GitHub Primer 强调蓝 #0969da，深色档整体翻成 Primer 深色。
    ========================================================================== */
 
 :root {
@@ -26,6 +27,9 @@
   --shadow-md: 0 4px 12px rgba(31, 35, 40, 0.08);
   --shadow-lg: 0 12px 32px rgba(31, 35, 40, 0.12);
 
+  /* 固定导航条是带模糊的半透明底色，跟着主题各给一档 */
+  --header-bg: rgba(255, 255, 255, 0.85);
+
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
@@ -42,6 +46,33 @@
     system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* 深色档：令牌整体翻一遍，取值对齐 GitHub Primer 深色（画布 #0d1117 / 次级 #161b22 /
+   主文字 #e6edf3 / 强调蓝 #2f81f0）。data-theme 由 <head> 内联脚本先落地，避免首帧闪白。 */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --primary: #2f81f0;
+  --primary-hover: #539bf5;
+  --primary-light: rgba(47, 129, 240, 0.15);
+  --primary-shadow: rgba(47, 129, 240, 0.32);
+
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+
+  --text-primary: #e6edf3;
+  --text-secondary: #9198a1;
+  --text-tertiary: #7d8590;
+  --border: #3d444d;
+  --border-soft: #30363d;
+
+  --shadow-sm: 0 1px 3px rgba(1, 4, 9, 0.6);
+  --shadow-md: 0 4px 12px rgba(1, 4, 9, 0.6);
+  --shadow-lg: 0 12px 32px rgba(1, 4, 9, 0.7);
+
+  --header-bg: rgba(13, 17, 23, 0.85);
 }
 
 * {
@@ -89,7 +120,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-soft);
@@ -154,6 +185,69 @@ a:hover {
 #langToggle:hover {
   color: var(--primary);
   border-color: var(--primary);
+}
+
+/* 右侧三枚控件（语言 / 明暗 / GitHub）成组，比导航链接之间的 1.25rem 收紧 */
+.nav-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 30px;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* 图标代表当前档位：浅色画太阳、深色画月亮 */
+.theme-toggle .icon-moon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle .icon-sun {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+  display: block;
+}
+
+.gh-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 30px;
+  color: var(--text-secondary);
+}
+
+.gh-link:hover {
+  color: var(--primary);
+}
+
+.gh-link svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 /* --------------------------------------------------------------------------
@@ -321,7 +415,7 @@ a:hover {
   padding: 0 0.75rem;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #25292e;
+  color: var(--text-primary);
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -365,7 +459,7 @@ a:hover {
   z-index: 3;
   width: 250px;
   padding: 8px;
-  background: #fff;
+  background: var(--bg-primary);
   border-radius: 12px;
   box-shadow:
     0 1px 0 rgba(31, 35, 40, 0.04),
@@ -517,59 +611,6 @@ a:hover {
   text-align: right;
 }
 
-/* --- install：三步 --- */
-
-.steps {
-  list-style: none;
-  counter-reset: step;
-  margin: 0 0 var(--spacing-xl);
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--spacing-md);
-}
-
-.steps li {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
-}
-
-.step-no {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  margin-bottom: 0.7rem;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.82rem;
-}
-
-.steps p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.install-cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.install-note {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-tertiary);
-  max-width: 30em;
-}
-
 /* --- assure：三枚承诺 --- */
 
 .assure-grid {
@@ -596,13 +637,12 @@ a:hover {
 
 .site-footer {
   background: var(--bg-primary);
-  border-top: 1px solid var(--border-soft);
   padding: var(--spacing-xl) 0 var(--spacing-lg);
 }
 
 .footer-content {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   gap: var(--spacing-xl);
   margin-bottom: var(--spacing-lg);
 }
@@ -627,7 +667,8 @@ a:hover {
 
 .footer-links {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* 三栏链接（快速链接 / 联系 / 支持）：auto-fit 让窄屏自然折行，不必为每档断点单写列数 */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--spacing-lg);
 }
 
@@ -651,6 +692,204 @@ a:hover {
 .footer-column a:hover {
   color: var(--primary);
 }
+
+/* --------------------------------------------------------------------------
+   安装色带（#get）—— 参考 prelook-landing 的 .cta-band
+   整段是一个饱和色块，不参与 --bg-* 的深浅交替，所以浅色/深色各写一版渐变：
+   深色主题下压暗一档，白字和白色按钮才不至于刺眼。底色取 RepoWays 品牌蓝 #0969da。
+   -------------------------------------------------------------------------- */
+.cta-band {
+  background: linear-gradient(135deg, #0969da 0%, #116ed7 55%, #2f81f0 100%);
+  color: #fff;
+  overflow: hidden;
+  padding: var(--spacing-2xl) 0;
+}
+
+[data-theme="dark"] .cta-band {
+  background: linear-gradient(135deg, #0a4a8f 0%, #0c58a8 55%, #1f6fd0 100%);
+}
+
+.cta-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.cta-title {
+  margin: var(--spacing-md) 0 0;
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.cta-sub {
+  margin: var(--spacing-sm) 0 0;
+  font-size: 1.0625rem;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+/* 三颗商店入口竖排成一列（只有三个，横向两列会空出半格、看着像漏了一个）。
+   浏览器 logo 必须用 <img> 引文件而非内联——Chrome/Edge/Firefox 的 SVG 各自定义了
+   同名渐变 id，内联进同一文档会互相覆盖（与 prelook-landing 同一套约定）。 */
+.cta-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.625rem;
+  max-width: 420px;
+  margin-top: var(--spacing-lg);
+}
+
+.store-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: var(--radius-md);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* 色带上固定用白底深字：--bg-primary 在深色主题里是近黑色，压在蓝底上像几块补丁 */
+.store-btn {
+  background: rgba(255, 255, 255, 0.96);
+  color: #1f2333;
+}
+
+.store-btn:hover {
+  background: #fff;
+  color: #0969da;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(1, 4, 9, 0.22);
+}
+
+.browser-logo {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+/* ---------- 色带右侧插画 ---------- */
+/* 用「前一层用负 margin 压住后一层」而不是绝对定位：窗口高度由内容决定，
+   绝对定位要按内容高度算偏移，改一行骨架线就得重算一次。 */
+.cta-art {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.art-win {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(12, 16, 40, 0.3);
+}
+
+.art-back {
+  width: 72%;
+  transform: rotate(5deg);
+}
+
+.art-front {
+  width: 84%;
+  align-self: flex-start;
+  /* 百分比 margin 按容器宽度算，这里就是"往上压 12% 的容器宽" */
+  margin: -12% 0 0 -4%;
+  transform: rotate(-3deg);
+  z-index: 1;
+  box-shadow: 0 26px 56px rgba(12, 16, 40, 0.38);
+}
+
+.art-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 11px;
+  background: #1f2333;
+}
+
+.art-bar > i {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.art-pill {
+  flex: 1;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* 预览窗那一条：浅色玻璃 + 品牌蓝，跟产品里的窗口标题栏同一个意思 */
+.art-bar-preview {
+  background: color-mix(in srgb, #0969da 17%, #fff);
+  border-bottom: 1px solid rgba(9, 105, 218, 0.26);
+}
+
+.art-bar-preview .art-pill {
+  background: rgba(31, 35, 51, 0.18);
+}
+
+.art-favicon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #0969da, #2f81f0);
+}
+
+.art-btns {
+  display: flex;
+  gap: 5px;
+}
+
+.art-btns i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: rgba(31, 35, 51, 0.18);
+}
+
+.art-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.art-line {
+  height: 10px;
+  border-radius: 5px;
+  background: #e9ecf3;
+}
+
+.art-line.w60 {
+  width: 60%;
+}
+
+.art-line.w70 {
+  width: 70%;
+}
+
+.art-line.w80 {
+  width: 80%;
+}
+
+.art-line.w85 {
+  width: 85%;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
 
 .footer-bottom {
   display: flex;
@@ -692,14 +931,30 @@ a:hover {
   .groups {
     grid-template-columns: 1fr;
   }
+}
 
-  .steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* 色带在窄屏立起来：文案居中、按钮居中、插画挪到下面并收窄。
+   断点压到 820px 而不是 960：768–960 这一档还放得下左右两栏，
+   提前立起来只会让色带上下空出一大片。 */
+@media (max-width: 820px) {
+  .cta-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .cta-actions {
+    margin-inline: auto;
+  }
+
+  .cta-art {
+    max-width: 380px;
+    width: 100%;
+    margin: var(--spacing-lg) auto 0;
+    align-self: center;
   }
 }
 
 @media (max-width: 600px) {
-  .steps,
   .assure-grid {
     grid-template-columns: 1fr;
   }
@@ -715,5 +970,10 @@ a:hover {
 
   .site-nav {
     gap: 0.8rem;
+  }
+
+  /* 手机上只留色块和按钮：插画会让这一段占掉整整一屏，而这一段的意义就是那三颗按钮 */
+  .cta-art {
+    display: none;
   }
 }

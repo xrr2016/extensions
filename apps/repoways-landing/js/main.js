@@ -9,8 +9,9 @@
       "meta.description":
         "RepoWays 在 GitHub 仓库页的 Code 按钮旁加一枚 Ways 按钮，一键调用能读懂它、图解它、运行它的 12 个工具。免费、开源、零权限。",
       "nav.features": "功能",
-      "nav.install": "安装",
       "nav.lang": "切换语言",
+      "nav.theme": "切换深浅色",
+      "nav.github": "GitHub 仓库",
       "hero.badge": "免费 · 开源 · 零权限",
       "hero.title": "GitHub 仓库的 12 种打开方式",
       "hero.sub": "在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。",
@@ -33,14 +34,6 @@
       "way.codespaces": "云端开发",
       "way.stackblitz": "跑项目",
       "way.ossinsight": "看活跃度",
-      "install.title": "四步装好",
-      "install.sub": "用离线包安装，适用于 Chrome 与 Edge。",
-      "install.step1": "下载离线包，解压到一个文件夹",
-      "install.step2": "打开 chrome://extensions，在右上角开启「开发者模式」",
-      "install.step3": "点「加载已解压的扩展程序」，选中刚才的文件夹",
-      "install.step4": "打开任意 GitHub 仓库页，Code 左边的 Ways 就是它",
-      "install.button": "下载 Chrome 离线包",
-      "install.note": "解压后的文件夹请保留：浏览器是按文件夹加载扩展的，删掉它就失效了。",
       "assure.perm.title": "零权限",
       "assure.perm.body": "不申请任何浏览器权限，也不后台联网。",
       "assure.link.title": "纯链接",
@@ -50,15 +43,25 @@
       "footer.about": "在 GitHub 仓库页，一键换种方式打开它。",
       "footer.links": "快速链接",
       "footer.contact": "联系",
+      "footer.support": "支持",
+      "footer.feedback": "反馈与功能许愿",
+      "footer.issues": "报告问题",
+      "footer.privacy": "隐私政策",
       "footer.rights": "保留所有权利",
+      "cta.title": "现在就用起来",
+      "cta.sub": "装完即用，不用注册，也不用登录。",
+      "store.chrome": "Chrome 应用商店",
+      "store.edge": "Microsoft Edge 加载项",
+      "store.firefox": "Firefox 附加组件",
     },
     en: {
       "meta.title": "RepoWays — 12 ways to open any GitHub repo",
       "meta.description":
         "RepoWays adds a Ways button next to Code on any GitHub repository page — one click to reach the tools that read, diagram and run it. Free, open source, zero permissions.",
       "nav.features": "Features",
-      "nav.install": "Install",
       "nav.lang": "Switch language",
+      "nav.theme": "Toggle theme",
+      "nav.github": "GitHub repository",
       "hero.badge": "Free · Open source · Zero permissions",
       "hero.title": "12 ways to open any GitHub repo",
       "hero.sub":
@@ -83,15 +86,6 @@
       "way.codespaces": "Dev environment",
       "way.stackblitz": "Run project",
       "way.ossinsight": "Repo activity",
-      "install.title": "Up and running in a few steps",
-      "install.sub": "Install from the offline package — works on Chrome and Edge.",
-      "install.step1": "Download the offline package and unzip it into a folder",
-      "install.step2": "Open chrome://extensions and turn on “Developer mode” (top right)",
-      "install.step3": "Click “Load unpacked” and select that folder",
-      "install.step4": "Open any GitHub repository — Ways sits right next to Code",
-      "install.button": "Download the Chrome package",
-      "install.note":
-        "Keep the unzipped folder: the browser loads the extension from it, so deleting it uninstalls.",
       "assure.perm.title": "Zero permissions",
       "assure.perm.body": "Requests no browser permissions and never phones home.",
       "assure.link.title": "Plain links",
@@ -101,7 +95,16 @@
       "footer.about": "On any GitHub repo, open it a different way.",
       "footer.links": "Quick links",
       "footer.contact": "Contact",
+      "footer.support": "Support",
+      "footer.feedback": "Feedback & feature requests",
+      "footer.issues": "Report an issue",
+      "footer.privacy": "Privacy policy",
       "footer.rights": "All rights reserved",
+      "cta.title": "Get started now",
+      "cta.sub": "Install and go — no sign-up, no login.",
+      "store.chrome": "Chrome Web Store",
+      "store.edge": "Microsoft Edge Add-ons",
+      "store.firefox": "Firefox Add-ons",
     },
   };
 
@@ -146,6 +149,30 @@
         /* 存不下就只在本次会话生效 */
       }
       applyLang();
+    });
+  }
+
+  // 深浅色：<head> 内联脚本已按存档/系统落地 data-theme，这里只补交互与地址栏底色同步。
+  var THEME_KEY = "repoways-landing-theme";
+  var themeBtn = document.getElementById("themeToggle");
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var meta = document.getElementById("metaThemeColor");
+    if (meta) meta.setAttribute("content", t === "dark" ? "#0d1117" : "#ffffff");
+    if (themeBtn) themeBtn.setAttribute("aria-pressed", t === "dark" ? "true" : "false");
+  }
+
+  if (themeBtn) {
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
+    themeBtn.addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch {
+        /* 存不下就只在本次会话生效 */
+      }
+      applyTheme(next);
     });
   }
 
