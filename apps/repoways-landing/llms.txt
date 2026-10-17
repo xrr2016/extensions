@@ -1,0 +1,8 @@
+# RepoWays
+
+> RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge / Firefox）：在任意 GitHub 仓库页的 `Code` 按钮左边注入一枚 `Ways` 按钮，点击展开十二条入口，一键调用能读懂它、图解它、运行它的工具——全部是由 `owner/repo` 现拼出来的普通链接，不抓取、零权限、不收集任何数据。本站为其产品官网。
+
+## 站点页面
+
+- [RepoWays 首页](https://repoways.coldstoneboy.cn/index.md): 产品介绍、十二条入口的四组分类、隐私承诺与各浏览器安装入口
+- [RepoWays 隐私政策](https://repoways.coldstoneboy.cn/privacy.md): 扩展与官网的数据处理说明（扩展零权限、零采集、不联网、不存储；官网仅使用两个 localStorage 键，数据只存本机、不上报）

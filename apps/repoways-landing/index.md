@@ -1,3 +1,5 @@
+> 完整文档索引见 [llms.txt](https://repoways.coldstoneboy.cn/llms.txt)。
+
 # RepoWays
 
 RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge / Firefox）。它在任意 GitHub 仓库页的

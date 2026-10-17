@@ -1,3 +1,5 @@
+> 完整文档索引见 [llms.txt](https://repoways.coldstoneboy.cn/llms.txt)。
+
 # RepoWays 隐私政策 / Privacy Policy
 
 生效日期 / Effective: 2026-10-16
