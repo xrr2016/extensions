@@ -33,7 +33,7 @@ RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge / Firefox）
 
 离线包（进不了商店时的兜底）：
 
-1. 下载 `./assets/repoways-1.0.4-chrome.zip` 并解压到一个文件夹；
+1. 下载 `./assets/repoways-1.0.5-chrome.zip` 并解压到一个文件夹；
 2. 打开 `chrome://extensions`，在右上角开启「开发者模式」；
 3. 点「加载已解压的扩展程序」，选中该文件夹；
 4. 打开任意 `github.com` 仓库页，`Code` 按钮左边的 `Ways` 即生效（Edge 同样适用）。
