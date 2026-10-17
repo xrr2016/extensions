@@ -13,7 +13,7 @@
        a round cap then reaches exactly to the ring's outer edge and spreads
        into the band, leaving the hole clean — run them to the centre instead
        and the cap fills the hole, which is what "hollow" would have lost. -->
-  <rect x="32.0" y="32.0" width="960.0" height="960.0" rx="288.0" fill="#0969da"/>
+  <rect x="32.0" y="32.0" width="960.0" height="960.0" rx="288.0" fill="#58a6ff"/>
   <g fill="none" stroke="#ffffff" stroke-width="64.0" stroke-linecap="round" stroke-linejoin="round">
     <path d="M319.8 480.7 L644.2 299.3"/>
     <path d="M328.0 512.0 L708.0 512.0"/>
