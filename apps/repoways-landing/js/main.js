@@ -15,7 +15,8 @@
       "hero.badge": "免费 · 开源 · 零权限",
       "hero.title": "GitHub 仓库的 12 种打开方式",
       "hero.sub": "在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。",
-      "hero.cta": "下载离线包",
+      "hero.cta": "立即安装",
+      "hero.offline": "下载离线包",
       "features.title": "十二条入口，按你要做的事分四组",
       "features.sub": "菜单里的每一条都是普通链接——点了才跳转，不碰任何抓取。",
       "group.structure": "看懂结构",
@@ -34,12 +35,6 @@
       "way.codespaces": "云端开发",
       "way.stackblitz": "跑项目",
       "way.ossinsight": "看活跃度",
-      "assure.perm.title": "零权限",
-      "assure.perm.body": "不申请任何浏览器权限，也不后台联网。",
-      "assure.link.title": "纯链接",
-      "assure.link.body": "十二条入口全是由仓库地址拼出来的普通链接。",
-      "assure.data.title": "不收集",
-      "assure.data.body": "没有统计、没有账号、没有任何数据上传。",
       "footer.about": "在 GitHub 仓库页，一键换种方式打开它。",
       "footer.links": "快速链接",
       "footer.contact": "联系",
@@ -66,7 +61,8 @@
       "hero.title": "12 ways to open any GitHub repo",
       "hero.sub":
         "One click on any GitHub repository to open it with the tools that read, diagram and run it.",
-      "hero.cta": "Download",
+      "hero.cta": "Install now",
+      "hero.offline": "Download offline package",
       "features.title": "Twelve entries, in four groups",
       "features.sub":
         "Every row in the menu is a plain link — it only opens when you click it. Nothing is scraped.",
@@ -86,12 +82,6 @@
       "way.codespaces": "Dev environment",
       "way.stackblitz": "Run project",
       "way.ossinsight": "Repo activity",
-      "assure.perm.title": "Zero permissions",
-      "assure.perm.body": "Requests no browser permissions and never phones home.",
-      "assure.link.title": "Plain links",
-      "assure.link.body": "All twelve entries are ordinary URLs built from the repository path.",
-      "assure.data.title": "No data collected",
-      "assure.data.body": "No analytics, no accounts, no uploads. None.",
       "footer.about": "On any GitHub repo, open it a different way.",
       "footer.links": "Quick links",
       "footer.contact": "Contact",
@@ -174,6 +164,33 @@
       }
       applyTheme(next);
     });
+  }
+
+  // 立即安装：按浏览器把 hero 主按钮指到对应商店并换上该浏览器 logo（Firefox→AMO、Edge→Edge 加载项、其余→Chrome）。
+  // 与页尾色带三颗商店按钮同一批地址；logo 用 <img> 引文件而非内联（三份 SVG 各自定义了同名渐变 id）。
+  // HTML 里默认已是 Chrome，所以禁用 JS 时仍是 Chrome 商店 + Chrome 图标。
+  var STORES = {
+    chrome: {
+      href: "https://chromewebstore.google.com/detail/repoways/ggckmbmffccjplnipncoplieaebbafkc",
+      icon: "./assets/browser-chrome.svg",
+    },
+    edge: {
+      href: "https://microsoftedge.microsoft.com/addons/detail/iekccdlhkjfmnioefgbmannknlmdbemb",
+      icon: "./assets/browser-edge.svg",
+    },
+    firefox: {
+      href: "https://addons.mozilla.org/zh-CN/firefox/addon/repoways/",
+      icon: "./assets/browser-firefox.svg",
+    },
+  };
+  var installBtn = document.getElementById("heroInstall");
+  if (installBtn) {
+    var ua = navigator.userAgent || "";
+    var store =
+      ua.indexOf("Firefox") !== -1 ? "firefox" : ua.indexOf("Edg") !== -1 ? "edge" : "chrome";
+    installBtn.setAttribute("href", STORES[store].href);
+    var installIcon = document.getElementById("heroInstallIcon");
+    if (installIcon) installIcon.setAttribute("src", STORES[store].icon);
   }
 
   applyLang();

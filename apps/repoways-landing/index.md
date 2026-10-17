@@ -27,7 +27,7 @@ RepoWays 是一款免费、开源的浏览器扩展（Chrome / Edge / Firefox）
 
 商店（首次提交审核中，通过后页面生效）：
 
-- Chrome：https://chromewebstore.google.com/detail/ggckmbmffcjplnipncopliaeabbafkc
+- Chrome：https://chromewebstore.google.com/detail/repoways/ggckmbmffccjplnipncoplieaebbafkc
 - Edge：https://microsoftedge.microsoft.com/addons/detail/0RDCKDRHHKSB
 - Firefox：https://addons.mozilla.org/zh-CN/firefox/addon/repoways/
 

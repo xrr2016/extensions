@@ -8,8 +8,6 @@ export default defineConfig({
   appType: "mpa",
   server: {
     host: "127.0.0.1",
-    // prelook-landing 占 4173；这里从 4175 起跳，没开 strictPort，所以端口被占时 Vite 自动 +1
-    // （4176、4177…），两个官网可并跑、互不抢占。
-    port: 4175,
+    port: 8090,
   },
 });

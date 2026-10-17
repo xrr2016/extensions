@@ -160,31 +160,19 @@ a:hover {
   gap: 1.25rem;
 }
 
-.site-nav > a {
-  color: var(--text-secondary);
-  font-size: 0.92rem;
-  font-weight: 500;
-}
-
-.site-nav > a:hover {
-  color: var(--primary);
-}
-
 #langToggle {
   font: inherit;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.28rem 0.8rem;
+  background: none;
+  border: none;
+  padding: 0.28rem 0.4rem;
   cursor: pointer;
 }
 
 #langToggle:hover {
   color: var(--primary);
-  border-color: var(--primary);
 }
 
 /* 右侧三枚控件（语言 / 明暗 / GitHub）成组，比导航链接之间的 1.25rem 收紧 */
@@ -201,15 +189,13 @@ a:hover {
   width: 34px;
   height: 30px;
   color: var(--text-secondary);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
 .theme-toggle:hover {
   color: var(--primary);
-  border-color: var(--primary);
 }
 
 .theme-toggle svg {
@@ -255,17 +241,28 @@ a:hover {
    -------------------------------------------------------------------------- */
 
 .hero {
+  /* 顶栏是 sticky、占 60px，所以首屏留给 hero 的高度是 100vh 再减去它；
+     svh 优先（移动端动态地址栏不会把 hero 撑到超出可见区），不支持时回落 vh。 */
+  min-height: calc(100vh - 60px);
+  min-height: calc(100svh - 60px);
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
   padding: var(--spacing-2xl) 0;
   background:
-    radial-gradient(60% 55% at 78% 12%, rgba(9, 105, 218, 0.07), transparent 70%),
-    var(--bg-primary);
+    radial-gradient(60% 55% at 78% 12%, rgba(9, 105, 218, 0.07), transparent 70%), var(--bg-primary);
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  grid-template-columns: 1fr;
   gap: var(--spacing-xl);
-  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.hero-copy {
+  max-width: 640px;
 }
 
 .hero-badge {
@@ -287,7 +284,7 @@ a:hover {
 }
 
 .hero-sub {
-  margin: 0 0 var(--spacing-lg);
+  margin: 0 auto var(--spacing-lg);
   color: var(--text-secondary);
   font-size: 1.05rem;
   max-width: 34em;
@@ -298,12 +295,30 @@ a:hover {
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   align-items: center;
+  justify-content: center;
+}
+
+.hero-offline {
+  margin: var(--spacing-sm) 0 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.hero-offline a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.hero-offline a:hover {
+  color: var(--primary);
 }
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.65rem 1.4rem;
   border-radius: var(--radius-md);
   background: var(--primary);
@@ -313,15 +328,44 @@ a:hover {
   transition: background 0.15s ease;
 }
 
+.btn-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
 .btn-primary:hover {
   background: var(--primary-hover);
   color: #fff;
 }
 
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 /* --- hero 插画：GitHub 仓库头部一行的纯 CSS 剪影 --- */
 
 .hero-visual {
-  min-width: 0;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
 }
 
 .mock-window {
@@ -611,26 +655,6 @@ a:hover {
   text-align: right;
 }
 
-/* --- assure：三枚承诺 --- */
-
-.assure-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-md);
-}
-
-.assure h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1rem;
-  color: var(--text-primary);
-}
-
-.assure p {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-}
-
 /* --------------------------------------------------------------------------
    Footer
    -------------------------------------------------------------------------- */
@@ -775,116 +799,20 @@ a:hover {
 }
 
 /* ---------- 色带右侧插画 ---------- */
-/* 用「前一层用负 margin 压住后一层」而不是绝对定位：窗口高度由内容决定，
-   绝对定位要按内容高度算偏移，改一行骨架线就得重算一次。 */
+/* 一个仓库节点向右散成多条路（与 logo 同一套制图语法）。整枚是内联 SVG，
+   节点用「白描边 + 深蓝填充」，深蓝比色带底色更深，读作空心环又能盖住连线端点。 */
 .cta-art {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.art-win {
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 18px 42px rgba(12, 16, 40, 0.3);
-}
-
-.art-back {
-  width: 72%;
-  transform: rotate(5deg);
-}
-
-.art-front {
-  width: 84%;
-  align-self: flex-start;
-  /* 百分比 margin 按容器宽度算，这里就是"往上压 12% 的容器宽" */
-  margin: -12% 0 0 -4%;
-  transform: rotate(-3deg);
-  z-index: 1;
-  box-shadow: 0 26px 56px rgba(12, 16, 40, 0.38);
-}
-
-.art-bar {
-  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 11px;
-  background: #1f2333;
+  justify-content: flex-end;
 }
 
-.art-bar > i {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.art-pill {
-  flex: 1;
-  height: 8px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.22);
-}
-
-/* 预览窗那一条：浅色玻璃 + 品牌蓝，跟产品里的窗口标题栏同一个意思 */
-.art-bar-preview {
-  background: color-mix(in srgb, #0969da 17%, #fff);
-  border-bottom: 1px solid rgba(9, 105, 218, 0.26);
-}
-
-.art-bar-preview .art-pill {
-  background: rgba(31, 35, 51, 0.18);
-}
-
-.art-favicon {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #0969da, #2f81f0);
-}
-
-.art-btns {
-  display: flex;
-  gap: 5px;
-}
-
-.art-btns i {
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
-  background: rgba(31, 35, 51, 0.18);
-}
-
-.art-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 16px;
-}
-
-.art-line {
-  height: 10px;
-  border-radius: 5px;
-  background: #e9ecf3;
-}
-
-.art-line.w60 {
-  width: 60%;
-}
-
-.art-line.w70 {
-  width: 70%;
-}
-
-.art-line.w80 {
-  width: 80%;
-}
-
-.art-line.w85 {
-  width: 85%;
+.cta-art-svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 16px 30px rgba(1, 4, 9, 0.28));
 }
 
 /* --------------------------------------------------------------------------
@@ -920,10 +848,6 @@ a:hover {
    -------------------------------------------------------------------------- */
 
 @media (max-width: 960px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-
   .hero {
     padding: var(--spacing-xl) 0;
   }
@@ -955,10 +879,6 @@ a:hover {
 }
 
 @media (max-width: 600px) {
-  .assure-grid {
-    grid-template-columns: 1fr;
-  }
-
   .footer-content {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
