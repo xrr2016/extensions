@@ -49,6 +49,17 @@
     </script>
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="stylesheet" href="./css/style.css" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SDELQ8K6ZQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-SDELQ8K6ZQ");
+    </script>
   </head>
   <body id="top">
     <!-- Agent 指令（视觉隐藏）：告知 LLM/Agent 本页存在机器可读索引与 markdown 变体，
@@ -236,10 +247,7 @@
               </a>
             </div>
             <p class="hero-offline">
-              <a
-                href="./assets/repoways-1.0.5-chrome.zip"
-                download
-                data-i18n="hero.offline"
+              <a href="./assets/repoways-1.0.5-chrome.zip" download data-i18n="hero.offline"
                 >下载离线包</a
               >
             </p>
