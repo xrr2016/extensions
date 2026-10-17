@@ -126,23 +126,87 @@
               在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。
             </p>
             <div class="hero-actions">
-              <a
-                id="heroInstall"
-                class="btn-primary"
-                href="https://chromewebstore.google.com/detail/repoways/ggckmbmffccjplnipncoplieaebbafkc"
-                target="_blank"
-                rel="noopener"
-              >
-                <img
-                  id="heroInstallIcon"
-                  class="btn-icon"
-                  src="./assets/browser-chrome.svg"
-                  alt=""
-                  width="18"
-                  height="18"
-                />
-                <span data-i18n="hero.cta">立即安装</span>
-              </a>
+              <div class="install-split">
+                <a
+                  id="heroInstall"
+                  class="btn-primary install-main"
+                  href="https://chromewebstore.google.com/detail/repoways/ggckmbmffccjplnipncoplieaebbafkc"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    id="heroInstallIcon"
+                    class="btn-icon"
+                    src="./assets/browser-chrome.svg"
+                    alt=""
+                    width="18"
+                    height="18"
+                  />
+                  <span data-i18n="hero.cta">立即安装</span>
+                </a>
+                <button
+                  type="button"
+                  id="installCaret"
+                  class="btn-primary install-caret"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-label="选择其他商店"
+                  data-i18n-aria="hero.installMore"
+                >
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+                    <path
+                      d="M4 6l4 4 4-4"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <div
+                  id="installMenu"
+                  class="install-menu"
+                  role="menu"
+                  aria-label="其他商店"
+                  data-i18n-aria="hero.installOther"
+                  hidden
+                >
+                  <p class="install-menu-label" data-i18n="hero.installOther">其他商店</p>
+                  <a
+                    role="menuitem"
+                    class="install-menu-item"
+                    data-store="chrome"
+                    href="https://chromewebstore.google.com/detail/repoways/ggckmbmffccjplnipncoplieaebbafkc"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src="./assets/browser-chrome.svg" alt="" width="18" height="18" />
+                    <span data-i18n="store.chrome">Chrome 应用商店</span>
+                  </a>
+                  <a
+                    role="menuitem"
+                    class="install-menu-item"
+                    data-store="edge"
+                    href="https://microsoftedge.microsoft.com/addons/detail/iekccdlhkjfmnioefgbmannknlmdbemb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src="./assets/browser-edge.svg" alt="" width="18" height="18" />
+                    <span data-i18n="store.edge">Edge 扩展</span>
+                  </a>
+                  <a
+                    role="menuitem"
+                    class="install-menu-item"
+                    data-store="firefox"
+                    href="https://addons.mozilla.org/zh-CN/firefox/addon/repoways/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src="./assets/browser-firefox.svg" alt="" width="18" height="18" />
+                    <span data-i18n="store.firefox">Firefox 扩展</span>
+                  </a>
+                </div>
+              </div>
               <a
                 class="btn-secondary"
                 href="https://github.com/xrr2016/extensions/issues"
@@ -318,7 +382,7 @@
                   width="24"
                   height="24"
                 />
-                <span data-i18n="store.edge">Microsoft Edge 加载项</span>
+                <span data-i18n="store.edge">Edge 扩展</span>
               </a>
               <a
                 class="store-btn"
@@ -334,7 +398,7 @@
                   width="24"
                   height="24"
                 />
-                <span data-i18n="store.firefox">Firefox 附加组件</span>
+                <span data-i18n="store.firefox">Firefox 扩展</span>
               </a>
             </div>
           </div>

@@ -360,6 +360,87 @@ a:hover {
   color: var(--text-primary);
 }
 
+/* --- 立即安装：主按钮 + 右侧下拉（列出另外两个商店入口） --- */
+.install-split {
+  position: relative;
+  display: inline-flex;
+}
+
+.install-main {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.install-caret {
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 0.65rem 0.6rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.install-caret svg {
+  display: block;
+  transition: transform 0.15s ease;
+}
+
+.install-caret[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.install-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  min-width: 230px;
+  padding: 6px;
+  text-align: left;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.install-menu[hidden] {
+  display: none;
+}
+
+.install-menu-label {
+  margin: 0;
+  padding: 6px 10px 4px;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.install-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.install-menu-item[hidden] {
+  display: none;
+}
+
+.install-menu-item img {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.install-menu-item:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 /* --- hero 插画：GitHub 仓库头部一行的纯 CSS 剪影 --- */
 
 .hero-visual {

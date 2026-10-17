@@ -17,6 +17,8 @@
       "hero.sub": "在任意 GitHub 仓库页一键调用能读懂它、图解它、运行它的工具。",
       "hero.cta": "立即安装",
       "hero.offline": "下载离线包",
+      "hero.installMore": "选择其他商店",
+      "hero.installOther": "其他商店",
       "features.title": "十二条入口，按你要做的事分四组",
       "features.sub": "菜单里的每一条都是普通链接——点了才跳转，不碰任何抓取。",
       "group.structure": "看懂结构",
@@ -46,8 +48,8 @@
       "cta.title": "现在就用起来",
       "cta.sub": "装完即用，不用注册，也不用登录。",
       "store.chrome": "Chrome 应用商店",
-      "store.edge": "Microsoft Edge 加载项",
-      "store.firefox": "Firefox 附加组件",
+      "store.edge": "Edge 扩展",
+      "store.firefox": "Firefox 扩展",
     },
     en: {
       "meta.title": "RepoWays — 12 ways to open any GitHub repo",
@@ -63,6 +65,8 @@
         "One click on any GitHub repository to open it with the tools that read, diagram and run it.",
       "hero.cta": "Install now",
       "hero.offline": "Download offline package",
+      "hero.installMore": "Choose another store",
+      "hero.installOther": "Other stores",
       "features.title": "Twelve entries, in four groups",
       "features.sub":
         "Every row in the menu is a plain link — it only opens when you click it. Nothing is scraped.",
@@ -93,8 +97,8 @@
       "cta.title": "Get started now",
       "cta.sub": "Install and go — no sign-up, no login.",
       "store.chrome": "Chrome Web Store",
-      "store.edge": "Microsoft Edge Add-ons",
-      "store.firefox": "Firefox Add-ons",
+      "store.edge": "Edge Extension",
+      "store.firefox": "Firefox Extension",
     },
   };
 
@@ -166,7 +170,7 @@
     });
   }
 
-  // 立即安装：按浏览器把 hero 主按钮指到对应商店并换上该浏览器 logo（Firefox→AMO、Edge→Edge 加载项、其余→Chrome）。
+  // 立即安装：按浏览器把 hero 主按钮指到对应商店并换上该浏览器 logo（Firefox→AMO、Edge→Edge 扩展、其余→Chrome）。
   // 与页尾色带三颗商店按钮同一批地址；logo 用 <img> 引文件而非内联（三份 SVG 各自定义了同名渐变 id）。
   // HTML 里默认已是 Chrome，所以禁用 JS 时仍是 Chrome 商店 + Chrome 图标。
   var STORES = {
@@ -184,13 +188,42 @@
     },
   };
   var installBtn = document.getElementById("heroInstall");
+  var installMenu = document.getElementById("installMenu");
+  var installCaret = document.getElementById("installCaret");
+  var store = "chrome";
   if (installBtn) {
     var ua = navigator.userAgent || "";
-    var store =
-      ua.indexOf("Firefox") !== -1 ? "firefox" : ua.indexOf("Edg") !== -1 ? "edge" : "chrome";
+    store = ua.indexOf("Firefox") !== -1 ? "firefox" : ua.indexOf("Edg") !== -1 ? "edge" : "chrome";
     installBtn.setAttribute("href", STORES[store].href);
     var installIcon = document.getElementById("heroInstallIcon");
     if (installIcon) installIcon.setAttribute("src", STORES[store].icon);
+  }
+
+  // 下拉里只列"另外两个"商店：主按钮已经指向当前浏览器那家，菜单把同名的那条隐掉。
+  if (installMenu) {
+    installMenu.querySelectorAll(".install-menu-item").forEach(function (item) {
+      if (item.getAttribute("data-store") === store) item.hidden = true;
+    });
+  }
+
+  // 点击 caret 开合；点菜单外任意处或按 Esc 收起。caret 的 click 要 stopPropagation，
+  // 否则会被下面那条 document 级收起监听立刻判定成"点在外部"而关掉。
+  function setMenu(open) {
+    if (!installMenu || !installCaret) return;
+    installMenu.hidden = !open;
+    installCaret.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  if (installCaret && installMenu) {
+    installCaret.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setMenu(installMenu.hidden);
+    });
+    document.addEventListener("click", function (event) {
+      if (!installMenu.hidden && !installMenu.contains(event.target)) setMenu(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setMenu(false);
+    });
   }
 
   applyLang();
